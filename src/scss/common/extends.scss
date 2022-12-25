@@ -1,0 +1,59 @@
+%flex_center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+%flex_vertical_center {
+    display: flex;
+    align-items: center;
+}
+
+%flex_horizontal_center {
+    display: flex;
+    justify-content: center;
+}
+
+%flex_space_between {
+    display: flex;
+    justify-content: space-between;
+}
+
+%flex_sb {
+    display: flex;
+    justify-content: space-between;
+}
+
+%flex_sb_vc {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+%hide_block {
+    opacity: 0;
+    visibility: hidden;
+}
+
+%show_block {
+    opacity: 1;
+    visibility: visible;
+}
+
+%full_screen {
+    width: 100vw;
+    height: 100vh;
+}
+
+%image {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+%full_size {
+    width: 100%;
+    height: 100%;
+}

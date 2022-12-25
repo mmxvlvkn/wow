@@ -1,0 +1,35 @@
+body {
+    font-family: Montserrat, sans-serif;
+    font-weight: 500;
+}
+
+.content {
+    padding: 0 calc_rem(15);
+    margin: 0 auto;
+    max-width: calc_rem(1200);
+
+    @media (max-width: 32em) {
+        padding: 0 calc_rem(10);
+    }
+}
+
+.flex-vertical-center {
+    @extend %flex_vertical_center;
+}
+
+// ._hidden {
+//     opacity: 0;
+//     visibility: hidden;
+// }
+
+// ._shown {
+//     opacity: 1;
+//     visibility: visible;
+// }
+
+// ._active {
+// }
+
+._scroll-lock {
+    overflow-y: hidden;
+}
