@@ -12,16 +12,17 @@
 }
 .left-row {
     @extend %flex_vertical_center;
-    gap: calc_rem(10);
 
     &__state {
         display: inline-block;
+        margin-right: calc_rem(15);
         padding: 12px 17px;
         font-weight: 700;
         background-color: $color_2;
         border-radius: calc_rem(3);
     }
     &__logo {
+        margin-right: calc_rem(10);
         width: calc_rem(150);
         height: calc_rem(70);
         position: relative;
@@ -31,6 +32,12 @@
         }
     }
     &__tlg {
+        display: flex;
+        align-items: center;
+        margin-right: calc_rem(15);
+    }
+    &__tlg-img {
+        margin-right: calc_rem(5);
         width: calc_rem(35);
         height: calc_rem(35);
         position: relative;
@@ -38,6 +45,33 @@
         & img {
             @extend %image;
         }
+    }
+    &__tlg-title {
+        font-size: 14;
+        color: #b4abbc;
+    }
+    &__chat-title {
+        font-size: 14;
+        color: #b4abbc;
+    }
+    &__chat {
+        display: flex;
+        align-items: center;
+    }
+    &__chat-img {
+        margin-right: calc_rem(5);
+        width: calc_rem(35);
+        height: calc_rem(35);
+        position: relative;
+
+        & img {
+            @extend %image;
+            fill: #b4abbc;
+        }
+    }
+    &__chat-title {
+        font-size: 14;
+        color: #b4abbc;
     }
 }
 .right-row {
