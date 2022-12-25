@@ -1,4 +1,7 @@
 .header {
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 calc_rem(6) rgba($color: black, $alpha: 0.5);
     font-size: calc_rem(18);
     color: white;
     height: calc_rem(70);
