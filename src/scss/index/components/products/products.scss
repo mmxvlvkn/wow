@@ -1,0 +1,72 @@
+.product {
+    padding: calc_rem(40) 0 calc_rem(30);
+    color: white;
+}
+.product-card {
+    padding: calc_rem(40) calc_rem(20);
+    border-radius: calc_rem(5);
+    background-color: $color_1;
+    box-shadow: 0 0 calc_rem(6) rgba($color: black, $alpha: 0.5);
+    max-width: calc_rem(280);
+
+    &__title {
+        margin-bottom: calc_rem(40);
+        font-size: calc_rem(24);
+        text-align: center;
+    }
+    &__levels-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: calc_rem(30);
+    }
+    &__functions-container {}
+    &__levels-left-container {
+    }
+    &__levels-label {}
+    &__functions-label {
+        display: block;
+        margin-bottom: calc_rem(4);
+        font-size: calc_rem(14);
+        color: $color_4;
+    }
+    &__levels-input {
+        background-color: $color_2;
+        width: calc_rem(182);
+        height: calc_rem(12);
+        border-radius: calc_rem(2);
+        -webkit-appearance: none;
+    }
+    &__levels-input::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: calc_rem(28);
+        height: calc_rem(20);
+        border-radius: calc_rem(6);
+        border: 2px solid $color_2;
+        background-color: $color_1;
+    }
+    &__levels-output {
+        display: inline-block;
+        padding: calc_rem(5);
+        margin-left: calc_rem(20);
+        font-size: calc_rem(20);
+        border-radius: calc_rem(5);
+        border: 2px solid $color_2;
+    }
+    &__functions-output {}
+    &__price-container {
+        margin-bottom: calc_rem(50);
+    }
+    &__price-label {}
+    &__price-output {
+        font-size: calc_rem(30);
+    }
+    &__price-value {}
+    &__price-currency {}
+    &__submit {
+        padding: calc_rem(12) calc_rem(20);
+        display: block;
+        font-size: calc_rem(20);
+        background-color: $color_2;
+        border-radius: calc_rem(3);
+    }
+}

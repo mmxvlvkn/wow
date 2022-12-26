@@ -1,5 +1,7 @@
 .main-screen {
     position: relative;
+    z-index: 1;
+    box-shadow: 0 0 calc_rem(6) rgba($color: black, $alpha: 0.5);
     background-image: url('../img/components/index/main_screen/bgr.png');
     background-position: 0 50%;
     color: white;

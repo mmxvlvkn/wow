@@ -1,6 +1,6 @@
 .header {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     box-shadow: 0 0 calc_rem(6) rgba($color: black, $alpha: 0.5);
     font-size: calc_rem(18);
     color: white;
@@ -51,11 +51,11 @@
     }
     &__tlg-title {
         font-size: 14;
-        color: #b4abbc;
+        color: $color_4;
     }
     &__chat-title {
         font-size: 14;
-        color: #b4abbc;
+        color: $color_4;
     }
     &__chat {
         display: flex;
