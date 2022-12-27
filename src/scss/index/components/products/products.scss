@@ -1,5 +1,6 @@
 .product {
-    padding: calc_rem(40) 0 calc_rem(30);
+    padding-top: calc_rem(40);
+    margin-bottom: calc_rem(40);
     color: white;
 
     & .content {
@@ -14,7 +15,7 @@
     padding: calc_rem(40) calc_rem(20);
     border-radius: calc_rem(5);
     background-color: $color_1;
-    box-shadow: 0 0 calc_rem(6) rgba($color: black, $alpha: 0.5);
+    @extend %shadow;
     max-width: calc_rem(280);
 
     &__form {}

@@ -17,8 +17,8 @@ main {
     background: 0 0 / 100% auto url('../img/components/index/main_bgr.png');
 }
 
-.flex-vertical-center {
-    @extend %flex_vertical_center;
+.flex-vc {
+    @extend %flex_vc;
 }
 
 // ._hidden {
