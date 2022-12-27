@@ -1,14 +1,23 @@
 .product {
     padding: calc_rem(40) 0 calc_rem(30);
     color: white;
+
+    & .content {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: calc_rem(20);
+    }
 }
 .product-card {
+    flex: 1 1 33.333%;
     padding: calc_rem(40) calc_rem(20);
     border-radius: calc_rem(5);
     background-color: $color_1;
     box-shadow: 0 0 calc_rem(6) rgba($color: black, $alpha: 0.5);
     max-width: calc_rem(280);
 
+    &__form {}
     &__title {
         margin-bottom: calc_rem(40);
         font-size: calc_rem(24);
@@ -20,8 +29,7 @@
         margin-bottom: calc_rem(30);
     }
     &__functions-container {}
-    &__levels-left-container {
-    }
+    &__levels-left-container {}
     &__levels-label {}
     &__functions-label {
         display: block;
