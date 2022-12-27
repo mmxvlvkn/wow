@@ -13,8 +13,7 @@ function addingSliderFunctionality($form) {
     const $output = $form.querySelector('.product-card__levels-output');
     const $value = $form.querySelector('.product-card__price-value');
 
-    $input.addEventListener('change', () => {
-        console.log($input)
+    $input.addEventListener('input', () => {
         $output.textContent = $input.value;
         $value.textContent = $input.value * priceForOneLevel;
     });
