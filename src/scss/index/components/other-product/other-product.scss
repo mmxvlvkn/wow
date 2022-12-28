@@ -1,4 +1,5 @@
 .other-product {
+    margin-bottom: calc_rem(40);
 
     & .content {
         @extend %flex_hc;
