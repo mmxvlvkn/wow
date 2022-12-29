@@ -5,7 +5,15 @@
 const priceForOneLevel = 70;
 document.querySelector('#product_card_form_1');
 for (let i = 0; i < 11; i++) {
-    addingSliderFunctionality(document.querySelector(`#product_card_form_${String(i + 1)}`));
+    const $productCards = document.querySelectorAll(`#product_card_form_${String(i + 1)}`);
+
+    if ($productCards === 1) {
+        addingSliderFunctionality($productCards);
+    } else {
+        $productCards.forEach($item => {
+            addingSliderFunctionality($item);
+        });
+    }
 }
 
 function addingSliderFunctionality($form) {

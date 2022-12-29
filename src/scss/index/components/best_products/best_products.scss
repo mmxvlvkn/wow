@@ -1,0 +1,24 @@
+.best-products {
+    color: white;
+
+    & .content {
+        padding: calc_rem(20) calc_rem(30);
+        @extend %shadow;
+        background-color: $color_1;
+        border-radius: calc_rem(5);
+    }
+
+    &__title {
+        margin-bottom: calc_rem(30);
+        text-align: center;
+        font-size: calc_rem(40);
+    }
+    &__products-container {
+        display: flex;
+        justify-content: center;
+        gap: calc_rem(25);
+    }
+    &__product-card {
+        border: 2px solid $color_2;
+    }
+}

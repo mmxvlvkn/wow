@@ -1,4 +1,9 @@
 .advantages {
+    display: block;
+    // border: 2px solid red;
+    margin-bottom: calc_rem(40);
+    width: 100%;
+
     & .content {
         padding: calc_rem(20) calc_rem(30);
         @extend %shadow;
