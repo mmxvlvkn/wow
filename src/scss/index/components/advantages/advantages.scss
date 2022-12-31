@@ -1,16 +1,12 @@
 .advantages {
     display: block;
-    // border: 2px solid red;
+    padding: calc_rem(20) calc_rem(30);
+    color: white;
     margin-bottom: calc_rem(40);
     width: 100%;
-
-    & .content {
-        padding: calc_rem(20) calc_rem(30);
-        @extend %shadow;
-        background-color: $color_1;
-        border-radius: calc_rem(5);
-        color: white;
-    }
+    @extend %shadow;
+    background-color: $color_1;
+    border-radius: calc_rem(5);
 
     &__title {
         margin-bottom: calc_rem(30);

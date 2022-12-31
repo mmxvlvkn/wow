@@ -27,4 +27,41 @@ function addingSliderFunctionality($form) {
     });
 }
 
-console.log(1234)
+// REVIEW 
+
+//Review slider
+
+const $reviewContentContainer = document.querySelector('.reviews__content-container');
+let $reviewsArray = $reviewContentContainer.querySelectorAll('.review');
+
+const countReview = $reviewsArray.length;
+let reviewWidth = $reviewsArray[0].clientWidth;
+let countReviewInContainer = Math.floor($reviewContentContainer.clientWidth / reviewWidth);
+let reviewGap = ($reviewContentContainer.clientWidth % reviewWidth) / (countReviewInContainer - 1);
+window.addEventListener('resize', () => {
+    reviewWidth = $reviewsArray[0].clientWidth;
+    countReviewInContainer = Math.floor($reviewContentContainer.clientWidth / reviewWidth);
+    reviewGap = ($reviewContentContainer.clientWidth % reviewWidth) / (countReviewInContainer - 1);
+})
+
+$reviewsArray[0].style.left = `-${reviewWidth + reviewGap}px`
+$reviewsArray[1].style.left = `${0}px`
+for (let i = 0; i < countReviewInContainer - 1; i++) {
+    $reviewsArray[i + 2].style.left = `${(reviewWidth + reviewGap) * (i + 1)}px`
+}
+for (let i = 0; i < countReview - countReviewInContainer - 1; i++) {
+    $reviewsArray[countReviewInContainer + i + 1].style.left = `${(reviewWidth + reviewGap) * countReviewInContainer}px`
+
+}
+
+setInterval(slide, 5000);
+
+function slide() {
+    for (let i = 0; i < countReviewInContainer + 1; i++) {
+        $reviewsArray[i + 1].style.left = `${parseInt($reviewsArray[i + 1].style.left) - (reviewWidth + reviewGap)}px`;
+    }
+    
+    $reviewsArray[0].style.left = `${(reviewWidth + reviewGap) * countReviewInContainer}px`
+    $reviewContentContainer.append($reviewsArray[0]);
+    $reviewsArray = $reviewContentContainer.querySelectorAll('.review');
+}
