@@ -1,3 +1,22 @@
+// HEADER
+
+// Show contacts
+
+const $HeaderContactsBtn = document.querySelector('.left-row__state-btn');
+const $HeaderContactsList = document.querySelector('.left-row__state-list');
+
+$HeaderContactsBtn.addEventListener('click', () => {
+    $HeaderContactsList.classList.toggle('_shown');
+});
+
+window.addEventListener('click', (event) => {
+    if ($HeaderContactsList.classList.contains('_shown')) {
+        if (!(event.target.closest('.left-row__state-list') || event.target.closest('.left-row__state-btn'))) {
+            $HeaderContactsList.classList.remove('_shown');
+        }
+    }
+});
+
 // PRODUCTS
 
 // Adding slider functionality

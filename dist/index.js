@@ -1,4 +1,6 @@
-// PRODUCTS
+// HEADER
+// Show contacts
+var $HeaderContactsBtn=document.querySelector(".left-row__state-btn");var $HeaderContactsList=document.querySelector(".left-row__state-list");$HeaderContactsBtn.addEventListener("click",function(){$HeaderContactsList.classList.toggle("_shown")});window.addEventListener("click",function(event){if($HeaderContactsList.classList.contains("_shown")){if(!(event.target.closest(".left-row__state-list")||event.target.closest(".left-row__state-btn"))){$HeaderContactsList.classList.remove("_shown")}}});// PRODUCTS
 // Adding slider functionality
 var priceForOneLevel=70;document.querySelector("#product_card_form_1");for(var i=0;i<11;i++){var $productCards=document.querySelectorAll("#product_card_form_".concat(String(i+1)));if($productCards===1){addingSliderFunctionality($productCards)}else{$productCards.forEach(function($item){addingSliderFunctionality($item)})}}function addingSliderFunctionality($form){var $input=$form.querySelector(".product-card__levels-input");var $output=$form.querySelector(".product-card__levels-output");var $value=$form.querySelector(".product-card__price-value");$input.addEventListener("input",function(){$output.textContent=$input.value;$value.textContent=$input.value*priceForOneLevel})}// REVIEW 
 //Review slider

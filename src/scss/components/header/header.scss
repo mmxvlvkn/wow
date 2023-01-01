@@ -17,12 +17,44 @@
     @extend %flex_vc;
 
     &__state {
+        position: relative;
+    }
+    &__state-btn {
         display: inline-block;
         margin-right: calc_rem(15);
         padding: 12px 17px;
         font-weight: 700;
         background-color: $color_2;
         border-radius: calc_rem(3);
+    }
+    &__state-list {
+        padding: calc_rem(10);
+        padding-bottom: calc_rem(4);
+        position: absolute;
+        left: 0;
+        top: 110%;
+        opacity: 0;
+        visibility: hidden;
+        font-size: calc_rem(14);
+        box-shadow: 0 0 1px $color_2;
+        background-color: $color_1;
+        border-radius: calc_rem(5);
+        transition-duration: 200ms;
+
+        &._shown {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+    &__state-item {
+        margin-bottom: calc_rem(10);
+        padding: calc_rem(8) 0 calc_rem(8) calc_rem(34);
+    }
+    &__state-email {
+        background: -4px 50% / 38px 38px url('../img/icons/header/email.svg') no-repeat;
+    }
+    &__state-tlg {
+        background: 0 50% / 30px 30px url('../img/icons/header/tlg_contacts.svg') no-repeat;
     }
     &__logo {
         margin-right: calc_rem(10);
