@@ -67,6 +67,8 @@
     }
     &__price-label {}
     &__price-output {
+        display: flex;
+        gap: calc_rem(5);
         font-size: calc_rem(30);
     }
     &__price-value {}

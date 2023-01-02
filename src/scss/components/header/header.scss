@@ -113,6 +113,7 @@
     display: flex;
     gap: calc_rem(15);
 
+    &__languages {}
     &__reg {}
     &__log {
         display: inline-block;
@@ -120,5 +121,44 @@
         font-weight: 700;
         background-color: $color_2;
         border-radius: calc_rem(3);
+    }
+}
+
+.languages {
+    position: relative;
+    width: calc_rem(45);
+    height: calc_rem(45);
+
+    &__flag {
+        position: absolute;
+        border-radius: 50%;
+        overflow: hidden;
+        transition-duration: 300ms;
+
+        & img {
+            display: block;
+            position: absolute;
+            left: -1px;
+            top: -1px;
+            width: 110%;
+            height: 110%;
+        }
+    }
+    &__ru {}
+    &__selected {
+        z-index: 2;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+    &__en {}
+    &__not-selected {
+        z-index: 3;
+        @extend %shadow;
+        right: 0;
+        bottom: 0;
+        width: calc_rem(20);
+        height: calc_rem(20);
     }
 }

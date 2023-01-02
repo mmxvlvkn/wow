@@ -17,22 +17,90 @@ window.addEventListener('click', (event) => {
     }
 });
 
+// Languages
+
+const $headerLanguage = document.querySelector('.header__languages');
+const $headerLanguageEn = document.querySelector('.header__languages .languages__en');
+const $headerLanguageRu = document.querySelector('.header__languages .languages__ru');
+
+let currentLanguage = 'en';
+
+languageChanges();
+
+$headerLanguage.addEventListener('click', () => {
+    if (currentLanguage === 'en') {
+        currentLanguage = 'ru';
+
+        $headerLanguageEn.classList.remove('languages__selected');
+        $headerLanguageEn.classList.add('languages__not-selected');
+
+        $headerLanguageRu.classList.remove('languages__not-selected');
+        $headerLanguageRu.classList.add('languages__selected');
+    } else {
+        currentLanguage = 'en';
+
+        $headerLanguageRu.classList.remove('languages__selected');
+        $headerLanguageRu.classList.add('languages__not-selected');
+
+        $headerLanguageEn.classList.remove('languages__not-selected');
+        $headerLanguageEn.classList.add('languages__selected');
+    }
+
+    languageChanges();
+});
+
+function languageChanges() {
+    const $enTextArray = document.querySelectorAll('.en');
+    const $ruTextArray = document.querySelectorAll('.ru');
+
+    if (currentLanguage === 'en') {
+        $enTextArray.forEach($item => {
+            $item.classList.add('_show');
+
+            if ($item.classList.contains('_hide')) {
+                $item.classList.remove('_hide');
+            }
+        });
+
+        $ruTextArray.forEach($item => {
+            $item.classList.add('_hide');
+
+            if ($item.classList.contains('_show')) {
+                $item.classList.remove('_show');
+            }
+        });
+    } else {
+        $ruTextArray.forEach($item => {
+            $item.classList.add('_show');
+
+            if ($item.classList.contains('_hide')) {
+                $item.classList.remove('_hide');
+            }
+        });
+
+        $enTextArray.forEach($item => {
+            $item.classList.add('_hide');
+
+            if ($item.classList.contains('_show')) {
+                $item.classList.remove('_show');
+            }
+        });
+    }
+}
+
 // PRODUCTS
 
 // Adding slider functionality
 
-const priceForOneLevel = 70;
-document.querySelector('#product_card_form_1');
-for (let i = 0; i < 11; i++) {
+const priceForOneLevelInRub = 70;
+const priceForOneLevelInUsd = 1;
+
+for (let i = 0; i < document.querySelectorAll('.product .product-card').length; i++) {
     const $productCards = document.querySelectorAll(`#product_card_form_${String(i + 1)}`);
 
-    if ($productCards === 1) {
-        addingSliderFunctionality($productCards);
-    } else {
-        $productCards.forEach($item => {
-            addingSliderFunctionality($item);
-        });
-    }
+    $productCards.forEach($item => {
+        addingSliderFunctionality($item);
+    });
 }
 
 function addingSliderFunctionality($form) {
@@ -40,9 +108,15 @@ function addingSliderFunctionality($form) {
     const $output = $form.querySelector('.product-card__levels-output');
     const $value = $form.querySelector('.product-card__price-value');
 
+    $value.textContent = (currentLanguage === 'en') ? $input.value * priceForOneLevelInUsd : $input.value * priceForOneLevelInRub;
+
+    $headerLanguage.addEventListener('click', () => {
+        $value.textContent = (currentLanguage === 'en') ? $input.value * priceForOneLevelInUsd : $input.value * priceForOneLevelInRub;
+    });
+
     $input.addEventListener('input', () => {
         $output.textContent = $input.value;
-        $value.textContent = $input.value * priceForOneLevel;
+        $value.textContent = (currentLanguage === 'en') ? $input.value * priceForOneLevelInUsd : $input.value * priceForOneLevelInRub;
     });
 }
 

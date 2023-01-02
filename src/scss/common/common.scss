@@ -15,7 +15,6 @@ body {
 
 main {
     background: 0 0 / 100% auto url('../img/components/index/main_bgr.png');
-    padding-bottom: calc_rem(100);
 }
 
 .flex-vc {
@@ -40,5 +39,18 @@ main {
 }
 
 ._hide-star {
+    display: none;
+}
+
+.ru._show {
+    display: block;
+}
+.ru._hide {
+    display: none;
+}
+.en._show {
+    display: block;
+}
+.en._hide {
     display: none;
 }
