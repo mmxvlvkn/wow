@@ -3,14 +3,18 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title></title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">        <title></title>
     </head>
     <body>
         <header class="header">
     <div class="content">
         <div class="left-row">
             <div class="left-row__logo">
-                <img src="../img/icons/header/logo.svg" alt="">
+                <a href="./index.html">
+                    <img src="../img/icons/header/logo.svg" alt="">
+                </a>
             </div>
             <div class="left-row__state">
                 <button type="button" src="#" class="left-row__state-btn"><span class="en">Contacts</span><span class="ru">Контакты</span></button>
@@ -39,6 +43,14 @@
             </div>
             <button class="right-row__reg"><span class="en">Sign up</span><span class="ru">Регистрация</span></button>
             <button class="right-row__log"><span class="en">Log in</span><span class="ru">Вход</span></button>
+            <div class="header__burger burger">
+                <button type="button" class="burger__button">
+                    <span class="burger__line burger__line-1"></span>
+                    <span class="burger__line burger__line-2"></span>
+                    <span class="burger__line burger__line-3"></span>
+                </button>
+                <div class="burger__list"></div>
+            </div>
         </div>
     </div>
 </header>

@@ -26,6 +26,14 @@
         font-weight: 700;
         background-color: $color_2;
         border-radius: calc_rem(3);
+
+        &:hover {
+            background-color: $color_2_hover;
+        }
+
+        &:active {
+            background-color: $color_2_active;
+        }
     }
     &__state-list {
         padding: calc_rem(10);
@@ -62,6 +70,11 @@
         height: calc_rem(70);
         position: relative;
 
+        & a {
+            display: block;
+            @extend %full_size;
+        }
+
         & img {
             @extend %image;
         }
@@ -70,6 +83,14 @@
         display: flex;
         align-items: center;
         margin-right: calc_rem(15);
+
+        &:hover {
+            text-decoration: 1px solid underline;
+        }
+
+        &:active {
+            text-shadow: 0 0 1px white;
+        }
     }
     &__tlg-img {
         margin-right: calc_rem(5);
@@ -92,6 +113,14 @@
     &__chat {
         display: flex;
         align-items: center;
+
+        &:hover {
+            text-decoration: 1px solid underline;
+        }
+
+        &:active {
+            text-shadow: 0 0 1px white;
+        }
     }
     &__chat-img {
         margin-right: calc_rem(5);
@@ -114,13 +143,29 @@
     gap: calc_rem(15);
 
     &__languages {}
-    &__reg {}
+    &__reg {
+        &:hover {
+            text-decoration: 1px solid underline;
+        }
+
+        &:active {
+            text-shadow: 0 0 2px white;
+        }
+    }
     &__log {
         display: inline-block;
         padding: 12px 17px;
         font-weight: 700;
         background-color: $color_2;
         border-radius: calc_rem(3);
+
+        &:hover {
+            background-color: $color_2_hover;
+        }
+
+        &:active {
+            background-color: $color_2_active;
+        }
     }
 }
 
@@ -128,6 +173,14 @@
     position: relative;
     width: calc_rem(45);
     height: calc_rem(45);
+
+    &:hover .languages__ru {
+        box-shadow: 0 0 20px $color_2;
+    }
+
+    &:hover .languages__en {
+        box-shadow: 0 0 20px $color_2;
+    }
 
     &__flag {
         position: absolute;
