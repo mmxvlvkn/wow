@@ -14,15 +14,20 @@
         font-size: calc_rem(40);
     }
     &__advantage-container {
-        @extend %flex_sb;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: calc_rem(20);
     }
     &__advantage {
+        flex: 1 1 33.33%;
     }
 }
 .advantage {
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-width: calc_rem(200);
     max-width: calc_rem(300);
 
 

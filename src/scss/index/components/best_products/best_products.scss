@@ -14,9 +14,12 @@
     &__products-container {
         display: flex;
         justify-content: center;
+        flex-wrap: wrap;
         gap: calc_rem(25);
+
     }
     &__product-card {
+        flex: 1 1 50%;
         border: 2px solid $color_2;
     }
 }

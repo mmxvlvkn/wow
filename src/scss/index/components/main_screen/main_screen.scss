@@ -7,7 +7,7 @@
     color: white;
 
     & .content {
-        padding: calc_rem(80) 0 calc_rem(60) 0;
+        padding: calc_rem(80) calc_rem(15) calc_rem(60);
         display: flex;
         align-items: center;
         flex-direction: column;
