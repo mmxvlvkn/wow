@@ -27,12 +27,14 @@
         background-color: $color_2;
         border-radius: calc_rem(3);
 
-        &:hover {
-            background-color: $color_2_hover;
-        }
-
-        &:active {
-            background-color: $color_2_active;
+        @media (min-width: 38.0625em) {
+            &:hover {
+                background-color: $color_2_hover;
+            }
+    
+            &:active {
+                background-color: $color_2_active;
+            }
         }
     }
     &__state-list {
@@ -181,6 +183,14 @@
 
     &:hover .languages__en {
         box-shadow: 0 0 20px $color_2;
+    }
+
+    &:active .languages__ru {
+        box-shadow: none;
+    }
+
+    &:active .languages__en {
+        box-shadow: none;
     }
 
     &__flag {

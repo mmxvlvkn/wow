@@ -2,8 +2,9 @@
 
 // Show contacts
 
-const $HeaderContactsBtn = document.querySelector('.left-row__state-btn');
-const $HeaderContactsList = document.querySelector('.left-row__state-list');
+const $body = document.querySelector('body')
+const $HeaderContactsBtn = $body.querySelector('.left-row__state-btn');
+const $HeaderContactsList = $body.querySelector('.left-row__state-list');
 
 $HeaderContactsBtn.addEventListener('click', () => {
     $HeaderContactsList.classList.toggle('_shown');
@@ -19,9 +20,9 @@ window.addEventListener('click', (event) => {
 
 // Languages
 
-const $headerLanguage = document.querySelector('.header__languages');
-const $headerLanguageEn = document.querySelector('.header__languages .languages__en');
-const $headerLanguageRu = document.querySelector('.header__languages .languages__ru');
+const $headerLanguage = $body.querySelector('.header__languages');
+const $headerLanguageEn = $body.querySelector('.header__languages .languages__en');
+const $headerLanguageRu = $body.querySelector('.header__languages .languages__ru');
 
 let currentLanguage = 'en';
 
@@ -50,8 +51,8 @@ $headerLanguage.addEventListener('click', () => {
 });
 
 function languageChanges() {
-    const $enTextArray = document.querySelectorAll('.en');
-    const $ruTextArray = document.querySelectorAll('.ru');
+    const $enTextArray = $body.querySelectorAll('.en');
+    const $ruTextArray = $body.querySelectorAll('.ru');
 
     if (currentLanguage === 'en') {
         $enTextArray.forEach($item => {
@@ -90,12 +91,12 @@ function languageChanges() {
 
 // Adoptive
 
-const $headerBurgerButton = document.querySelector('.burger__button');
-const $headerBurgerList = document.querySelector('.burger__list');
-const $headerRightRow = document.querySelector('.right-row');
+const $headerBurgerButton = $body.querySelector('.burger__button');
+const $headerBurgerList = $body.querySelector('.burger__list');
+const $headerRightRow = $body.querySelector('.right-row');
 const $headerRightRowReg = $headerRightRow.querySelector('.right-row__reg');
 const $headerRightRowLog = $headerRightRow.querySelector('.right-row__log');
-const $headerLeftRow = document.querySelector('.left-row');
+const $headerLeftRow = $body.querySelector('.left-row');
 const $headerLeftRowLogo = $headerLeftRow.querySelector('.left-row__logo');
 const $headerLeftRowTlg = $headerLeftRow.querySelector('.left-row__tlg');
 const $headerLeftRowChat = $headerLeftRow.querySelector('.left-row__chat');
@@ -171,14 +172,28 @@ function headerAdoptiveMore608() {
 
 $headerBurgerButton.addEventListener('click', () => {
     $headerBurgerList.classList.toggle('_show');
+
+    if ($headerBurgerList.classList.contains('_show')) {
+        $body.classList.add('_lock');
+    } else {
+        $body.classList.remove('_lock');
+    }
 });
 
 window.addEventListener( 'click', (event) => {
     if ($headerBurgerList.classList.contains('_show')) {
         if (!event.target.closest('.burger')) {
             $headerBurgerList.classList.remove('_show');
+            $body.classList.remove('_lock');
         }
     }
+});
+
+// Establishing a position burger list
+
+$headerBurgerList.style.top = `${70 - document.documentElement.scrollTop}px`;
+window.addEventListener('scroll', () => {
+    $headerBurgerList.style.top = `${70 - document.documentElement.scrollTop}px`;
 });
 
 // PRODUCTS
@@ -188,8 +203,8 @@ window.addEventListener( 'click', (event) => {
 const priceForOneLevelInRub = 70;
 const priceForOneLevelInUsd = 1;
 
-for (let i = 0; i < document.querySelectorAll('.product .product-card').length; i++) {
-    const $productCards = document.querySelectorAll(`#product_card_form_${String(i + 1)}`);
+for (let i = 0; i < $body.querySelectorAll('.product .product-card').length; i++) {
+    const $productCards = $body.querySelectorAll(`#product_card_form_${String(i + 1)}`);
 
     $productCards.forEach($item => {
         addingSliderFunctionality($item);
@@ -217,8 +232,8 @@ function addingSliderFunctionality($form) {
 
 //Review slider
 
-const $content = document.querySelector('.content');
-const $reviewContentContainer = document.querySelector('.reviews__content-container');
+const $content = $body.querySelector('.content');
+const $reviewContentContainer = $body.querySelector('.reviews__content-container');
 let $reviewsArray = $reviewContentContainer.querySelectorAll('.review');
 
 const countReview = $reviewsArray.length;
@@ -240,22 +255,24 @@ for (let i = 0; i < countReview - countReviewInContainer - 1; i++) {
 }
 
 window.addEventListener('resize', () => {
-    contentWidth = $content.clientWidth - 30;
-    reviewWidth = $reviewsArray[0].clientWidth;
-    countReviewInContainer = ((contentWidth % reviewWidth) / (Math.floor(contentWidth / reviewWidth) - 1) >= 10) ? Math.floor(contentWidth / reviewWidth) : Math.floor(contentWidth / reviewWidth) - 1;
-    reviewGap = ((contentWidth - (reviewWidth * countReviewInContainer)) / (countReviewInContainer - 1) < 25) ? (contentWidth - (reviewWidth * countReviewInContainer)) / (countReviewInContainer - 1) : 25;
-    sidePadding = (contentWidth - (countReviewInContainer * reviewWidth + reviewGap * (countReviewInContainer - 1))) / 2;
+    setTimeout(() => {
+        contentWidth = $content.clientWidth - 30;
+        reviewWidth = $reviewsArray[0].clientWidth;
+        countReviewInContainer = ((contentWidth % reviewWidth) / (Math.floor(contentWidth / reviewWidth) - 1) >= 10) ? Math.floor(contentWidth / reviewWidth) : Math.floor(contentWidth / reviewWidth) - 1;
+        reviewGap = ((contentWidth - (reviewWidth * countReviewInContainer)) / (countReviewInContainer - 1) < 25) ? (contentWidth - (reviewWidth * countReviewInContainer)) / (countReviewInContainer - 1) : 25;
+        sidePadding = (contentWidth - (countReviewInContainer * reviewWidth + reviewGap * (countReviewInContainer - 1))) / 2;
 
-    $reviewContentContainer.style.width = `${(contentWidth - sidePadding * 2 > contentWidth) ? contentWidth : contentWidth - sidePadding * 2}px`;
-    $reviewContentContainer.style.height = `${$reviewsArray[0].clientHeight}px`;
-    $reviewsArray[0].style.left = `-${reviewWidth + reviewGap}px`
-    $reviewsArray[1].style.left = `${0}px`
-    for (let i = 0; i < countReviewInContainer - 1; i++) {
-        $reviewsArray[i + 2].style.left = `${(reviewWidth + reviewGap) * (i + 1)}px`
-    } 
-    for (let i = 0; i < countReview - countReviewInContainer - 1; i++) {
-        $reviewsArray[countReviewInContainer + i + 1].style.left = `${(reviewWidth + reviewGap) * countReviewInContainer}px`
-    }
+        $reviewContentContainer.style.width = `${(contentWidth - sidePadding * 2 > contentWidth) ? contentWidth : contentWidth - sidePadding * 2}px`;
+        $reviewContentContainer.style.height = `${$reviewsArray[0].clientHeight}px`;
+        $reviewsArray[0].style.left = `-${reviewWidth + reviewGap}px`
+        $reviewsArray[1].style.left = `${0}px`
+        for (let i = 0; i < countReviewInContainer - 1; i++) {
+            $reviewsArray[i + 2].style.left = `${(reviewWidth + reviewGap) * (i + 1)}px`
+        } 
+        for (let i = 0; i < countReview - countReviewInContainer - 1; i++) {
+            $reviewsArray[countReviewInContainer + i + 1].style.left = `${(reviewWidth + reviewGap) * countReviewInContainer}px`
+        }
+    }, 500);
 })
 
 setInterval(slide, 5000);
