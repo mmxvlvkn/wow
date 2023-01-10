@@ -1,7 +1,5 @@
 @media (max-width: 24em) {
     .other-product {
-        margin-bottom: calc_rem(40);
-    
         &__card {
             padding: calc_rem(33) calc_rem(20);
         }
@@ -33,3 +31,21 @@
         }
     }
 } 
+
+.other-product {
+    @media (max-width: 70em) {
+        margin-bottom: calc_rem(33);
+    }
+
+    @media (max-width: 57em) {
+        margin-bottom: calc_rem(27);
+    }
+
+    @media (max-width: 44.5em) {
+        margin-bottom: calc_rem(22);
+    }
+
+    @media (max-width: 37em) {
+        margin-bottom: calc_rem(18);
+    }
+}
