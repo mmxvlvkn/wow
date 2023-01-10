@@ -99,6 +99,17 @@
         font-size: calc_rem(25);
         font-weight: normal;
 
+        //!
+        // &.left-row__state-btn:hover {
+        //     background-color: inherit !important;
+        //     text-decoration: none;
+        // }
+
+        // &.left-row__state-btn:active {
+        //     background-color: inherit !important;
+        //     text-decoration: none;
+        // }
+
         &:hover {
             background-color: inherit;
             text-decoration: none;

@@ -1,0 +1,29 @@
+.product {
+    @media (max-width: 70em) {
+        padding-top: calc_rem(33);
+        margin-bottom: calc_rem(33);
+    }
+
+    @media (max-width: 57em) {
+        padding-top: calc_rem(27);
+        margin-bottom: calc_rem(27);
+    }
+
+    @media (max-width: 44.5em) {
+        padding-top: calc_rem(22);
+        margin-bottom: calc_rem(22);
+    }
+
+    @media (max-width: 37em) {
+        padding-top: calc_rem(18);
+        margin-bottom: calc_rem(18);
+    }
+}
+
+@media (max-width: 37em) {
+    .product {
+        & .content {
+            gap: calc_rem(14);
+        }
+    }
+}

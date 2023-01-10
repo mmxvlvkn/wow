@@ -39,6 +39,7 @@
         padding: calc_rem(10);
         padding-bottom: calc_rem(4);
         position: absolute;
+        z-index: 20;
         left: 0;
         top: 110%;
         opacity: 0;

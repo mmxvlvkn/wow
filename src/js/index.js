@@ -118,14 +118,12 @@ window.addEventListener('resize', () => {
         }
     } else if (document.documentElement.clientWidth <= 880) {
         if ($HeaderLeftRowContacts.closest('.burger__list')) {
-            console.log(321)
             headerAdoptiveMore608();
         } else if (!$headerRightRowReg.closest('.burger__list')) {
             headerAdoptiveLess880();
         }
     } else {
         if ($headerRightRowReg.closest('.burger__list') && !$HeaderLeftRowContacts.closest('.burger__list')) {
-            console.log(123);
             headerAdoptiveMore880();
         } else if ($HeaderLeftRowContacts.closest('.burger__list')) {
             headerAdoptiveMore608();
@@ -166,7 +164,6 @@ function headerAdoptiveLess608() {
 
 function headerAdoptiveMore608() {
     $headerLeftRowLogo.after($HeaderLeftRowContacts);
-    console.log($headerLeftRowLogo)
     $HeaderLeftRowContacts.classList.remove('burger__item');
 }
 
@@ -220,19 +217,19 @@ function addingSliderFunctionality($form) {
 
 //Review slider
 
+const $content = document.querySelector('.content');
 const $reviewContentContainer = document.querySelector('.reviews__content-container');
 let $reviewsArray = $reviewContentContainer.querySelectorAll('.review');
 
 const countReview = $reviewsArray.length;
+let contentWidth = $content.clientWidth - 30;
 let reviewWidth = $reviewsArray[0].clientWidth;
-let countReviewInContainer = Math.floor($reviewContentContainer.clientWidth / reviewWidth);
-let reviewGap = ($reviewContentContainer.clientWidth % reviewWidth) / (countReviewInContainer - 1);
-window.addEventListener('resize', () => {
-    reviewWidth = $reviewsArray[0].clientWidth;
-    countReviewInContainer = Math.floor($reviewContentContainer.clientWidth / reviewWidth);
-    reviewGap = ($reviewContentContainer.clientWidth % reviewWidth) / (countReviewInContainer - 1);
-})
+let countReviewInContainer = ((contentWidth % reviewWidth) / (Math.floor(contentWidth / reviewWidth) - 1) >= 10) ? Math.floor(contentWidth / reviewWidth) : Math.floor(contentWidth / reviewWidth) - 1;
+let reviewGap = ((contentWidth - (reviewWidth * countReviewInContainer)) / (countReviewInContainer - 1) < 25) ? (contentWidth - (reviewWidth * countReviewInContainer)) / (countReviewInContainer - 1) : 25;
+let sidePadding = (contentWidth - (countReviewInContainer * reviewWidth + reviewGap * (countReviewInContainer - 1))) / 2;
 
+$reviewContentContainer.style.width = `${(contentWidth - sidePadding * 2 > contentWidth) ? contentWidth : contentWidth - sidePadding * 2}px`;
+$reviewContentContainer.style.height = `${$reviewsArray[0].clientHeight}px`;
 $reviewsArray[0].style.left = `-${reviewWidth + reviewGap}px`
 $reviewsArray[1].style.left = `${0}px`
 for (let i = 0; i < countReviewInContainer - 1; i++) {
@@ -240,8 +237,26 @@ for (let i = 0; i < countReviewInContainer - 1; i++) {
 }
 for (let i = 0; i < countReview - countReviewInContainer - 1; i++) {
     $reviewsArray[countReviewInContainer + i + 1].style.left = `${(reviewWidth + reviewGap) * countReviewInContainer}px`
-
 }
+
+window.addEventListener('resize', () => {
+    contentWidth = $content.clientWidth - 30;
+    reviewWidth = $reviewsArray[0].clientWidth;
+    countReviewInContainer = ((contentWidth % reviewWidth) / (Math.floor(contentWidth / reviewWidth) - 1) >= 10) ? Math.floor(contentWidth / reviewWidth) : Math.floor(contentWidth / reviewWidth) - 1;
+    reviewGap = ((contentWidth - (reviewWidth * countReviewInContainer)) / (countReviewInContainer - 1) < 25) ? (contentWidth - (reviewWidth * countReviewInContainer)) / (countReviewInContainer - 1) : 25;
+    sidePadding = (contentWidth - (countReviewInContainer * reviewWidth + reviewGap * (countReviewInContainer - 1))) / 2;
+
+    $reviewContentContainer.style.width = `${(contentWidth - sidePadding * 2 > contentWidth) ? contentWidth : contentWidth - sidePadding * 2}px`;
+    $reviewContentContainer.style.height = `${$reviewsArray[0].clientHeight}px`;
+    $reviewsArray[0].style.left = `-${reviewWidth + reviewGap}px`
+    $reviewsArray[1].style.left = `${0}px`
+    for (let i = 0; i < countReviewInContainer - 1; i++) {
+        $reviewsArray[i + 2].style.left = `${(reviewWidth + reviewGap) * (i + 1)}px`
+    } 
+    for (let i = 0; i < countReview - countReviewInContainer - 1; i++) {
+        $reviewsArray[countReviewInContainer + i + 1].style.left = `${(reviewWidth + reviewGap) * countReviewInContainer}px`
+    }
+})
 
 setInterval(slide, 5000);
 
