@@ -144,6 +144,7 @@
 .right-row {
     display: flex;
     gap: calc_rem(15);
+    z-index: 0;
 
     &__languages {}
     &__reg {
@@ -153,6 +154,10 @@
 
         &:active {
             text-shadow: 0 0 2px white;
+        }
+
+        &._hidden {
+            display: none;
         }
     }
     &__log {
@@ -169,28 +174,61 @@
         &:active {
             background-color: $color_2_active;
         }
+
+        &._hidden {
+            display: none;
+        }
+    }
+    &__exit {
+        display: none;
+
+        &:hover {
+            text-decoration: 1px solid underline;
+        }
+
+        &:active {
+            text-shadow: 0 0 2px white;
+        }
+
+        &._shown {
+            display: block;
+        }
+    }
+    &__account {
+        display: none;
+        padding: 14px 17px 12px 17px;
+        font-weight: 700;
+        background-color: $color_2;
+        border-radius: calc_rem(3);
+
+        &:hover {
+            background-color: $color_2_hover;
+        }
+
+        &:active {
+            background-color: $color_2_active;
+        }
+
+        &._shown {
+            display: inline-block;
+        }
     }
 }
 
 .languages {
     position: relative;
+    z-index: 1;
     width: calc_rem(45);
     height: calc_rem(45);
 
-    &:hover .languages__ru {
-        box-shadow: 0 0 20px $color_2;
-    }
-
-    &:hover .languages__en {
-        box-shadow: 0 0 20px $color_2;
-    }
-
-    &:active .languages__ru {
-        box-shadow: none;
-    }
-
-    &:active .languages__en {
-        box-shadow: none;
+    @media screen {
+        &:hover .languages__ru {
+            box-shadow: 0 0 20px $color_2;
+        }
+    
+        &:hover .languages__en {
+            box-shadow: 0 0 20px $color_2;
+        }
     }
 
     &__flag {
