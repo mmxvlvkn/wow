@@ -79,5 +79,13 @@
         font-size: calc_rem(20);
         background-color: $color_2;
         border-radius: calc_rem(3);
+
+        &:hover {
+            background-color: $color_2_hover;
+        }
+
+        &:active {
+            background-color: $color_2_active;
+        }
     }
 }

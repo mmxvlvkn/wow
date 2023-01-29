@@ -52,12 +52,12 @@ const $headerLanguage = $body.querySelector('.header__languages');
 const $headerLanguageEn = $body.querySelector('.header__languages .languages__en');
 const $headerLanguageRu = $body.querySelector('.header__languages .languages__ru');
 
-let currentLanguage = 'en';
-
+let currentLanguage = localStorage.getItem('currentLanguage') || 'en';
 languageChanges();
 
 $headerLanguage.addEventListener('click', () => {
     if (currentLanguage === 'en') {
+        localStorage.setItem('currentLanguage', 'ru');
         currentLanguage = 'ru';
 
         $headerLanguageEn.classList.remove('languages__selected');
@@ -66,6 +66,7 @@ $headerLanguage.addEventListener('click', () => {
         $headerLanguageRu.classList.remove('languages__not-selected');
         $headerLanguageRu.classList.add('languages__selected');
     } else {
+        localStorage.setItem('currentLanguage', 'en');
         currentLanguage = 'en';
 
         $headerLanguageRu.classList.remove('languages__selected');

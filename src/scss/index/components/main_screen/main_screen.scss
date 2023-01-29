@@ -43,5 +43,13 @@
         font-size: calc_rem(24);
         border-radius: calc_rem(4);
         background-color: $color_2;
+
+        &:hover {
+            background-color: $color_2_hover;
+        }
+
+        &:active {
+            background-color: $color_2_active;
+        }
     }
 }
