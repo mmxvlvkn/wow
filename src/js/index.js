@@ -53,6 +53,21 @@ const $headerLanguageEn = $body.querySelector('.header__languages .languages__en
 const $headerLanguageRu = $body.querySelector('.header__languages .languages__ru');
 
 let currentLanguage = localStorage.getItem('currentLanguage') || 'en';
+
+if (currentLanguage !== 'en') {
+    $headerLanguageEn.classList.remove('languages__selected');
+    $headerLanguageEn.classList.add('languages__not-selected');
+
+    $headerLanguageRu.classList.remove('languages__not-selected');
+    $headerLanguageRu.classList.add('languages__selected');
+}
+
+setTimeout(() => {
+    $headerLanguageEn.style.transitionDuration = '300ms';
+    $headerLanguageRu.style.transitionDuration = '300ms';
+}, 500);
+
+
 languageChanges();
 
 $headerLanguage.addEventListener('click', () => {
@@ -520,8 +535,6 @@ $headerSignUpFormActv.addEventListener('submit', (event) => {
                     console.error('Error: ' + error);
                 }
             } else {
-                //! Сохранение токена
-
                 localStorage.setItem('isLoggedIn', 'true');
                 
                 doLogin();
