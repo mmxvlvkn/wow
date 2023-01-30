@@ -598,6 +598,17 @@ function doExit() {
     $headerRightRowAccount.classList.remove('_shown');
 }
 
+// MAIN_SCREEN
+
+// Activate scroll button for products
+
+const $mainScreenScrollBtn = $body.querySelector('.main-screen__view');
+const $products = $body.querySelector('.product'); 
+
+$mainScreenScrollBtn.addEventListener('click', () => {
+    window.scrollBy(0, $products.getBoundingClientRect().y);
+});
+
 // PRODUCTS
 
 // Adding slider functionality
@@ -688,3 +699,29 @@ function slide() {
     $reviewContentContainer.append($reviewsArray[0]);
     $reviewsArray = $reviewContentContainer.querySelectorAll('.review');
 }
+
+// FOOTER
+
+// Activate navigation scroll buttons
+
+const $footerNavServices = $body.querySelector('.footer__nav-services');
+const $footerNavPersonalService = $body.querySelector('.footer__nav-personal-service');
+const $footerNavAdvantages = $body.querySelector('.footer__nav-advantages');
+const $footerNavReviews = $body.querySelector('.footer__nav-reviews');
+
+//? $products;
+const $personalService = $body.querySelector('.other-product');
+const $advantages = $body.querySelector('.advantages');
+const $reviews = $body.querySelector('.reviews');
+
+activeteScrollButton($footerNavServices, $products);
+activeteScrollButton($footerNavPersonalService, $personalService, 20);
+activeteScrollButton($footerNavAdvantages, $advantages, 20);
+activeteScrollButton($footerNavReviews, $reviews);
+
+function activeteScrollButton($btn, $element, numberOfPixelsToMoveUp = 0) {
+    $btn.addEventListener('click', () => {
+        window.scrollBy(0, ($element.getBoundingClientRect().y - numberOfPixelsToMoveUp));
+    });
+}
+
