@@ -10,6 +10,9 @@ class authController {
     constructor() {
         this.sendEmailCode = this.sendEmailCode.bind(this);
         this.singIn = this.singIn.bind(this);
+        this.logIn = this.logIn.bind(this);
+        this.sendRefreshEmailCode = this.sendRefreshEmailCode.bind(this);
+        this.checkAccessCodeOnServer = this.checkAccessCodeOnServer.bind(this);
     }
 
     async sendEmailCode(req, res) {
@@ -38,7 +41,6 @@ class authController {
             }
         
             if (!(/^[@]{1}[^а-яё]+$/.test(req.body.tlg))) {
-                console.log(req.body)
                 validationSuccessful = false;
                 errorMessage = (errorMessage.en) ? errorMessage : {en: 'Incorrect telegram', ru: 'Некорректный телеграм'};
             }
@@ -86,7 +88,7 @@ class authController {
 
             // Making, recording and email-sening access code
 
-            const code = this.generateCode();
+            const code = this.generateAccessCode();
 
             data = await database.query('SELECT * FROM person_bufer WHERE email = $1', [req.body.email]);
 
@@ -138,7 +140,7 @@ class authController {
 
                     // Make account and token
 
-                    const token = this.generateAccesssToken(req.body.email, 'user');
+                    const token = this.generateAccessToken(req.body.email, 'user', '720h');
 
                     await database.query('INSERT INTO person (email, nickname, tlg, pass, roole, token) values ($1, $2, $3, $4, $5, $6)', [data.rows[0].email, data.rows[0].nickname, data.rows[0].tlg, data.rows[0].pass, 'user', token]);
 
@@ -210,6 +212,65 @@ class authController {
         }
     }
 
+    async logIn(req, res) {
+        try {
+            const data = await database.query('SELECT pass, roole, token FROM person WHERE email = $1', [req.body.email]);
+
+            if (data.rows.length === 1) {
+                let token = data.rows[0].token;
+
+                if (bcrypt.compareSync(req.body.pass, data.rows[0].pass)) {
+                    jwt.verify(token, secret, async (err) => {
+                        if (err) {
+                            token = this.generateAccessToken(req.body.email, data.rows[0].roole, '720h');
+                            await database.query('UPDATE person SET token = $2 WHERE email = $1', [req.body.email, token])
+                        }
+                    });
+
+                    // Delete refresh email code
+
+                    if (!data.rows[0].code) {
+                        await database.query('UPDATE person SET code = $2 WHERE email = $1', [req.body.email, '']);
+                    }
+
+                    res.status(200);
+                    res.header('Access-Control-Allow-Origin', siteHost);
+                    res.header('Access-Control-Allow-Methods', 'POST');
+                    res.header('Access-Control-Allow-Headers', 'Content-Type');
+                    res.header('Access-Control-Allow-Credentials', 'true');
+                    res.cookie('token', `Bearer ${token}`, {
+                        maxAge: 2 * 30 * 24 * 60 * 60,
+                        httpOnly: true
+                    });
+                    return res.json('OK');
+                } else {
+                    res.status(409);
+                    res.header('Access-Control-Allow-Origin', siteHost);
+                    res.header('Access-Control-Allow-Methods', 'POST');
+                    res.header('Access-Control-Allow-Headers', 'Content-Type');
+                    res.header('Access-Control-Allow-Credentials', 'true');
+                    return res.json({en: 'Wrong password', ru: 'Неверный пароль'});
+                }
+            } else {
+                res.status(404);
+                res.header('Access-Control-Allow-Origin', siteHost);
+                res.header('Access-Control-Allow-Methods', 'POST');
+                res.header('Access-Control-Allow-Headers', 'Content-Type');
+                res.header('Access-Control-Allow-Credentials', 'true');
+                return res.json({en: 'Account not found', ru: 'Аккаунт не найден'});
+            }
+
+        } catch (error) {
+            console.log('Error: ' + error);
+            res.status(500);
+            res.header('Access-Control-Allow-Origin', siteHost);
+            res.header('Access-Control-Allow-Methods', 'GET');
+            res.header('Access-Control-Allow-Headers', 'Content-Type');
+            res.header('Access-Control-Allow-Credentials', 'true');
+            return res.json({en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
+        }
+    } 
+
     async checkToken(req, res) {
         try {
             const tokenFromReq = cookieService.findCookieByKey(req, 'token');
@@ -217,11 +278,9 @@ class authController {
             try {
                 const data = jwt.verify(tokenFromReq, secret);
 
-                const person = await database.query('SELECT token FROM person WHERE email = $1', [data.email]);
-                
-                let token;
-                if (person.rows.length === 1) {
-                    token = person.rows[0].token;
+                let token = await database.query('SELECT token FROM person WHERE email = $1', [data.email]);
+                if (token.rows.length === 1) {
+                    token = token.rows[0].token;
                 } else {
                     res.status(409);
                     res.header('Access-Control-Allow-Origin', siteHost);
@@ -239,7 +298,6 @@ class authController {
                     res.header('Access-Control-Allow-Credentials', 'true');
                     return res.json('OK');
                 } else {
-                    console.log(123)
                     res.status(409);
                     res.header('Access-Control-Allow-Origin', siteHost);
                     res.header('Access-Control-Allow-Methods', 'GET');
@@ -263,7 +321,101 @@ class authController {
             res.header('Access-Control-Allow-Methods', 'GET');
             res.header('Access-Control-Allow-Headers', 'Content-Type');
             res.header('Access-Control-Allow-Credentials', 'true');
-            return res.json('Unexpected error');
+            return res.json({en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
+        }
+    }
+
+    async sendRefreshEmailCode(req, res) {
+        try {
+            const email = req.body.email;
+            const data = await database.query('SELECT * FROM person WHERE email = $1', [email]);
+            let code;
+
+            if (data.rows.length === 1) {
+                if (!data.rows[0].code) {
+                    code = this.generateAccessCode();
+                } else {
+                    code = data.rows[0].code;
+                }
+
+                await database.query('UPDATE person SET token = $2, code = $3 WHERE email = $1', [email, '', code]);
+
+                emailService.sendRefreshCode(email, code);
+
+                res.status(200);
+                res.header('Access-Control-Allow-Origin', siteHost);
+                res.header('Access-Control-Allow-Methods', 'GET');
+                res.header('Access-Control-Allow-Headers', 'Content-Type');
+                return res.json('OK');
+            } else {
+                res.status(404);
+                res.header('Access-Control-Allow-Origin', siteHost);
+                res.header('Access-Control-Allow-Methods', 'POST');
+                res.header('Access-Control-Allow-Headers', 'Content-Type');
+                return res.json({en: 'Account not found', ru: 'Аккаунт не найден'});
+            }
+        } catch (error) {
+            console.log('Error: ' + error);
+            res.status(500);
+            res.header('Access-Control-Allow-Origin', siteHost);
+            res.header('Access-Control-Allow-Methods', 'POST');
+            res.header('Access-Control-Allow-Headers', 'Content-Type');
+            return res.json({en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
+        }
+    }
+
+    async checkAccessCodeOnServer(req, res) {
+        try {
+            const data = await database.query('SELECT roole, code FROM person WHERE email = $1', [req.body.email]);
+
+            if (data.rows.length === 1) {
+                if (data.rows[0].code) {
+                    if (data.rows[0].code === req.body.code) {
+                        const token = this.generateAccessToken(req.body.code, 'refresh_pass', '20m');
+                        await database.query('UPDATE person SET token = $2, code = $3 WHERE email = $1', [req.body.email, token, '']);
+
+                        res.status(200);
+                        res.header('Access-Control-Allow-Origin', siteHost);
+                        res.header('Access-Control-Allow-Methods', 'POST');
+                        res.header('Access-Control-Allow-Headers', 'Content-Type');
+                        res.header('Access-Control-Allow-Credentials', 'true');
+                        res.cookie('token', `Bearer ${token}`, {
+                            maxAge: 20 * 60,
+                            httpOnly: true
+                        });
+                        return res.json('OK');
+                    } else {
+                        res.status(409);
+                        res.header('Access-Control-Allow-Origin', siteHost);
+                        res.header('Access-Control-Allow-Methods', 'POST');
+                        res.header('Access-Control-Allow-Headers', 'Content-Type');
+                        res.header('Access-Control-Allow-Credentials', 'true');
+                        return res.json({en: 'Incorrect code', ru: 'Неверный код'});
+                    }
+                } else {
+                    res.status(409);
+                    res.header('Access-Control-Allow-Origin', siteHost);
+                    res.header('Access-Control-Allow-Methods', 'POST');
+                    res.header('Access-Control-Allow-Headers', 'Content-Type');
+                    res.header('Access-Control-Allow-Credentials', 'true');
+                    return res.json({en: 'Authorization error, please try again', ru: 'Ошибка авторизации, попробуйте снова'});
+                }
+            } else {
+                res.status(404);
+                res.header('Access-Control-Allow-Origin', siteHost);
+                res.header('Access-Control-Allow-Methods', 'POST');
+                res.header('Access-Control-Allow-Headers', 'Content-Type');
+                res.header('Access-Control-Allow-Credentials', 'true');
+                return res.json({en: 'Account not found', ru: 'Аккаунт не найден'});
+            }
+        } catch (error) {
+            console.log('Error: ' + error);
+            res.status(500);
+            res.header('Access-Control-Allow-Origin', siteHost);
+            res.header('Access-Control-Allow-Methods', 'POST');
+            res.header('Access-Control-Allow-Headers', 'Content-Type');
+            res.header('Access-Control-Allow-Credentials', 'true');
+            return res.json({en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
         }
     }
 
@@ -282,16 +434,16 @@ class authController {
         return str.length >= len;
     }
 
-    generateAccesssToken(email, role) {
+    generateAccessToken(email, role, exp) {
         const payload = {
             email,
             role
         }
         
-        return jwt.sign(payload, secret, {expiresIn: '720h'});
+        return jwt.sign(payload, secret, {expiresIn: exp});
     }
 
-    generateCode() {
+    generateAccessCode() {
         // Returns a string with a six digit number
 
         return String(Math.floor(Math.random() * (1000000 - 100000) + 100000));
