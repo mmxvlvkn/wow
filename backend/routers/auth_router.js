@@ -16,5 +16,7 @@ authRouter.post('/send_refresh_email_code', authController.sendRefreshEmailCode)
 authRouter.options('/send_refresh_email_code', authController.sendOptions);
 authRouter.post('/check_access_code_on_server', authController.checkAccessCodeOnServer);
 authRouter.options('/check_access_code_on_server', authController.sendOptions);
+authRouter.post('/change_user_password', authController.changeUserPassword);
+authRouter.options('/change_user_password', authController.sendOptions);
 
 module.exports = authRouter;

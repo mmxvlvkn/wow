@@ -58,6 +58,42 @@
     &__close-line-2 {
         transform: rotate(-45deg);
     }
+    &__back {
+        display: none;
+        position: absolute;
+        top: calc_rem(10);
+        left: calc_rem(10);
+        width: calc_rem(35);
+        height: calc_rem(35);
+
+        &._shown {
+            display: block;
+        }
+    }
+    &__back-line {
+        display: block;
+        position: absolute;
+        height: calc_rem(4);
+        background-color: white;
+        border-radius: calc_rem(30);
+    }
+    &__back-line-1 {
+        width: calc_rem(18);
+        top: calc_rem(8);
+        left: calc_rem(-1);
+        transform: rotate(-45deg);
+    }
+    &__back-line-2 {
+        width: calc_rem(18);
+        top: calc_rem(19);
+        left: calc_rem(-1);
+        transform: rotate(45deg);
+    }
+    &__back-line-3 {
+        width: calc_rem(26);
+        top: calc_rem(14);
+        left: calc_rem(2);
+    }
     &__main-container {
         &._hidden {
             display: none;
@@ -138,7 +174,9 @@
     &__confirmation-form {
         margin-bottom: calc_rem(30);
     }
-    &__confirmation-title {}
+    &__confirmation-title {
+        font-size: calc_rem(24);
+    }
     &__confirmation-email-label {}
     &__confirmation-email {
         margin-bottom: calc_rem(10);
@@ -202,8 +240,9 @@
             background-color: $color_4;
         }
     }
-    &__title {}
-    &__new-pass-title {}
+    &__new-pass-title {
+        font-size: calc_rem(24);
+    }
     &__new-pass-label {}
     &__label {}
     &__new-pass {
@@ -244,10 +283,4 @@
         background-color: $color_2;
         border-radius: calc_rem(3);
     }
-}
-.log-new-pass-title {
-}
-.en {
-}
-.ru {
 }

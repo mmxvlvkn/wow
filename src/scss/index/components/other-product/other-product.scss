@@ -1,5 +1,5 @@
 .other-product {
-    margin-bottom: calc_rem(40);
+    margin-bottom: calc_percent(30, 1600);
 
     & .content {
         @extend %flex_hc;

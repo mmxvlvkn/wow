@@ -2,7 +2,7 @@
     display: block;
     padding: calc_rem(20) calc_rem(30);
     color: white;
-    margin-bottom: calc_rem(40);
+    margin-bottom: calc_percent(41, 1600);
     width: 100%;
     @extend %shadow;
     background-color: $color_1;

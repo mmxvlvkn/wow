@@ -1,6 +1,6 @@
 .best-products {
     padding: calc_rem(20) calc_rem(30);
-    margin-bottom: calc_rem(40);
+    margin-bottom: calc_percent(41, 1600);
     color: white;
     @extend %shadow;
     background-color: $color_1;
@@ -15,11 +15,10 @@
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
-        gap: calc_rem(25);
+        gap: calc_rem(20);
 
     }
     &__product-card {
-        flex: 1 1 50%;
         border: 2px solid $color_2;
     }
 }

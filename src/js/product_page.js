@@ -6,7 +6,7 @@ const COLOR_2 = '#564fff';
 // Login visualization in header when visiting the site
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (localStorage.getItem('isLoggedIn') === 'true') {
+    if (localStorage.getItem('isLoggedIn')) {
         doLogin();
         checkToken();
     }
@@ -932,7 +932,6 @@ $headerLogInCodeForm.addEventListener('submit', (event) => {
     }
 });
 
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // Send new password
 
 const $headerLogInNewPassForm = $headerLogInNewPassContainer.querySelector('.log-in__new-pass-form');
@@ -1040,16 +1039,395 @@ $headerLogInBackBtn.addEventListener('click', () => {
     $headerLogInBackBtn.classList.remove('_shown');
 });
 
-// MAIN_SCREEN
+// PRODUCT_PAGE
 
-// Activate scroll button for products
+// Set min width for product page description
 
-const $mainScreenScrollBtn = $body.querySelector('.main-screen__view');
-const $products = $body.querySelector('.product'); 
+const $productPage = $body.querySelector('.produst-page');
+const $productPageDescription = $body.querySelector('.produst-page__description');
 
-$mainScreenScrollBtn.addEventListener('click', () => {
-    window.scrollBy(0, $products.getBoundingClientRect().y);
+$productPageDescription.style.minHeight = `${window.innerHeight - parseInt(window.getComputedStyle($body.querySelector('header')).height) - parseInt(window.getComputedStyle($productPage).paddingTop)}px`
+
+// PRODUCT SETTINGS
+
+// Set width for product settings container
+
+const $productSettings = $body.querySelector('.product-settings');
+const $productSettingsContainer = $productSettings.querySelector('.product-settings__container');
+const productSettingsVerticalPadding = 10;
+
+if (document.documentElement.clientWidth > 800) {
+    $productSettingsContainer.style.height = `${document.documentElement.clientHeight - parseInt(window.getComputedStyle($body.querySelector('header')).height) - parseInt(window.getComputedStyle($productPage).paddingTop) - productSettingsVerticalPadding*2}px`;
+}
+
+// Set position for product settings container
+
+let baseTopForDescription = parseInt(window.getComputedStyle($body.querySelector('header')).height) + parseInt(window.getComputedStyle($productPage).paddingTop);
+let baseTopForProductSettingsContainer = baseTopForDescription + productSettingsVerticalPadding;
+const $produstPageDescription = $productPage.querySelector('.produst-page__description');
+
+if (window.clientWidth > 800) {
+    if (window.scrollY >= (baseTopForDescription + $produstPageDescription.clientHeight - window.innerHeight)) {
+        setPositionToEnd();
+    } else {
+        setPositionToStart();
+    }
+}
+
+window.addEventListener('scroll', () => {
+    if (window.innerWidth > 800) {
+        if (window.scrollY >= (baseTopForDescription + $produstPageDescription.clientHeight - window.innerHeight)) {
+            setPositionToEnd();
+        } else {
+            setPositionToStart();
+        }
+    }
 });
+
+function setPositionToStart() {
+    $productSettingsContainer.style.top = `${baseTopForProductSettingsContainer}px`;
+    parseFloat(window.getComputedStyle($productPageDescription).border.split(' ')[0])
+    $productSettingsContainer.style.left = `${$productPageDescription.getBoundingClientRect().left + $productPageDescription.clientWidth + parseFloat(window.getComputedStyle($productPageDescription).border.split(' ')[0])*2 }px`;
+    $productSettingsContainer.style.position = 'fixed';
+}
+
+function setPositionToEnd() {
+    $productSettingsContainer.style.position = 'relative';
+    $productSettingsContainer.style.left = `0px`;
+    $productSettingsContainer.style.top = `${baseTopForDescription + $produstPageDescription.clientHeight - $productSettingsContainer.clientHeight - productSettingsVerticalPadding - baseTopForProductSettingsContainer}px`;
+}
+
+// Run radiobuttons
+
+$body.querySelectorAll('.product-settings__radiobutton').forEach($item => {
+    $item.addEventListener('click', runRadiobutton);
+});
+
+function runRadiobutton(event) {
+    const $target = event.target.closest('.product-settings__radiobutton');
+    const $parent = $target.parentNode;
+
+    $parent.querySelectorAll('.product-settings__radiobutton').forEach($item => {
+        if ($item.classList.contains('_checked')) {
+            $item.classList.remove('_checked');
+            $item.setAttribute('data-status', 'off');
+        }
+    });
+
+    $target.classList.add('_checked');
+    $target.setAttribute('data-status', 'on');
+}
+
+// Run slider range
+
+const $optionsRange = $body.querySelectorAll('.product-settings__option.range');
+const priceGaps = [1];
+
+for (let i = 0; i < $optionsRange.length; i++) {
+    const $progress = $optionsRange[i].querySelector('.product-settings__range-progress');
+    const $inputsForRange = $optionsRange[i].querySelectorAll('.product-settings__input-for-range');
+    const $ranges = $optionsRange[i].querySelectorAll('.product-settings__range');
+
+    // Run input for slider range
+
+    $inputsForRange.forEach($inputForRange => {
+        $inputForRange.addEventListener('input', event => {
+            const min = $ranges[0].getAttribute('min');
+            const max = $ranges[0].getAttribute('max');
+            let minVal = ($inputsForRange[0].value && $inputsForRange[0].value >= 0) ? parseInt($inputsForRange[0].value) : 0;
+            let maxVal = ($inputsForRange[1].value && $inputsForRange[0].value >= 0) ? parseInt($inputsForRange[1].value) : 0;
+
+            if ((maxVal - minVal >= priceGaps[i]) && (maxVal <= max)) {
+                if (event.target.classList.contains('product-settings__input-for-range-min')) {
+                    $ranges[0].value = minVal;
+                    $progress.style.left = `${(minVal / max) * 100}%`;
+                } else {
+                    $ranges[1].value = maxVal;
+                    $progress.style.right = `${100 - (maxVal / max) * 100}%`;
+                }
+            }
+        });
+    });
+
+    // Run slider range
+
+    $ranges.forEach($inputForRange => {
+        $inputForRange.addEventListener('input', event => {
+            const min = $ranges[0].getAttribute('min');
+            const max = $ranges[0].getAttribute('max');
+            let minVal = parseInt($ranges[0].value);
+            let maxVal = parseInt($ranges[1].value);
+
+            if (maxVal - minVal < priceGaps[i]) {
+                if (event.target.classList.contains('product-settings__range-min')) {
+                    $ranges[0].value = maxVal - priceGaps[i];
+                } else {
+                    $ranges[1].value = minVal + priceGaps[i];
+                }
+            } else {
+                $inputsForRange[0].value = minVal;
+                $inputsForRange[1].value = maxVal;
+                $progress.style.left = `${(minVal / max) * 100}%`;
+                $progress.style.right = `${100 - (maxVal / max) * 100}%`;
+            }
+        });
+    });
+}
+
+// Adoptive
+
+let windowWidth = document.documentElement.clientWidth;
+let windowHeight = window.innerHeight;
+// Values: 'null', 'less', 'more'
+let adobtiveStatus = 'null'
+
+window.addEventListener('resize', () => {
+
+    // Width adoptive
+
+    baseTopForDescription = parseInt(window.getComputedStyle($body.querySelector('header')).height) + parseInt(window.getComputedStyle($productPage).paddingTop);
+    baseTopForProductSettingsContainer = baseTopForDescription + productSettingsVerticalPadding;
+
+    if (document.documentElement.clientWidth > 800) {
+        $productSettingsContainer.style.left = `${$productPageDescription.getBoundingClientRect().left + $productPageDescription.clientWidth + 4}px`;
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        console.log(window.innerHeight)
+        $productSettingsContainer.style.height = `${document.documentElement.clientHeight - parseInt(window.getComputedStyle($body.querySelector('header')).height) - parseInt(window.getComputedStyle($productPage).paddingTop) - productSettingsVerticalPadding*2}px`;
+
+        if (window.scrollY >= (baseTopForDescription + $produstPageDescription.clientHeight - window.innerHeight)) {
+            setPositionToEnd();
+        } else {
+            setPositionToStart();
+        }
+
+        if (adobtiveStatus !== 'more') {
+            adobtiveStatus = 'more';
+        }
+    } else if (adobtiveStatus !== 'less') {
+        $productSettingsContainer.style.height = 'auto';
+        $productSettingsContainer.style.position = 'relative';
+        $productSettingsContainer.style.left = `0px`;
+        $productSettingsContainer.style.top = `0px`;
+        adobtiveStatus = 'less';
+    }
+});
+
+// Price formation
+
+const dataForPriceFormation = {
+    base_price: 8.5,
+    radio: {
+        region: {
+            eu: {
+                is_coef: true,
+                value: 1
+            },
+            us: {
+                is_coef: true,
+                value: 1.2
+            }
+        },
+        faction: {
+            horde: {
+                is_coef: true,
+                value: 1
+            },
+            alliance: {
+                is_coef: true,
+                value: 1
+            }
+        },
+        boost_method: {
+            self_play: {
+                is_coef: true,
+                value: 1
+            },
+            piloted: {
+                is_coef: true,
+                value: 1.06
+            },
+            remote_control: {
+                is_coef: true,
+                value: 1
+            }
+        },
+        execution_options: {
+            normal: {
+                is_coef: true,
+                value: 1
+            },
+            extra_fast: {
+                is_coef: false,
+                value: 8.28
+            },
+            faster_25: {
+                is_coef: false,
+                value: 3.31
+            },
+            faster_50: {
+                is_coef: false,
+                value: 5.8
+            }
+        }
+    },
+    range: {
+        levels: {
+            is_coef: false,
+            value: 0.74
+        }
+    },
+    checkbox: {
+        additional_options: {
+            additional_options_1: {
+                is_coef: false,
+                value: 18.15
+            },
+            additional_options_2: {
+                is_coef: false,
+                value: 40.59
+            },
+            additional_options_3: {
+                is_coef: false,
+                value: 45.93
+            },
+            additional_options_4: {
+                is_coef: false,
+                value: 32.04
+            }
+        }
+    },
+    select: {
+        multiple_character_leveling: {
+            characters_1: {
+                is_coef: false,
+                value: 0
+            },
+            characters_2: {
+                is_coef: false,
+                value: 15.12
+            },
+            characters_3: {
+                is_coef: false,
+                value: 29.43
+            },
+            characters_4: {
+                is_coef: false,
+                value: 43.24
+            },
+            characters_5: {
+                is_coef: false,
+                value: 56.71
+            },
+            characters_6: {
+                is_coef: false,
+                value: 68.71
+            }
+        }
+    }
+}
+
+const $productPricesEn = $body.querySelectorAll('.product-price__price .en .product-price__text');
+const $productPricesRu = $body.querySelectorAll('.product-price__price .ru .product-price__text');
+const $radios = $body.querySelectorAll('.product-settings__option.radio');
+const $ranges = $body.querySelectorAll('.product-settings__option.range');
+const $checkboxes = $body.querySelectorAll('.product-settings__option.checkbox');
+const $selects = $body.querySelectorAll('.product-settings__option.select');
+let price = dataForPriceFormation.base_price;
+let coef = 1;
+
+priceFormation();
+
+$radios.forEach($radio => {
+    $radio.querySelectorAll('.product-settings__radiobutton').forEach($radioItem => {
+        $radioItem.addEventListener('click', () => {
+            priceFormation();
+        });
+    });
+});
+
+$ranges.forEach($range => {
+    $range.querySelectorAll('input').forEach($rangeItem => {
+        $rangeItem.addEventListener('input', () => {
+            priceFormation();
+        });
+    });
+});
+
+$checkboxes.forEach($checkbox => {
+    $checkbox.querySelectorAll('.product-settings__checkbox').forEach($checkboxItem => {
+        $checkboxItem.addEventListener('input', () => {
+            priceFormation();
+        });
+    });
+});
+
+$selects.forEach($select => {
+    $select.querySelector('.product-settings__select').addEventListener('input', () => {
+        priceFormation();
+    });
+});
+
+function priceFormation() {
+    price = dataForPriceFormation.base_price;
+    coef = 1;
+
+    $radios.forEach($radio => {
+        $checked = $radio.querySelector('._checked');
+        const data = dataForPriceFormation.radio[$checked.getAttribute('name')][$checked.getAttribute('value')];
+
+        if (data.is_coef) {
+            coef *= data.value;
+        } else {
+            price += data.value;
+        }
+    });
+
+
+    $ranges.forEach($range => {
+        const delta = ($range.querySelector('.product-settings__input-for-range-max').value - $range.querySelector('.product-settings__input-for-range-min').value);
+        const maxDelta = $range.querySelector('.product-settings__range-min').getAttribute('max') - $range.querySelector('.product-settings__range-min').getAttribute('min');
+
+        if (dataForPriceFormation.range[$range.querySelector('.product-settings__input-for-range-min').getAttribute('name')].is_coef) {
+            if (delta >= 1 && delta <= maxDelta) {
+                coef *= delta * dataForPriceFormation.range[$range.querySelector('.product-settings__input-for-range-min').getAttribute('name')].value;
+            }
+        } else {
+            if (delta >= 1 && delta <= maxDelta) {
+                price += delta * dataForPriceFormation.range[$range.querySelector('.product-settings__input-for-range-min').getAttribute('name')].value;
+            }
+        }
+    });
+
+    $checkboxes.forEach($checkbox => {
+        $checkbox.querySelectorAll('.product-settings__checkbox').forEach($checkboxItem => {
+            if ($checkboxItem.checked) {
+                if (dataForPriceFormation.checkbox[$checkboxItem.getAttribute('data-checkbox-name')][$checkboxItem.getAttribute('name')].is_coef) {
+                    coef *= dataForPriceFormation.checkbox[$checkboxItem.getAttribute('data-checkbox-name')][$checkboxItem.getAttribute('name')].value;
+                } else {
+                    price += dataForPriceFormation.checkbox[$checkboxItem.getAttribute('data-checkbox-name')][$checkboxItem.getAttribute('name')].value;
+                }
+            }
+        });
+    });
+
+    $selects.forEach($select => {
+        const $selectItem = $select.querySelector('.product-settings__select');
+
+        if (dataForPriceFormation.select[$selectItem.getAttribute('name')][$selectItem.value]) {
+            if (dataForPriceFormation.select[$selectItem.getAttribute('name')][$selectItem.value].is_coef) {
+                coef *= dataForPriceFormation.select[$selectItem.getAttribute('name')][$selectItem.value].value;
+            } else {
+                price += dataForPriceFormation.select[$selectItem.getAttribute('name')][$selectItem.value].value;
+            }
+        }
+    });
+
+    price *= coef;
+    $productPricesEn[0].textContent = price.toFixed(2);
+    $productPricesEn[1].textContent = price.toFixed(2);
+    $productPricesRu[0].textContent = (price * 76).toFixed(2);
+    $productPricesRu[1].textContent = (price * 76).toFixed(2);
+}
 
 // PRODUCTS
 
@@ -1158,7 +1536,7 @@ const $personalService = $body.querySelector('.other-product');
 const $advantages = $body.querySelector('.advantages');
 const $reviews = $body.querySelector('.reviews');
 
-activeteScrollButton($footerNavServices, $products);
+//! activeteScrollButton($footerNavServices, $products);
 activeteScrollButton($footerNavPersonalService, $personalService, 20);
 activeteScrollButton($footerNavAdvantages, $advantages, 20);
 activeteScrollButton($footerNavReviews, $reviews);
