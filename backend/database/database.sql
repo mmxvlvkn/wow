@@ -17,3 +17,8 @@ create TABLE person_bufer(
     roole VARCHAR(10),
     code VARCHAR(10)
 );
+
+create TABLE price_formation(
+    price_name VARCHAR(200),
+    price_data VARCHAR(5000)
+);

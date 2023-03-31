@@ -193,7 +193,7 @@
                         </ul>
                         <p class="produst-page__paragraph"><span class="en"><span class="produst-page__red">Note:</span> Guaranteed items are not counted as specific items of your choice, but as a minimum number of items you end your run with. If you pass the roll for the item which suits your class and spec, it still counts as a minimum guarantee in any case.</span><span class="ru"></span></p>
                     </section>
-                    <section class="product-settings">
+                    <form class="product-settings product-settings__form">
                         <div class="product-settings__container">
                             <div class="product-settings__set">
                                 <h2 class="product-settings__hidden-header">VAULT OF THE INCARNATES NORMAL RAID RUN</h2>
@@ -231,11 +231,11 @@
                                     <div class="product-settings__radiobuttons">
                                         <p value="normal" name="execution_options" data-status="on" class="product-settings__radiobutton _checked"><span class="en">Normal</span><span class="ru"></span></p>
                                         <input type="radio" value="normal" name="execution_options" class="product-settings__radiobutton-input"></input>
-                                        <p value="extra_fast" name="execution_options" data-status="off" class="product-settings__radiobutton"><span class="en">Extra fast +$8.28</span><span class="ru"></span></p>
+                                        <p value="extra_fast" name="execution_options" data-status="off" class="product-settings__radiobutton"><span class="en">Extra fast</span><span class="ru"></span></p>
                                         <input type="radio" value="extra_fast" name="execution_options" class="product-settings__radiobutton-input"></input>
-                                        <p value="faster_25" name="execution_options" data-status="off" class="product-settings__radiobutton"><span class="en">25% Faster +$3.31</span><span class="ru"></span></p>
+                                        <p value="faster_25" name="execution_options" data-status="off" class="product-settings__radiobutton"><span class="en">25% Faster</span><span class="ru"></span></p>
                                         <input type="radio" value="25_faster" name="execution_options" class="product-settings__radiobutton-input"></input>
-                                        <p value="faster_50" name="execution_options" data-status="off" class="product-settings__radiobutton"><span class="en">50% Faster +$5.80</span><span class="ru"></span></p>
+                                        <p value="faster_50" name="execution_options" data-status="off" class="product-settings__radiobutton"><span class="en">50% Faster</span><span class="ru"></span></p>
                                         <input type="radio" value="50_faster" name="execution_options" class="product-settings__radiobutton-input"></input>
                                     </div>
                                 </div>
@@ -312,7 +312,7 @@
                                 </div>
                             </div>
                         </div>
-                    </section>
+                    </form>
                     <div class="product-price product-price__hidden">
                         <div class="product-price product-price__container">
                             <p class="product-price__price"><span class="en"><span class="product-price__text"></span><span>$</span></span><span class="ru"><span class="product-price__text"></span><span>руб.</span></span></p>
@@ -595,6 +595,9 @@
         </div>
     </div>
 </footer>
+        <script src="../js/header.js"></script>
         <script src="../js/product_page.js"></script>
+        <script src="../js/footer.js"></script>
+        <script>activateFooterList(false, false, true, true);</script>
     </body>
 </html>

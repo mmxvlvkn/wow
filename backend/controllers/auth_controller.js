@@ -273,6 +273,9 @@ class authController {
     } 
 
     async checkToken(req, res) {
+        let data = await database.query('SELECT price_data FROM price_formation');
+        console.log(JSON.parse(data.rows[0].price_data));
+
         try {
             const tokenFromReq = cookieService.findCookieByKey(req, 'token');
 
@@ -290,7 +293,7 @@ class authController {
                     res.header('Access-Control-Allow-Credentials', 'true');
                     return res.json('More than one account registered with email');
                 }
-
+                
                 if (tokenFromReq === token) {
                     res.status(200);
                     res.header('Access-Control-Allow-Origin', siteHost);
