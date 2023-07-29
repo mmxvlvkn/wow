@@ -3,7 +3,9 @@ const emailService = require('../services/email_service.js');
 const cookieService = require('../services/cookie_service.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const {secret, siteHost} = require('../config.js');
+const ress = require('../services/response_service.js');
+require('dotenv').config();
+const secret = process.env.secret;
 
 
 class authController {
@@ -80,16 +82,12 @@ class authController {
             // Send error
 
             if (errorMessage.en) {
-                res.status(409);
-                res.header('Access-Control-Allow-Origin', siteHost);
-                res.header('Access-Control-Allow-Methods', 'POST');
-                res.header('Access-Control-Allow-Headers', 'Content-Type');
-                return res.json(errorMessage);
+                return ress.create(res, 409, errorMessage); 
             }
 
             // Making, recording and email-sening access code
 
-            const code = this.generateAccessCode();
+            const code = this.generateEmailCode();
 
             data = await database.query('SELECT * FROM person_bufer WHERE email = $1', [req.body.email]);
 
@@ -100,30 +98,21 @@ class authController {
             await database.query('INSERT INTO person_bufer (email, nickname, tlg, pass, roole, code) values ($1, $2, $3, $4, $5, $6)', [req.body.email, req.body.nickname, req.body.tlg, bcrypt.hashSync(req.body.pass, 7), 'user', code]);
 
             try {
-                emailService.sendActivationCode(req.body.email, code);
+                await emailService.sendActivationCode(req.body.email, code);
             } catch (error) {
                 try {
-                    emailService.sendActivationCode(req.body.email, code);
+                    await emailService.sendActivationCode(req.body.email, code);
                 } catch (error) {
-                    console.log('Error: ' + error);
+                    return ress.create(res, 500, {en: 'Unexpected send email code error', ru: 'Непредвиденная ошибка отправки кода регистации'}); 
+
                 }
             }
 
             // Send ressponse
-
-            res.status(200);
-            res.header('Access-Control-Allow-Origin', siteHost);
-            res.header('Access-Control-Allow-Methods', 'POST');
-            res.header('Access-Control-Allow-Headers', 'Content-Type');
-            return res.json('OK');
-
+            return ress.create(res, 200, 'OK'); 
         } catch (error) {
             console.log('Error: ' + error);
-            res.status(500);
-            res.header('Access-Control-Allow-Origin', siteHost);
-            res.header('Access-Control-Allow-Methods', 'POST');
-            res.header('Access-Control-Allow-Headers', 'Content-Type');
-            return res.json({en: 'Unexpected registration error', ru: 'Непредвиденная ошибка регистации'});
+            return ress.create(res, 500, {en: 'Unexpected registration error', ru: 'Непредвиденная ошибка регистации'}); 
         }
     }
 
@@ -147,40 +136,20 @@ class authController {
 
                     // Send ressponse
 
-                    res.status(200);
-                    res.header('Access-Control-Allow-Origin', siteHost);
-                    res.header('Access-Control-Allow-Methods', 'POST');
-                    res.header('Access-Control-Allow-Headers', 'Content-Type');
-                    res.header('Access-Control-Allow-Credentials', 'true');
-                    res.cookie('token', `Bearer ${token}`, {
+                    return ress.create(res, 200, 'OK', ['token', `Bearer ${token}`, {
                         maxAge: 2 * 30 * 24 * 60 * 60 * 1000,
                         httpOnly: true
-                    });
-                    return res.json('ok');
+                    }]); 
                 } else {
-                    res.status(409);
-                    res.header('Access-Control-Allow-Origin', siteHost);
-                    res.header('Access-Control-Allow-Methods', 'POST');
-                    res.header('Access-Control-Allow-Headers', 'Content-Type');
-                    res.header('Access-Control-Allow-Credentials', 'true');
-                    return res.json({en: 'Incorrect code', ru: 'Неверный код'});
+                    return ress.create(res, 409, {en: 'Incorrect code', ru: 'Неверный код'}); 
+
                 }
             } else {
-                res.status(500);
-                res.header('Access-Control-Allow-Origin', siteHost);
-                res.header('Access-Control-Allow-Methods', 'POST');
-                res.header('Access-Control-Allow-Headers', 'Content-Type');
-                res.header('Access-Control-Allow-Credentials', 'true');
-                return res.json({en: 'Unexpected registration error', ru: 'Непредвиденная ошибка регистации'});
+                return ress.create(res, 500, {en: 'Unexpected registration error', ru: 'Непредвиденная ошибка регистации'}); 
             }
         } catch (error) {
             console.log('Error: ' + error);
-            res.status(500);
-            res.header('Access-Control-Allow-Origin', siteHost);
-            res.header('Access-Control-Allow-Methods', 'POST');
-            res.header('Access-Control-Allow-Headers', 'Content-Type');
-            res.header('Access-Control-Allow-Credentials', 'true');
-            return res.json({en: 'Unexpected registration error', ru: 'Непредвиденная ошибка регистации'});
+            return ress.create(res, 500, {en: 'Unexpected registration error', ru: 'Непредвиденная ошибка регистации'}); 
         }
     }
 
@@ -191,25 +160,13 @@ class authController {
             if (data.rows.length) {
                 await emailService.sendActivationCode(req.body.email, data.rows[0].code);
 
-                res.status(200);
-                res.header('Access-Control-Allow-Origin', siteHost);
-                res.header('Access-Control-Allow-Methods', 'POST');
-                res.header('Access-Control-Allow-Headers', 'Content-Type');
-                return res.json('OK');
+                return ress.create(res, 200, 'OK');
             } else {
-                res.status(500);
-                res.header('Access-Control-Allow-Origin', siteHost);
-                res.header('Access-Control-Allow-Methods', 'POST');
-                res.header('Access-Control-Allow-Headers', 'Content-Type');
-                return res.json({en: 'Error. Register again', ru: 'Ошибка. Пройдите регистрацию снова'});
+                return ress.create(res, 500, {en: 'Error. Register again', ru: 'Ошибка. Пройдите регистрацию снова'});
             }
         } catch (error) {
             console.log('Error: ' + error);
-            res.status(500);
-            res.header('Access-Control-Allow-Origin', siteHost);
-            res.header('Access-Control-Allow-Methods', 'POST');
-            res.header('Access-Control-Allow-Headers', 'Content-Type');
-            return res.json({en: 'Unexpected error while submitting code', ru: 'Непредвиденная ошибка при отправке кода'});
+            return ress.create(res, 500, {en: 'Unexpected error while submitting code', ru: 'Непредвиденная ошибка при отправке кода'}); 
         }
     }
 
@@ -234,48 +191,24 @@ class authController {
                         await database.query('UPDATE person SET code = $2 WHERE email = $1', [req.body.email, '']);
                     }
 
-                    res.status(200);
-                    res.header('Access-Control-Allow-Origin', siteHost);
-                    res.header('Access-Control-Allow-Methods', 'POST');
-                    res.header('Access-Control-Allow-Headers', 'Content-Type');
-                    res.header('Access-Control-Allow-Credentials', 'true');
-                    res.cookie('token', `Bearer ${token}`, {
+                    return ress.create(res, 200, 'OK', ['token', `Bearer ${token}`, {
                         maxAge: 2 * 30 * 24 * 60 * 60 * 1000,
                         httpOnly: true
-                    });
-                    return res.json('OK');
+                    }]);
                 } else {
-                    res.status(409);
-                    res.header('Access-Control-Allow-Origin', siteHost);
-                    res.header('Access-Control-Allow-Methods', 'POST');
-                    res.header('Access-Control-Allow-Headers', 'Content-Type');
-                    res.header('Access-Control-Allow-Credentials', 'true');
-                    return res.json({en: 'Wrong password', ru: 'Неверный пароль'});
+                    return ress.create(res, 409, {en: 'Wrong password', ru: 'Неверный пароль'});
                 }
             } else {
-                res.status(404);
-                res.header('Access-Control-Allow-Origin', siteHost);
-                res.header('Access-Control-Allow-Methods', 'POST');
-                res.header('Access-Control-Allow-Headers', 'Content-Type');
-                res.header('Access-Control-Allow-Credentials', 'true');
-                return res.json({en: 'Account not found', ru: 'Аккаунт не найден'});
+                return ress.create(res, 404, {en: 'Account not found', ru: 'Аккаунт не найден'});
             }
 
         } catch (error) {
             console.log('Error: ' + error);
-            res.status(500);
-            res.header('Access-Control-Allow-Origin', siteHost);
-            res.header('Access-Control-Allow-Methods', 'GET');
-            res.header('Access-Control-Allow-Headers', 'Content-Type');
-            res.header('Access-Control-Allow-Credentials', 'true');
-            return res.json({en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
+            return ress.create(res, 500, {en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
         }
     } 
 
     async checkToken(req, res) {
-        let data = await database.query('SELECT price_data FROM price_formation');
-        console.log(JSON.parse(data.rows[0].price_data));
-
         try {
             const tokenFromReq = cookieService.findCookieByKey(req, 'token');
 
@@ -286,46 +219,21 @@ class authController {
                 if (token.rows.length === 1) {
                     token = token.rows[0].token;
                 } else {
-                    res.status(409);
-                    res.header('Access-Control-Allow-Origin', siteHost);
-                    res.header('Access-Control-Allow-Methods', 'GET');
-                    res.header('Access-Control-Allow-Headers', 'Content-Type');
-                    res.header('Access-Control-Allow-Credentials', 'true');
-                    return res.json('More than one account registered with email');
+                    return ress.create(res, 409, 'More than one account registered with email');
                 }
                 
                 if (tokenFromReq === token) {
-                    res.status(200);
-                    res.header('Access-Control-Allow-Origin', siteHost);
-                    res.header('Access-Control-Allow-Methods', 'GET');
-                    res.header('Access-Control-Allow-Headers', 'Content-Type');
-                    res.header('Access-Control-Allow-Credentials', 'true');
-                    return res.json('OK');
+                    return ress.create(res, 200, 'OK');
                 } else {
-                    res.status(409);
-                    res.header('Access-Control-Allow-Origin', siteHost);
-                    res.header('Access-Control-Allow-Methods', 'GET');
-                    res.header('Access-Control-Allow-Headers', 'Content-Type');
-                    res.header('Access-Control-Allow-Credentials', 'true');
-                    return res.json('Tokens don\'t match');
+                    return ress.create(res, 409, 'Tokens don\'t match');
                 }
             } catch (error) {
-                res.status(401);
-                res.header('Access-Control-Allow-Origin', siteHost);
-                res.header('Access-Control-Allow-Methods', 'GET');
-                res.header('Access-Control-Allow-Headers', 'Content-Type');
-                res.header('Access-Control-Allow-Credentials', 'true');
-                return res.json('Invalid token');        
+                return ress.create(res, 401, 'Invalid token');        
 
             }
         } catch (error) {
             console.log('Error: ' + error);
-            res.status(500);
-            res.header('Access-Control-Allow-Origin', siteHost);
-            res.header('Access-Control-Allow-Methods', 'GET');
-            res.header('Access-Control-Allow-Headers', 'Content-Type');
-            res.header('Access-Control-Allow-Credentials', 'true');
-            return res.json({en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
+            return ress.create(res, 500, {en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
         }
     }
 
@@ -337,34 +245,22 @@ class authController {
 
             if (data.rows.length === 1) {
                 if (!data.rows[0].code) {
-                    code = this.generateAccessCode();
+                    code = this.generateEmailCode();
                 } else {
                     code = data.rows[0].code;
                 }
 
                 await database.query('UPDATE person SET token = $2, code = $3 WHERE email = $1', [email, '', code]);
-
-                emailService.sendRefreshCode(email, code);
-
-                res.status(200);
-                res.header('Access-Control-Allow-Origin', siteHost);
-                res.header('Access-Control-Allow-Methods', 'GET');
-                res.header('Access-Control-Allow-Headers', 'Content-Type');
-                return res.json('OK');
+                
+                await emailService.sendRefreshCode(email, code);
+                
+                return ress.create(res, 200, 'OK');
             } else {
-                res.status(404);
-                res.header('Access-Control-Allow-Origin', siteHost);
-                res.header('Access-Control-Allow-Methods', 'POST');
-                res.header('Access-Control-Allow-Headers', 'Content-Type');
-                return res.json({en: 'Account not found', ru: 'Аккаунт не найден'});
+                return ress.create(res, 404, {en: 'Account not found', ru: 'Аккаунт не найден'});
             }
         } catch (error) {
             console.log('Error: ' + error);
-            res.status(500);
-            res.header('Access-Control-Allow-Origin', siteHost);
-            res.header('Access-Control-Allow-Methods', 'POST');
-            res.header('Access-Control-Allow-Headers', 'Content-Type');
-            return res.json({en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
+            return ress.create(res, 500, {en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
         }
     }
 
@@ -378,58 +274,27 @@ class authController {
                         const token = this.generateAccessToken(req.body.email, 'refresh_pass', '20m');
                         await database.query('UPDATE person SET token = $2, code = $3 WHERE email = $1', [req.body.email, token, '']);
 
-                        res.status(200);
-                        res.header('Access-Control-Allow-Origin', siteHost);
-                        res.header('Access-Control-Allow-Methods', 'POST');
-                        res.header('Access-Control-Allow-Headers', 'Content-Type');
-                        res.header('Access-Control-Allow-Credentials', 'true');
-                        res.cookie('token', `Bearer ${token}`, {
+                        return ress.create(res, 200, 'OK', ['token', `Bearer ${token}`, {
                             maxAge: 20 * 60 * 1000,
                             httpOnly: true
-                        });
-                        return res.json('OK');
+                        }]);
                     } else {
-                        res.status(409);
-                        res.header('Access-Control-Allow-Origin', siteHost);
-                        res.header('Access-Control-Allow-Methods', 'POST');
-                        res.header('Access-Control-Allow-Headers', 'Content-Type');
-                        res.header('Access-Control-Allow-Credentials', 'true');
-                        return res.json({en: 'Incorrect code', ru: 'Неверный код'});
+                        return ress.create(res, 409, {en: 'Incorrect code', ru: 'Неверный код'});
                     }
                 } else {
-                    res.status(409);
-                    res.header('Access-Control-Allow-Origin', siteHost);
-                    res.header('Access-Control-Allow-Methods', 'POST');
-                    res.header('Access-Control-Allow-Headers', 'Content-Type');
-                    res.header('Access-Control-Allow-Credentials', 'true');
-                    return res.json({en: 'Authorization error, please try again', ru: 'Ошибка авторизации, попробуйте снова'});
+                    return ress.create(res, 409, {en: 'Authorization error, please try again', ru: 'Ошибка авторизации, попробуйте снова'});
                 }
             } else {
-                res.status(404);
-                res.header('Access-Control-Allow-Origin', siteHost);
-                res.header('Access-Control-Allow-Methods', 'POST');
-                res.header('Access-Control-Allow-Headers', 'Content-Type');
-                res.header('Access-Control-Allow-Credentials', 'true');
-                return res.json({en: 'Account not found', ru: 'Аккаунт не найден'});
+                return ress.create(res, 404, {en: 'Account not found', ru: 'Аккаунт не найден'});
             }
         } catch (error) {
             console.log('Error: ' + error);
-            res.status(500);
-            res.header('Access-Control-Allow-Origin', siteHost);
-            res.header('Access-Control-Allow-Methods', 'POST');
-            res.header('Access-Control-Allow-Headers', 'Content-Type');
-            res.header('Access-Control-Allow-Credentials', 'true');
-            return res.json({en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
+            return ress.create(res, 500, {en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
         }
     }
 
     sendOptions(req, res) {
-        res.status(200);
-        res.header('Access-Control-Allow-Origin', siteHost);
-        res.header('Access-Control-Allow-Methods', 'POST');
-        res.header('Access-Control-Allow-Headers', 'Content-Type');
-        res.header('Access-Control-Allow-Credentials', 'true');
-        return res.json('ok');
+        return ress.create(res, 200, 'ok');
     }
 
     //! Убрать у обоих паролей red border при фокусе на один
@@ -458,65 +323,29 @@ class authController {
                                     const token = this.generateAccessToken(data.rows[0].email, data.rows[0].roole, '720h');
                                     await database.query('UPDATE person SET token = $2, pass = $3 WHERE email = $1', [data.rows[0].email, token, bcrypt.hashSync(req.body.pass, 7)]);
 
-                                    res.status(200);
-                                    res.header('Access-Control-Allow-Origin', siteHost);
-                                    res.header('Access-Control-Allow-Methods', 'POST');
-                                    res.header('Access-Control-Allow-Headers', 'Content-Type');
-                                    res.header('Access-Control-Allow-Credentials', 'true');
-                                    res.cookie('token', `Bearer ${token}`, {
+                                    return ress.create(res, 200, 'ok', ['token', `Bearer ${token}`, {
                                         maxAge: 2 * 30 * 24 * 60 * 60 * 1000,
                                         httpOnly: true
-                                    });
-                                    return res.json('ok');
+                                    }]);
                                 } else {
-                                    res.status(409);
-                                    res.header('Access-Control-Allow-Origin', siteHost);
-                                    res.header('Access-Control-Allow-Methods', 'POST');
-                                    res.header('Access-Control-Allow-Headers', 'Content-Type');
-                                    res.header('Access-Control-Allow-Credentials', 'true');
-                                    return res.json({en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
+                                    return ress.create(res, 409, {en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
                                 }
                             } else {
-                                res.status(500);
-                                res.header('Access-Control-Allow-Origin', siteHost);
-                                res.header('Access-Control-Allow-Methods', 'POST');
-                                res.header('Access-Control-Allow-Headers', 'Content-Type');
-                                res.header('Access-Control-Allow-Credentials', 'true');
-                                return res.json({en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
+                                return ress.create(res, 500, {en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
                             }
                         } else {
-                            res.status(409);
-                            res.header('Access-Control-Allow-Origin', siteHost);
-                            res.header('Access-Control-Allow-Methods', 'POST');
-                            res.header('Access-Control-Allow-Headers', 'Content-Type');
-                            res.header('Access-Control-Allow-Credentials', 'true');
-                            return res.json({en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
+                            return ress.create(res, 409, {en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
                         }
                     } else {
-                        res.status(409);
-                        res.header('Access-Control-Allow-Origin', siteHost);
-                        res.header('Access-Control-Allow-Methods', 'POST');
-                        res.header('Access-Control-Allow-Headers', 'Content-Type');
-                        res.header('Access-Control-Allow-Credentials', 'true');
-                        return res.json({en: 'Timeout expired', ru: 'Время ожидания вышло'});
+                        return ress.create(res, 409, {en: 'Timeout expired', ru: 'Время ожидания вышло'});
                     }
                 });
             } else {
-                res.status(409);
-                res.header('Access-Control-Allow-Origin', siteHost);
-                res.header('Access-Control-Allow-Methods', 'POST');
-                res.header('Access-Control-Allow-Headers', 'Content-Type');
-                res.header('Access-Control-Allow-Credentials', 'true');
-                return res.json({en: 'Incorrect password', ru: 'Неверный пароль'});
+                return ress.create(res, 409, {en: 'Incorrect password', ru: 'Неверный пароль'});
             }
         } catch (error) {
             console.log('Error: ' + error);
-            res.status(500);
-            res.header('Access-Control-Allow-Origin', siteHost);
-            res.header('Access-Control-Allow-Methods', 'POST');
-            res.header('Access-Control-Allow-Headers', 'Content-Type');
-            res.header('Access-Control-Allow-Credentials', 'true');
-            return res.json({en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
+            return ress.create(res, 500, {en: 'Unexpected error', ru: 'Непредвиденная ошибка'});
         }
     }
 
@@ -533,7 +362,7 @@ class authController {
         return jwt.sign(payload, secret, {expiresIn: exp});
     }
 
-    generateAccessCode() {
+    generateEmailCode() {
         // Returns a string with a six digit number
 
         return String(Math.floor(Math.random() * (1000000 - 100000) + 100000));

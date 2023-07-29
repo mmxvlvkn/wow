@@ -9,7 +9,7 @@
         padding: calc_rem(12) 0;
         width: 100%;
         @extend %shadow;
-        background-color: $color_1;
+        background: 0 0/100% auto url('../img/components/index/main.png') no-repeat;
         border-radius: calc_rem(5);
     }
     &__title {
@@ -32,8 +32,8 @@
         padding: calc_rem(34) calc_rem(24);
         width: calc_rem(350);
         @extend %shadow;
-        background-color: $color_1;
-        border-radius: calc_rem(5);
+        border-radius: calc_rem(5);   
+        background: 0 0/100% auto url('../img/components/index/main.png') no-repeat;
         transition-duration: 600ms;
 
     &__username {

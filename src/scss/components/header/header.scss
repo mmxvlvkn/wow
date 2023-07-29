@@ -12,6 +12,15 @@
         justify-content: space-between;
         height: 100%;
     }
+
+    &__admin {
+        display: none !important;
+        padding: calc_rem(13) calc_rem(20) !important;
+
+        &._shown {
+            display: block !important;
+        }
+    }
 }
 .left-row {
     @extend %flex_vc;
@@ -37,6 +46,12 @@
             }
         }
     }
+    &__contacts-btn {
+        &._hidden {
+            display: none;
+        }
+    }
+    
     &__state-list {
         padding: calc_rem(10);
         padding-bottom: calc_rem(4);

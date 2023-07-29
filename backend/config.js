@@ -1,7 +1,7 @@
 module.exports = {
     secret: 'tMjghNk67lgJKh1jfjfMGHVMe67zseAWv89g',
-    emailToSend: 'valyavkin99@gmail.com', 
-    emailToSendPassword: 'xgonsmjmdrsahgdt',
+    emailToSend: 'finditproduction@gmail.com', 
+    emailToSendPassword: 'swatwctexltpefrl',
     emailToSendHost: 'smtp.gmail.com',
     emailToSendPort: 587,
     emailToSendSecureMode: false,

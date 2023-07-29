@@ -1,3 +1,4 @@
+
 // PRODUCT_PAGE
 
 // Set min width for product page description
@@ -82,27 +83,38 @@ function runRadiobutton(event) {
 const $optionsRange = $body.querySelectorAll('.product-settings__option.range');
 const priceGaps = [1];
 
+console.log($optionsRange.length)
 for (let i = 0; i < $optionsRange.length; i++) {
     const $progress = $optionsRange[i].querySelector('.product-settings__range-progress');
     const $inputsForRange = $optionsRange[i].querySelectorAll('.product-settings__input-for-range');
     const $ranges = $optionsRange[i].querySelectorAll('.product-settings__range');
 
     // Run input for slider range
-
+    console.log($inputsForRange)
     $inputsForRange.forEach($inputForRange => {
+        const min = $ranges[0].getAttribute('min');
+        const max = $ranges[0].getAttribute('max');
+        let minVal = ($inputsForRange[0].value && $inputsForRange[0].value >= 0) ? parseInt($inputsForRange[0].value) : 0;
+        let maxVal = ($inputsForRange[1].value && $inputsForRange[0].value >= 0) ? parseInt($inputsForRange[1].value) : 0;
+
+        if ((maxVal - minVal >= priceGaps[i]) && (maxVal <= max)) {
+                $ranges[0].value = minVal;
+                $progress.style.left = `${((minVal - min) / (max - min)) * 100}%`;
+                $ranges[1].value = maxVal;
+                $progress.style.right = `${100 - ((maxVal - min) / (max - min)) * 100}%`;
+        }
+
         $inputForRange.addEventListener('input', event => {
-            const min = $ranges[0].getAttribute('min');
-            const max = $ranges[0].getAttribute('max');
             let minVal = ($inputsForRange[0].value && $inputsForRange[0].value >= 0) ? parseInt($inputsForRange[0].value) : 0;
             let maxVal = ($inputsForRange[1].value && $inputsForRange[0].value >= 0) ? parseInt($inputsForRange[1].value) : 0;
 
             if ((maxVal - minVal >= priceGaps[i]) && (maxVal <= max)) {
                 if (event.target.classList.contains('product-settings__input-for-range-min')) {
                     $ranges[0].value = minVal;
-                    $progress.style.left = `${(minVal / max) * 100}%`;
+                    $progress.style.left = `${((minVal - min) / (max - min)) * 100}%`;
                 } else {
                     $ranges[1].value = maxVal;
-                    $progress.style.right = `${100 - (maxVal / max) * 100}%`;
+                    $progress.style.right = `${100 - ((maxVal - min) / (max - min)) * 100}%`;
                 }
             }
         });
@@ -126,8 +138,8 @@ for (let i = 0; i < $optionsRange.length; i++) {
             } else {
                 $inputsForRange[0].value = minVal;
                 $inputsForRange[1].value = maxVal;
-                $progress.style.left = `${(minVal / max) * 100}%`;
-                $progress.style.right = `${100 - (maxVal / max) * 100}%`;
+                $progress.style.left = `${((minVal - min) / (max - min)) * 100}%`;
+                $progress.style.right = `${100 - ((maxVal - min) / (max - min)) * 100}%`;
             }
         });
     });
@@ -170,172 +182,261 @@ window.addEventListener('resize', () => {
 });
 
 // Price formation
-let orderDescription;
-const dataForPriceFormation = {
-    base_price: 8.5,
-    radio: {
-        region: {
-            eu: {
-                is_coef: true,
-                value: 1
-            },
-            us: {
-                is_coef: true,
-                value: 1.2
-            }
-        },
-        faction: {
-            horde: {
-                is_coef: true,
-                value: 1
-            },
-            alliance: {
-                is_coef: true,
-                value: 1
-            }
-        },
-        boost_method: {
-            self_play: {
-                is_coef: true,
-                value: 1
-            },
-            piloted: {
-                is_coef: true,
-                value: 1.06
-            },
-            remote_control: {
-                is_coef: true,
-                value: 1
-            }
-        },
-        execution_options: {
-            normal: {
-                is_coef: true,
-                value: 1
-            },
-            extra_fast: {
-                is_coef: false,
-                value: 8.28
-            },
-            faster_25: {
-                is_coef: false,
-                value: 3.31
-            },
-            faster_50: {
-                is_coef: false,
-                value: 5.8
-            }
-        }
-    },
-    range: {
-        levels: {
-            is_coef: false,
-            value: 0.74
-        }
-    },
-    checkbox: {
-        additional_options: {
-            additional_options_1: {
-                is_coef: false,
-                value: 18.15
-            },
-            additional_options_2: {
-                is_coef: false,
-                value: 40.59
-            },
-            additional_options_3: {
-                is_coef: false,
-                value: 45.93
-            },
-            additional_options_4: {
-                is_coef: false,
-                value: 32.04
-            }
-        }
-    },
-    select: {
-        multiple_character_leveling: {
-            characters_1: {
-                is_coef: false,
-                value: 0
-            },
-            characters_2: {
-                is_coef: false,
-                value: 15.12
-            },
-            characters_3: {
-                is_coef: false,
-                value: 29.43
-            },
-            characters_4: {
-                is_coef: false,
-                value: 43.24
-            },
-            characters_5: {
-                is_coef: false,
-                value: 56.71
-            },
-            characters_6: {
-                is_coef: false,
-                value: 68.71
-            }
-        }
-    }
-}
-
 const $productPricesEn = $body.querySelectorAll('.product-price__price .en .product-price__text');
 const $productPricesRu = $body.querySelectorAll('.product-price__price .ru .product-price__text');
 const $radios = $body.querySelectorAll('.product-settings__option.radio');
 const $ranges = $body.querySelectorAll('.product-settings__option.range');
 const $checkboxes = $body.querySelectorAll('.product-settings__option.checkbox');
 const $selects = $body.querySelectorAll('.product-settings__option.select');
-let price = dataForPriceFormation.base_price;
+const $form = $body.querySelector('.product-settings__form');
+const $productPriceSubmit = $body.querySelectorAll('.product-price__submit');
 let coef = 1;
 
-priceFormation();
+// Get data for price formation
 
-$radios.forEach($radio => {
-    $radio.querySelectorAll('.product-settings__radiobutton').forEach($radioItem => {
-        $radioItem.addEventListener('click', () => {
-            priceFormation();
+let dataForPriceFormation;
+fetch(`${HOST}/api/get_price_formation`, {
+    method: 'POST', 
+    body: JSON.stringify({
+        title: $body.querySelector('.data-title').textContent,
+    }),
+    headers: {
+        'Content-Type': 'application/json'
+    }
+})
+.then(async (res) => {
+    const status = res.status;
+    const data = await res.json();
+    if (status !== 200) {
+        console.error((currentLanguage === 'en') ? data.en : data.ru);
+    } else {
+        let dataForPriceFormation = data;
+
+        let price = dataForPriceFormation.base_price;
+
+        priceFormation(dataForPriceFormation);
+
+        $radios.forEach($radio => {
+            $radio.querySelectorAll('.product-settings__radiobutton').forEach($radioItem => {
+                $radioItem.addEventListener('click', () => {
+                    priceFormation(dataForPriceFormation);
+                });
+            });
         });
-    });
-});
 
-$ranges.forEach($range => {
-    $range.querySelectorAll('input').forEach($rangeItem => {
-        $rangeItem.addEventListener('input', () => {
-            priceFormation();
+        $ranges.forEach($range => {
+            $range.querySelectorAll('input').forEach($rangeItem => {
+                $rangeItem.addEventListener('input', () => {
+                    priceFormation(dataForPriceFormation);
+                });
+            });
         });
-    });
-});
 
-$checkboxes.forEach($checkbox => {
-    $checkbox.querySelectorAll('.product-settings__checkbox').forEach($checkboxItem => {
-        $checkboxItem.addEventListener('input', () => {
-            priceFormation();
+        $checkboxes.forEach($checkbox => {
+            $checkbox.querySelectorAll('.product-settings__checkbox').forEach($checkboxItem => {
+                $checkboxItem.addEventListener('input', () => {
+                    priceFormation(dataForPriceFormation);
+                });
+            });
         });
-    });
+
+        $selects.forEach($select => {
+            $select.querySelector('.product-settings__select').addEventListener('input', () => {
+                priceFormation(dataForPriceFormation);
+            });
+        });
+
+        // Submit and payment
+
+        $form.addEventListener('submit', event => {
+            event.preventDefault();
+
+            if (localStorage.getItem('isLoggedIn') === 'true') {
+                checkToken().then(checkTokenResult => {
+                    if (checkTokenResult) {
+                        // Create sending object
+                        let sendingData = {};
+                        sendingData.radio = {};
+                        sendingData.range = {};
+                        sendingData.checkbox = {};
+                        sendingData.select = {};
+
+                        $radios.forEach($radio => {
+                            $checked = $radio.querySelector('._checked');
+                            const data = dataForPriceFormation.radio[$checked.getAttribute('name')][$checked.getAttribute('value')];
+                            sendingData.radio[String($checked.getAttribute('name'))] = $checked.getAttribute('value');
+                        });
+                        $ranges.forEach($range => {
+                            const delta = ($range.querySelector('.product-settings__input-for-range-max').value - $range.querySelector('.product-settings__input-for-range-min').value);            
+                            sendingData.range[$range.querySelector('input').getAttribute('name')] = delta;
+                        });
+                        $checkboxes.forEach($checkbox => {
+                            sendingData.checkbox[$checkbox.querySelectorAll('.product-settings__checkbox')[0].getAttribute('data-checkbox-name')] = [];
+                            $checkbox.querySelectorAll('.product-settings__checkbox').forEach($checkboxItem => {
+                                if ($checkboxItem.checked) {
+                                    sendingData.checkbox[$checkboxItem.getAttribute('data-checkbox-name')].push($checkboxItem.getAttribute('name'));
+                                }
+                            });
+                        });
+                        $selects.forEach($select => {
+                            const $selectItem = $select.querySelector('.product-settings__select');
+                            sendingData.select[$selectItem.getAttribute('name')] = $selectItem.value;
+
+                            if (dataForPriceFormation.select[$selectItem.getAttribute('name')][$selectItem.value]) {
+                                if (dataForPriceFormation.select[$selectItem.getAttribute('name')][$selectItem.value].is_coef) {
+                                    coef *= dataForPriceFormation.select[$selectItem.getAttribute('name')][$selectItem.value].value;
+                                } else {
+                                    price += dataForPriceFormation.select[$selectItem.getAttribute('name')][$selectItem.value].value;
+                                }
+                            }
+                        });
+
+                        fetch(`${HOST}/api/save_order`, {
+                            method: 'POST', 
+                            credentials: 'include',
+                            body: JSON.stringify({
+                                title: $body.querySelector('.data-title').textContent,
+                                data: sendingData
+                            }),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(async (res) => {
+                            const status = res.status;
+                            const data = await res.json();
+
+                            if (status !== 200) {
+                                $paymentError.classList.add('_shown');
+                                $body.classList.add('_lock')
+                            } else {
+                                localStorage.setItem('order_number', data);
+                                window.location = '../payment.html';
+                            }
+                        })
+                        .catch((error) => {
+                            $paymentError.classList.add('_shown');
+                            $body.classList.add('_lock')
+                            console.error('Fetch error');
+                        });
+
+                    } else {
+                        doExit();
+            
+                        if (!$headerLogInPopup.classList.contains('_shown')) {
+                            $headerLogInPopup.classList.add('_shown');
+                            $body.classList.add('_lock');
+                        }
+                    }
+                });
+            } else {
+                if (!$headerLogInPopup.classList.contains('_shown')) {
+                    $headerLogInPopup.classList.add('_shown');
+                    $body.classList.add('_lock');
+                }
+            }
+        });
+        $productPriceSubmit.forEach($btn => {
+            $btn.addEventListener('click', () => {
+                if (localStorage.getItem('isLoggedIn') === 'true') {
+                    checkToken().then(checkTokenResult => {
+                        if (checkTokenResult) {
+                            // Create sending object
+                            let sendingData = {};
+                            sendingData.radio = {};
+                            sendingData.range = {};
+                            sendingData.checkbox = {};
+                            sendingData.select = {};
+        
+                            $radios.forEach($radio => {
+                                $checked = $radio.querySelector('._checked');
+                                const data = dataForPriceFormation.radio[$checked.getAttribute('name')][$checked.getAttribute('value')];
+                                sendingData.radio[String($checked.getAttribute('name'))] = $checked.getAttribute('value');
+                            });
+                            $ranges.forEach($range => {
+                                const delta = ($range.querySelector('.product-settings__input-for-range-max').value - $range.querySelector('.product-settings__input-for-range-min').value);            
+                                sendingData.range[$range.querySelector('input').getAttribute('name')] = delta;
+                            });
+                            $checkboxes.forEach($checkbox => {
+                                sendingData.checkbox[$checkbox.querySelectorAll('.product-settings__checkbox')[0].getAttribute('data-checkbox-name')] = [];
+                                $checkbox.querySelectorAll('.product-settings__checkbox').forEach($checkboxItem => {
+                                    if ($checkboxItem.checked) {
+                                        sendingData.checkbox[$checkboxItem.getAttribute('data-checkbox-name')].push($checkboxItem.getAttribute('name'));
+                                    }
+                                });
+                            });
+                            $selects.forEach($select => {
+                                const $selectItem = $select.querySelector('.product-settings__select');
+                                sendingData.select[$selectItem.getAttribute('name')] = $selectItem.value;
+        
+                                if (dataForPriceFormation.select[$selectItem.getAttribute('name')][$selectItem.value]) {
+                                    if (dataForPriceFormation.select[$selectItem.getAttribute('name')][$selectItem.value].is_coef) {
+                                        coef *= dataForPriceFormation.select[$selectItem.getAttribute('name')][$selectItem.value].value;
+                                    } else {
+                                        price += dataForPriceFormation.select[$selectItem.getAttribute('name')][$selectItem.value].value;
+                                    }
+                                }
+                            });
+        
+                            fetch(`${HOST}/api/save_order`, {
+                                method: 'POST', 
+                                credentials: 'include',
+                                body: JSON.stringify({
+                                    title: $body.querySelector('.data-title').textContent,
+                                    data: sendingData
+                                }),
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            })
+                            .then(async (res) => {
+                                const status = res.status;
+                                const data = await res.json();
+        
+                                if (status !== 200) {
+                                    $paymentError.classList.add('_shown');
+                                    $body.classList.add('_lock')
+                                } else {
+                                    localStorage.setItem('order_number', data);
+                                    window.location = '../payment.html';
+                                }
+                            })
+                            .catch((error) => {
+                                $paymentError.classList.add('_shown');
+                                $body.classList.add('_lock')
+                                console.error('Fetch error');
+                            });
+        
+                        } else {
+                            doExit();
+                
+                            if (!$headerLogInPopup.classList.contains('_shown')) {
+                                $headerLogInPopup.classList.add('_shown');
+                                $body.classList.add('_lock');
+                            }
+                        }
+                    });
+                } else {
+                    if (!$headerLogInPopup.classList.contains('_shown')) {
+                        $headerLogInPopup.classList.add('_shown');
+                        $body.classList.add('_lock');
+                    }
+                }
+            });
+        });
+    }
+})
+.catch((error) => {
+    console.error('Fetch error: ' + error);
 });
 
-$selects.forEach($select => {
-    $select.querySelector('.product-settings__select').addEventListener('input', () => {
-        priceFormation();
-    });
-});
-
-function priceFormation() {
-    orderDescription = '';
+function priceFormation(dataForPriceFormation) {
     price = dataForPriceFormation.base_price;
     coef = 1;
 
-    orderDescription += 'radio:\n';
     $radios.forEach($radio => {
         $checked = $radio.querySelector('._checked');
         const data = dataForPriceFormation.radio[$checked.getAttribute('name')][$checked.getAttribute('value')];
-
-        orderDescription += `  ${$checked.getAttribute('name')}:\n`;
-        orderDescription += `    ${$checked.getAttribute('value')}:\n`;
 
         if (data.is_coef) {
             coef *= data.value;
@@ -344,13 +445,9 @@ function priceFormation() {
         }
     });
 
-    orderDescription += 'range:\n';
     $ranges.forEach($range => {
         const delta = ($range.querySelector('.product-settings__input-for-range-max').value - $range.querySelector('.product-settings__input-for-range-min').value);
         const maxDelta = $range.querySelector('.product-settings__range-min').getAttribute('max') - $range.querySelector('.product-settings__range-min').getAttribute('min');
-
-        orderDescription += `  ${$range.querySelector('.product-settings__input-for-range-min').getAttribute('name')}:\n`;
-        orderDescription += `    ${$range.querySelector('.product-settings__range-min').getAttribute('min')} - ${$range.querySelector('.product-settings__range-min').getAttribute('max')}\n`;
 
         if (dataForPriceFormation.range[$range.querySelector('.product-settings__input-for-range-min').getAttribute('name')].is_coef) {
             if (delta >= 1 && delta <= maxDelta) {
@@ -363,16 +460,9 @@ function priceFormation() {
         }
     });
 
-    orderDescription += 'checkbox:\n';
     $checkboxes.forEach($checkbox => {
-        let tempTitle = '';
-        let tempSubtitle = '';
-
         $checkbox.querySelectorAll('.product-settings__checkbox').forEach($checkboxItem => {
             if ($checkboxItem.checked) {
-                tempTitle = '  ' + String($checkboxItem.getAttribute('data-checkbox-name')) + '\n'; 
-                tempSubtitle += '    ' + String($checkboxItem.getAttribute('name')) + '\n';
-
                 if (dataForPriceFormation.checkbox[$checkboxItem.getAttribute('data-checkbox-name')][$checkboxItem.getAttribute('name')].is_coef) {
                     coef *= dataForPriceFormation.checkbox[$checkboxItem.getAttribute('data-checkbox-name')][$checkboxItem.getAttribute('name')].value;
                 } else {
@@ -380,17 +470,10 @@ function priceFormation() {
                 }
             }
         });
-
-        orderDescription += tempTitle;
-        orderDescription += tempSubtitle;
     });
 
-    orderDescription += 'select:\n';
     $selects.forEach($select => {
         const $selectItem = $select.querySelector('.product-settings__select');
-
-        orderDescription += `  ${$selectItem.getAttribute('name')}:\n`;
-        orderDescription += `    ${$selectItem.value}:\n`;
 
         if (dataForPriceFormation.select[$selectItem.getAttribute('name')][$selectItem.value]) {
             if (dataForPriceFormation.select[$selectItem.getAttribute('name')][$selectItem.value].is_coef) {
@@ -408,114 +491,14 @@ function priceFormation() {
     $productPricesRu[1].textContent = (price * 76).toFixed(2);
 }
 
-// Submit and payment
+// Show error
 
-const $form = $body.querySelector('.product-settings__form');
-
-$form.addEventListener('submit', event => {
-    event.preventDefault();
-
-    if (localStorage.getItem('isLoggedIn') === 'true') {
-        checkToken().then(checkTokenResult => {
-            if (checkTokenResult) {
-                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                fetch(`${HOST}/api/send_email_code`, {
-                    method: 'POST', 
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        price: price, 
-                        description: orderDescription
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(async (res) => {
-                    const status = res.status;
-                    const data = await res.json();
-                    if (status !== 200) {
-                        
-                    } else {
-                        
-                    }
-                })
-                .catch((error) => {
-                    $headerSignUpErrorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
-                    console.error('Fetch error');
-                });
-
-            } else {
-                doExit();
-    
-                if (!$headerLogInPopup.classList.contains('_shown')) {
-                    $headerLogInPopup.classList.add('_shown');
-                    $body.classList.add('_lock');
-                }
-            }
-        });
-    } else {
-        if (!$headerLogInPopup.classList.contains('_shown')) {
-            $headerLogInPopup.classList.add('_shown');
-            $body.classList.add('_lock');
+const $paymentError = $body.querySelector('.payment-error');
+window.addEventListener('click', (event) => {
+    if ($paymentError.classList.contains('_shown')) {
+        if (!event.target.closest('.payment-error__container') || event.target.classList.contains('payment-error__btn')) {
+            $paymentError.classList.remove('_shown');
+            $body.classList.remove('_lock');
         }
     }
 });
-
-// REVIEW 
-
-//Review slider
-
-const $content = $body.querySelector('.content');
-const $reviewContentContainer = $body.querySelector('.reviews__content-container');
-let $reviewsArray = $reviewContentContainer.querySelectorAll('.review');
-
-const countReview = $reviewsArray.length;
-let contentWidth = $content.clientWidth - 30;
-let reviewWidth = $reviewsArray[0].clientWidth;
-let countReviewInContainer = ((contentWidth % reviewWidth) / (Math.floor(contentWidth / reviewWidth) - 1) >= 10) ? Math.floor(contentWidth / reviewWidth) : Math.floor(contentWidth / reviewWidth) - 1;
-let reviewGap = ((contentWidth - (reviewWidth * countReviewInContainer)) / (countReviewInContainer - 1) < 25) ? (contentWidth - (reviewWidth * countReviewInContainer)) / (countReviewInContainer - 1) : 25;
-let sidePadding = (contentWidth - (countReviewInContainer * reviewWidth + reviewGap * (countReviewInContainer - 1))) / 2;
-
-$reviewContentContainer.style.width = `${(contentWidth - sidePadding * 2 > contentWidth) ? contentWidth : contentWidth - sidePadding * 2}px`;
-$reviewContentContainer.style.height = `${$reviewsArray[0].clientHeight}px`;
-$reviewsArray[0].style.left = `-${reviewWidth + reviewGap}px`
-$reviewsArray[1].style.left = `${0}px`
-for (let i = 0; i < countReviewInContainer - 1; i++) {
-    $reviewsArray[i + 2].style.left = `${(reviewWidth + reviewGap) * (i + 1)}px`
-}
-for (let i = 0; i < countReview - countReviewInContainer - 1; i++) {
-    $reviewsArray[countReviewInContainer + i + 1].style.left = `${(reviewWidth + reviewGap) * countReviewInContainer}px`
-}
-
-window.addEventListener('resize', () => {
-    setTimeout(() => {
-        contentWidth = $content.clientWidth - 30;
-        reviewWidth = $reviewsArray[0].clientWidth;
-        countReviewInContainer = ((contentWidth % reviewWidth) / (Math.floor(contentWidth / reviewWidth) - 1) >= 10) ? Math.floor(contentWidth / reviewWidth) : Math.floor(contentWidth / reviewWidth) - 1;
-        reviewGap = ((contentWidth - (reviewWidth * countReviewInContainer)) / (countReviewInContainer - 1) < 25) ? (contentWidth - (reviewWidth * countReviewInContainer)) / (countReviewInContainer - 1) : 25;
-        sidePadding = (contentWidth - (countReviewInContainer * reviewWidth + reviewGap * (countReviewInContainer - 1))) / 2;
-
-        $reviewContentContainer.style.width = `${(contentWidth - sidePadding * 2 > contentWidth) ? contentWidth : contentWidth - sidePadding * 2}px`;
-        $reviewContentContainer.style.height = `${$reviewsArray[0].clientHeight}px`;
-        $reviewsArray[0].style.left = `-${reviewWidth + reviewGap}px`
-        $reviewsArray[1].style.left = `${0}px`
-        for (let i = 0; i < countReviewInContainer - 1; i++) {
-            $reviewsArray[i + 2].style.left = `${(reviewWidth + reviewGap) * (i + 1)}px`
-        } 
-        for (let i = 0; i < countReview - countReviewInContainer - 1; i++) {
-            $reviewsArray[countReviewInContainer + i + 1].style.left = `${(reviewWidth + reviewGap) * countReviewInContainer}px`
-        }
-    }, 500);
-})
-
-setInterval(slide, 5000);
-
-function slide() {
-    for (let i = 0; i < countReviewInContainer + 1; i++) {
-        $reviewsArray[i + 1].style.left = `${parseInt($reviewsArray[i + 1].style.left) - (reviewWidth + reviewGap)}px`;
-    }
-    
-    $reviewsArray[0].style.left = `${(reviewWidth + reviewGap) * countReviewInContainer}px`
-    $reviewContentContainer.append($reviewsArray[0]);
-    $reviewsArray = $reviewContentContainer.querySelectorAll('.review');
-}

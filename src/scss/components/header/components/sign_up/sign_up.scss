@@ -12,7 +12,7 @@
     transition-duration: 300ms;
     overflow: scroll;
 
-    &._show {
+    &._shown {
         opacity: 1;
         visibility: visible;
     }

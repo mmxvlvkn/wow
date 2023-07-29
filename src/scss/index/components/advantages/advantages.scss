@@ -5,7 +5,9 @@
     margin-bottom: calc_percent(41, 1600);
     width: 100%;
     @extend %shadow;
-    background-color: $color_1;
+    //background-color: $color_1;
+    background: 0 0/100% auto url('../img/components/index/main.png');
+
     border-radius: calc_rem(5);
 
     &__title {

@@ -1,6 +1,7 @@
 body {
     font-family: Roboto, sans-serif;
     font-weight: 500;
+    overflow-x: hidden;
 
     &._lock {
         overflow: hidden;
@@ -19,7 +20,7 @@ body {
 
 main {
     padding-bottom: calc_percent(40, 1600);
-    background: 0 0 / 100% auto url('../img/components/index/main_bgr.png');
+    background: 0 0 / 100% auto url('../img/components/index/main_bgr.jpg');
 }
 
 .flex-vc {
@@ -47,15 +48,24 @@ main {
     display: none;
 }
 
-.ru._show {
+.ru._shown {
     display: block;
 }
-.ru._hide {
+.ru._hidden {
     display: none;
 }
-.en._show {
+.en._shown {
     display: block;
 }
-.en._hide {
+.en._hidden {
     display: none;
+}
+.hidden {
+    display: none;
+}
+
+.on-duty {
+    width: calc_rem(1);
+    height: calc_rem(1);
+    opacity: 0;
 }

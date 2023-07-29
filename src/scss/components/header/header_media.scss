@@ -26,7 +26,7 @@
     }
     .left-row {
         &__state-btn {
-            padding: 0;
+            padding: 0 !important;
             background-color: inherit;
             font-weight: normal;
         }
@@ -84,7 +84,7 @@
         transition-duration: 300ms;
         background-color: $color_1;
 
-        &._show {
+        &._shown {
             opacity: 1;
             visibility: visible;
             right: 0;

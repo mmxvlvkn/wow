@@ -9,7 +9,8 @@
         flex: 1 1 auto;
         padding: calc_rem(40) calc_rem(25);
         color: white;
-        background-color: $color_1;
+        text-shadow: 0 0 calc_rem(6) rgba($color: rgb(0, 0, 0), $alpha: 1);
+        background: 0 20%/auto 100% url('../img/components/services/wow_bw.jpg') no-repeat;
         @extend %shadow;
         border-radius: calc_rem(5);
         max-width: calc_rem(500);

@@ -5,11 +5,22 @@ const COLOR_2 = '#564fff';
 
 // Login visualization in header when visiting the site
 
+const $HeaderContactsBtn = document.querySelector('.left-row__contacts-btn');
+const $adminBtn = document.querySelector('.header__admin');
+
 document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('isLoggedIn') === 'true') {
         checkToken().then(checkTokenResult => {
             if (checkTokenResult) {
                 doLogin();
+
+                checkAdmin().then(checkAdminResult => {
+                    console.log(checkAdminResult)
+                    if (checkAdminResult) {
+                        $adminBtn.classList.add('_shown');
+                        $HeaderContactsBtn.classList.add('_hidden');
+                    }
+                });
             } else {
                 localStorage.setItem('isLoggedIn', 'false');
             }
@@ -43,10 +54,33 @@ async function checkToken() {
     return result;
 }
 
+async function checkAdmin() {
+    let result;
+
+    await fetch(`${HOST}/api/is_admin`, {
+        method: 'GET', 
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(async (res) => {
+        if (res.status !== 200) {
+            result = false;
+        } else {
+            result = true;
+        }
+    })
+    .catch((error) => {
+        console.error('Check admin error');
+    });
+
+    return result;
+}
+
 // Show contacts
 
 const $body = document.querySelector('body')
-const $HeaderContactsBtn = $body.querySelector('.left-row__state-btn');
 const $HeaderContactsList = $body.querySelector('.left-row__state-list');
 
 $HeaderContactsBtn.addEventListener('click', () => {
@@ -115,34 +149,34 @@ function languageChanges() {
 
     if (currentLanguage === 'en') {
         $enTextArray.forEach($item => {
-            $item.classList.add('_show');
+            $item.classList.add('_shown');
 
-            if ($item.classList.contains('_hide')) {
-                $item.classList.remove('_hide');
+            if ($item.classList.contains('_hidden')) {
+                $item.classList.remove('_hidden');
             }
         });
 
         $ruTextArray.forEach($item => {
-            $item.classList.add('_hide');
+            $item.classList.add('_hidden');
 
-            if ($item.classList.contains('_show')) {
-                $item.classList.remove('_show');
+            if ($item.classList.contains('_shown')) {
+                $item.classList.remove('_shown');
             }
         });
     } else {
         $ruTextArray.forEach($item => {
-            $item.classList.add('_show');
+            $item.classList.add('_shown');
 
-            if ($item.classList.contains('_hide')) {
-                $item.classList.remove('_hide');
+            if ($item.classList.contains('_hidden')) {
+                $item.classList.remove('_hidden');
             }
         });
 
         $enTextArray.forEach($item => {
-            $item.classList.add('_hide');
+            $item.classList.add('_hidden');
 
-            if ($item.classList.contains('_show')) {
-                $item.classList.remove('_show');
+            if ($item.classList.contains('_shown')) {
+                $item.classList.remove('_shown');
             }
         });
     }
@@ -240,9 +274,9 @@ function headerAdoptiveMore608() {
 // Show burger list
 
 $headerBurgerButton.addEventListener('click', () => {
-    $headerBurgerList.classList.toggle('_show');
+    $headerBurgerList.classList.toggle('_shown');
 
-    if ($headerBurgerList.classList.contains('_show')) {
+    if ($headerBurgerList.classList.contains('_shown')) {
         $body.classList.add('_lock');
     } else {
         $body.classList.remove('_lock');
@@ -250,9 +284,9 @@ $headerBurgerButton.addEventListener('click', () => {
 });
 
 window.addEventListener( 'click', (event) => {
-    if ($headerBurgerList.classList.contains('_show')) {
+    if ($headerBurgerList.classList.contains('_shown')) {
         if (!event.target.closest('.burger') && !event.target.closest('.header__sign-up-popup')) {
-            $headerBurgerList.classList.remove('_show');
+            $headerBurgerList.classList.remove('_shown');
             $body.classList.remove('_lock');
         }
     }
@@ -282,9 +316,9 @@ const $headerSignUpCloseBtn = $headerSignUpPopup.querySelector('.sign-up__close'
 
 
 $headerRightRowReg.addEventListener('click', () => {
-    $headerSignUpPopup.classList.toggle('_show');
+    $headerSignUpPopup.classList.toggle('_shown');
 
-    if ($headerSignUpPopup.classList.contains('_show')) {
+    if ($headerSignUpPopup.classList.contains('_shown')) {
         $body.classList.add('_lock');
     } else {
         $body.classList.remove('_lock');
@@ -292,17 +326,17 @@ $headerRightRowReg.addEventListener('click', () => {
 });
 
 window.addEventListener( 'click', (event) => {
-    if ($headerSignUpPopup.classList.contains('_show')) {
+    if ($headerSignUpPopup.classList.contains('_shown')) {
         if (!event.target.closest('.sign-up__container') && !event.target.closest('.right-row__reg')) {
-            $headerSignUpPopup.classList.remove('_show');
+            $headerSignUpPopup.classList.remove('_shown');
             $body.classList.remove('_lock');
         }
     }
 });
 
 $headerSignUpCloseBtn.addEventListener('click', () => {
-    if ($headerSignUpPopup.classList.contains('_show')) {
-        $headerSignUpPopup.classList.remove('_show');
+    if ($headerSignUpPopup.classList.contains('_shown')) {
+        $headerSignUpPopup.classList.remove('_shown');
         $body.classList.remove('_lock');
     }
 });
@@ -466,9 +500,12 @@ removeRedBorder($headerSignUpTlg);
 removeRedBorder($headerSignUpPassword);
 removeRedBorder($headerSignUpRepeatPassword);
 
-function removeRedBorder($input) {
-    $input.addEventListener('focus', () => {
-        $input.style.border = `2px solid ${COLOR_2}`;
+function removeRedBorder($input1, $input2) {
+    $input1.addEventListener('focus', () => {
+        $input1.style.border = `2px solid ${COLOR_2}`;
+        if ($input2) {
+            $input2.style.border = `2px solid ${COLOR_2}`;
+        }
     });
 }
 
@@ -499,7 +536,7 @@ const $headerSignUpCodeInput = $headerSignUpFormActv.querySelector('.sign-up__co
 const $headerSignUpCodeError = $headerSignUpFormActv.querySelector('.sign-up__code-error-message');
 
 $headerSignUpReorderBtn.addEventListener('click', () => {
-    if (!$headerSignUpReorderBtn.classList.contains('_disables')) {
+    if (!$headerSignUpReorderBtn.classList.contains('_disabled')) {
         resendMessageCounterForSingUp = makeSendButtonInactive($headerSignUpReorderCounter, $headerSignUpReorderBtn);
 
         fetch(`${HOST}/api/send_code_again`, {
@@ -580,7 +617,7 @@ $headerSignUpFormActv.addEventListener('submit', (event) => {
                 $headerSignUpActivation.classList.remove('_shown');
                 $headerSignUpBackBtn.classList.remove('_shown');
 
-                $headerSignUpPopup.classList.remove('_show');
+                $headerSignUpPopup.classList.remove('_shown');
                 $body.classList.remove('_lock');
 
                 clearInterval(resendMessageCounterForSingUp);
@@ -600,6 +637,7 @@ $headerSignUpFormActv.addEventListener('submit', (event) => {
 // Make the send button inactive
 
 function makeSendButtonInactive($counter, $btn) {
+    //!!!!!!!!!
     $btn.classList.add('_disabled');
 
     let countOfSeconsd = 2 * 60;
@@ -645,6 +683,13 @@ function doLogin() {
     $headerRightRowLog.classList.add('_hidden');
     $headerRightRowExit.classList.add('_shown');
     $headerRightRowAccount.classList.add('_shown');
+
+    checkAdmin().then(checkAdminResult => {
+        if (checkAdminResult) {
+            $adminBtn.classList.add('_shown');
+            $HeaderContactsBtn.classList.add('_hidden');
+        }
+    });
 }
 
 // Exit visualization in header
@@ -654,6 +699,11 @@ function doExit() {
     $headerRightRowLog.classList.remove('_hidden');
     $headerRightRowExit.classList.remove('_shown');
     $headerRightRowAccount.classList.remove('_shown');
+
+    if ($adminBtn.classList.contains('_shown')) {
+        $adminBtn.classList.remove('_shown');
+        $HeaderContactsBtn.classList.remove('_hidden');
+    }
 }
 
 // LOG_IN
@@ -941,7 +991,6 @@ $headerLogInCodeForm.addEventListener('submit', (event) => {
     }
 });
 
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // Send new password
 
 const $headerLogInNewPassForm = $headerLogInNewPassContainer.querySelector('.log-in__new-pass-form');
