@@ -1,7 +1,11 @@
 const $accountOrders = $body.querySelector('.account__orders');
 
+// Product display
+
 window.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('isLoggedIn') === 'true') {
+        // Main product display
+
         fetch(`${HOST}/api/get_user_products`, {
             method: 'GET', 
             credentials: 'include',
@@ -21,6 +25,8 @@ window.addEventListener('DOMContentLoaded', () => {
             } else {
                 if (data.length) {
                     data.forEach(product => {
+                        // Main product parse
+
                         let $productArticle = document.createElement('article');
                         $productArticle.className = "account__order order-item";
                         const $productDate = document.createElement('div');
@@ -147,6 +153,8 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         })
         .then(() => {
+            // Other products display
+
             fetch(`${HOST}/api/get_user_other_products`, {
                 method: 'GET', 
                 credentials: 'include',
@@ -161,6 +169,8 @@ window.addEventListener('DOMContentLoaded', () => {
                     console.error('Bad status');
                 } else {
                     if (data.length) {
+                        // Other product parse
+
                         const $subtitle = document.createElement('h2');
                         $subtitle.className = "account__subtitle";
                         let $subtitleSpan = document.createElement('span');
@@ -258,8 +268,10 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Check validation of data
+
 function stringIsValid(str) {
-    if (str.includes(':') && str.includes(',') && str.indexOf(':') < str.indexOf(',')) {
+    if (str.includes(':') && str.includes(',') && (str.indexOf(':') < str.indexOf(','))) {
         while (str.length) {
             str = str.slice(str.match(/^([\s\S]+?):/)[1].length + 1);
             if (str.indexOf(':') != -1) {
@@ -271,3 +283,58 @@ function stringIsValid(str) {
     }
     return false;
 }
+
+// Navigation on page
+
+const $accountSubtitles = $body.querySelectorAll('.account__subtitle');
+const $accountSubtitleOrders = $body.querySelector('.account__subtitle-orders');
+const $accountSubtitleSettings = $body.querySelector('.account__subtitle-settings');
+const $accountSubtitleSetPass = $body.querySelector('.account__subtitle-set-pass');
+//? $accountOrders
+const $accountSettings = $body.querySelector('.account__settings');
+const $accountSetPass = $body.querySelector('.account__set-pass');
+
+// Show selected subpage after load
+if ($accountSubtitleOrders.classList.contains('_selected')) {
+    $accountOrders.style.display = 'block';
+    $accountSettings.style.display = 'none';
+    $accountSetPass.style.display = 'none';
+} else if ($accountSubtitleSettings.classList.contains('_selected')) {
+    $accountOrders.style.display = 'none';
+    $accountSettings.style.display = 'block';
+    $accountSetPass.style.display = 'none';
+} else if ($accountSubtitleSetPass.classList.contains('_selected')) {
+    $accountOrders.style.display = 'none';
+    $accountSettings.style.display = 'none';
+    $accountSetPass.style.display = 'block';
+}
+
+// Change selected subpage
+$accountSubtitles.forEach($elem => {
+    $elem.addEventListener('click', () => {
+        if (!$elem.classList.contains('_selected')) {
+            $accountSubtitles.forEach($item => {
+                if ($item.classList.contains('_selected')) {
+                    $item.classList.remove('_selected');
+                }
+            });
+
+            $elem.classList.add('_selected');
+
+            // Show selected subpage
+            if ($accountSubtitleOrders.classList.contains('_selected')) {
+                $accountOrders.style.display = 'block';
+                $accountSettings.style.display = 'none';
+                $accountSetPass.style.display = 'none';
+            } else if ($accountSubtitleSettings.classList.contains('_selected')) {
+                $accountOrders.style.display = 'none';
+                $accountSettings.style.display = 'block';
+                $accountSetPass.style.display = 'none';
+            } else if ($accountSubtitleSetPass.classList.contains('_selected')) {
+                $accountOrders.style.display = 'none';
+                $accountSettings.style.display = 'none';
+                $accountSetPass.style.display = 'block';
+            }
+        }
+    });
+});

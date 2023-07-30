@@ -16,16 +16,28 @@
         font-size: calc_rem(36);
     }
     &__subtitle {
-        padding-bottom: calc_rem(5);
-        margin-bottom: calc_rem(-1);
+        padding-bottom: calc_rem(4);
+        margin-bottom: calc_rem(-2);
+        border-bottom: 2px solid rgba(white, 0);
         display: block;
         font-size: calc_rem(28);
         transition-duration: 300ms;
 
+        &:hover {
+            color: $color_4;
+        }
+
         &._selected {
             border-bottom: 2px solid $color_7;
             color: $color_7;
+
+            &:hover {
+                color: $color_7;
+            }
         }
+    }
+    &__subpage {
+        display: none;
     }
     &__orders {
         margin-bottom: calc_rem(15);
