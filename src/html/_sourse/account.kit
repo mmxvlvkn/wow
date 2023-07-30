@@ -13,9 +13,40 @@
             <!-- @import "components/header/header.kit" -->
             <main class="account__main">
                 <div class="content">
-                    <h1 class="account__title"><span class="en">Account</span><span class="ru">Аккаунт</span></h1>
-                    <h2 class="account__subtitle"><span class="en">Orders</span><span class="ru">Заказы</span></h2>
+                    <h1 class="account__title"><span class="en">My account</span><span class="ru">Мой аккаунт</span></h1>
+                    <nav class="account__nav">
+                        <button type="button" class="account__subtitle account__subtitle-orders"><span class="en">Orders</span><span class="ru">Заказы</span></button>
+                        <button type="button" class="account__subtitle account__subtitle-settings  _selected"><span class="en">Main settings</span><span class="ru">Основные настройки</span></button>
+                        <button type="button" class="account__subtitle account__subtitle-set-pass"><span class="en">Set password</span><span class="ru">Изменить пароль</span></button>
+                    </nav>
                     <div class="account__orders"></div>
+                    <div class="account__settings">
+                        <div class="account__setting account__setting-nickname">
+                            <form action="#" class="account__form account__form-nickname">
+                                <laber class="account__setting-label" for="account_nickname"><span class="en">Nickname</span><span class="ru">Никнейм</span></laber>
+                                <input readonly id="account_nickname" type="text" class="account__setting-input account__setting-input-nickname">
+                                <button type="button" class="account__setting-set account__setting-set-nickname"><span class="en">Set</span><span class="ru">Изменить</span></button>
+                                <button type="submit" class="account__setting-submit"><span class="en">Confirm</span><span class="ru">Подтвердить</span></button>
+                            </form>
+                        </div>
+                        <div class="account__setting account__setting-email">
+                            <form action="#" class="account__form account__form-email">
+                                <laber class="account__setting-label" for="account_email"><span class="en">Email</span><span class="ru">Эл. почта</span></laber>
+                                <input readonly id="account_email" type="text" class="account__setting-input account__setting-input-email">
+                                <button type="button" class="account__setting-set account__setting-set-email"><span class="en">Set</span><span class="ru">Изменить</span></button>
+                                <button type="submit" class="account__setting-submit"><span class="en">Confirm</span><span class="ru">Подтвердить</span></button>
+                            </form>
+                        </div>
+                        <div class="account__setting account__setting-tlg">
+                            <form action="#" class="account__form account__form-tlg">
+                                <laber class="account__setting-label" for="account_tlg"><span class="en">Telegram</span><span class="ru">Telegram</span></laber>
+                                <input readonly id="account_tlg" type="text" placeholder="@telegram" class="account__setting-input account__setting-input-tlg">
+                                <button type="button" class="account__setting-set account__setting-set-tlg"><span class="en">Set</span><span class="ru">Изменить</span></button>
+                                <button type="submit" class="account__setting-submit"><span class="en">Confirm</span><span class="ru">Подтвердить</span></button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="account__set-pass">kek</div>
                 </div>
             </main>
             <!-- @import "components/footer/footer.kit" -->

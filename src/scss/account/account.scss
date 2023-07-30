@@ -12,17 +12,136 @@
         flex-shrink: 0;
     }
     &__title {
-        margin-bottom: calc_rem(8);
+        margin-bottom: calc_rem(30);
         font-size: calc_rem(36);
     }
     &__subtitle {
+        padding-bottom: calc_rem(5);
+        margin-bottom: calc_rem(-1);
+        display: block;
         font-size: calc_rem(28);
-        margin-bottom: calc_rem(20);
+        transition-duration: 300ms;
+
+        &._selected {
+            border-bottom: 2px solid $color_7;
+            color: $color_7;
+        }
     }
     &__orders {
         margin-bottom: calc_rem(15);
     }
     &__order {}
+    &__nav {
+        display: inline-flex;
+        margin-bottom: calc_rem(15);
+        gap: calc_rem(40);
+        border-bottom: 1px solid white;
+    }
+    &__subtitle-orders {}
+    &__subtitle-settings {}
+    &__subtitle-set-pass {}
+    &__settings {}
+    &__setting {
+        margin-bottom: calc_rem(10);
+        padding: calc_rem(5);
+        padding-left: calc_rem(40);
+        display: flex;
+        align-items: center;
+        height: calc_rem(120);
+        max-width: calc_rem(600);
+        border-radius: calc_rem(3);
+        color: black;
+
+        &:last-child {
+            margin-bottom: calc_rem(0);
+        }
+    }
+    &__setting-nickname {
+        background-color: white;
+        
+    }
+    &__form {
+        display: grid;
+        align-items: center;
+        grid-template-columns: calc_rem(100) calc_rem(220) auto;
+        gap: calc_rem(40);
+    }
+    &__form-nickname {}
+    &__setting-label {
+        font-size: calc_rem(20);
+        font-weight: 700;
+    }
+    &__setting-input {
+        border-bottom: 2px solid $color_2;
+        padding: calc_rem(2);
+        padding-left: calc_rem(10);
+        font-size: calc_rem(20);
+        width: calc_rem(220);
+        height: calc_rem(35);
+        border-radius: calc_rem(2) calc_rem(2) 0 0;
+        background-color: rgba($color_6, 0.1);
+        color: black;
+    }
+    &__setting-input-nickname {}
+    &__setting-set {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: calc_rem(130);
+        height: calc_rem(45);
+        border-radius: calc_rem(4);
+        color: white;
+        font-size: calc_rem(18);
+        font-weight: 500;
+        background-color: $color_2;
+        box-shadow: 0 0 3px 1px rgba(black, 0.1);
+
+        &:hover {
+            background-color: $color_2_hover;
+        }
+
+        &:active {
+            background-color: $color_2_active;
+        }
+    }
+    &__setting-set-nickname {}
+    &__setting-submit {
+        display: flex;
+                //!
+                display: none;
+        justify-content: center;
+        align-items: center;
+        width: calc_rem(130);
+        height: calc_rem(45);
+        border-radius: calc_rem(4);
+        color: white;
+        font-size: calc_rem(18);
+        font-weight: 500;
+        background-color: $color_2;
+        box-shadow: 0 0 3px 1px rgba(black, 0.1);
+        
+        &:hover {
+            background-color: $color_2_hover;
+        }
+
+        &:active {
+            background-color: $color_2_active;
+        }
+    }
+    &__setting-email {
+        background-color: #c5c5c5;
+    }
+    &__form-email {}
+    &__setting-input-email {
+    }
+    &__setting-set-email {}
+    &__setting-tlg {
+        background-color: white;
+    }
+    &__form-tlg {}
+    &__setting-input-tlg {}
+    &__setting-set-tlg {}
+    &__set-pass {}
 }
 
 .order-item {
@@ -57,6 +176,7 @@
     &__option:nth-child(6) {
         width: calc_rem(240);
     }
+    
 }
 
 .order-item:nth-child(odd) {
