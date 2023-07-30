@@ -24,7 +24,10 @@
                         <div class="account__setting account__setting-nickname">
                             <form action="#" class="account__form account__form-nickname">
                                 <laber class="account__setting-label" for="account_nickname"><span class="en">Nickname</span><span class="ru">Никнейм</span></laber>
-                                <input readonly id="account_nickname" type="text" class="account__setting-input account__setting-input-nickname">
+                                <div class="account__setting-input-container">
+                                    <input value="" readonly id="account_nickname" type="text" class="account__setting-input account__setting-input-nickname">
+                                    <p class="account__setting-error account__setting-error-nickname"></p>
+                                </div>
                                 <button type="button" class="account__setting-set account__setting-set-nickname"><span class="en">Set</span><span class="ru">Изменить</span></button>
                                 <button type="submit" class="account__setting-submit"><span class="en">Confirm</span><span class="ru">Подтвердить</span></button>
                             </form>
@@ -32,7 +35,10 @@
                         <div class="account__setting account__setting-email">
                             <form action="#" class="account__form account__form-email">
                                 <laber class="account__setting-label" for="account_email"><span class="en">Email</span><span class="ru">Эл. почта</span></laber>
-                                <input readonly id="account_email" type="text" class="account__setting-input account__setting-input-email">
+                                <div class="account__setting-input-container">
+                                    <input readonly id="account_email" type="text" class="account__setting-input account__setting-input-email">
+                                    <p class="account__setting-error account__setting-error-email"></p>
+                                </div>
                                 <button type="button" class="account__setting-set account__setting-set-email"><span class="en">Set</span><span class="ru">Изменить</span></button>
                                 <button type="submit" class="account__setting-submit"><span class="en">Confirm</span><span class="ru">Подтвердить</span></button>
                             </form>
@@ -40,7 +46,10 @@
                         <div class="account__setting account__setting-tlg">
                             <form action="#" class="account__form account__form-tlg">
                                 <laber class="account__setting-label" for="account_tlg"><span class="en">Telegram</span><span class="ru">Telegram</span></laber>
-                                <input readonly id="account_tlg" type="text" placeholder="@telegram" class="account__setting-input account__setting-input-tlg">
+                                <div class="account__setting-input-container">
+                                    <input readonly id="account_tlg" type="text" placeholder="@telegram" class="account__setting-input account__setting-input-tlg">
+                                    <p class="account__setting-error account__setting-error-tlg"></p>
+                                </div>
                                 <button type="button" class="account__setting-set account__setting-set-tlg"><span class="en">Set</span><span class="ru">Изменить</span></button>
                                 <button type="submit" class="account__setting-submit"><span class="en">Confirm</span><span class="ru">Подтвердить</span></button>
                             </form>

@@ -83,6 +83,16 @@
         font-size: calc_rem(20);
         font-weight: 700;
     }
+    &__setting-input-container {
+        position: relative;
+    }
+    &__setting-error {
+        position: absolute;
+        font-size: calc_rem(10);
+        color: red;
+        left: calc_rem(0);
+        top: 102%;
+    }
     &__setting-input {
         border-bottom: 2px solid $color_2;
         padding: calc_rem(2);
@@ -200,4 +210,12 @@
     .order-item__option {
         background-color: #c5c5c5;
     }
+}
+
+.account {
+    &__setting-input-container {}
+    &__setting-input {}
+    &__setting-input-nickname {}
+    &__setting-error {}
+    &__setting-error-nickname {}
 }

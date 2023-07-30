@@ -338,3 +338,114 @@ $accountSubtitles.forEach($elem => {
         }
     });
 });
+
+// Getting info about user 
+fetch(`${HOST}/api/get_user_info`, {
+    method: 'GET', 
+    credentials: 'include',
+    headers: {
+        'Content-Type': 'application/json'
+    }
+})
+.then(async (res) => {
+    const status = res.status;
+    const data = await res.json();
+
+    if (status !== 200) {
+        try {
+            $body.querySelectorAll('.account__setting-error').forEach($errorMessage => {
+                $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+            });
+        } catch (error) {
+            console.error('Error: ' + error);
+        }
+    } else {
+        $body.querySelector('.account__setting-input-nickname').value = data.nickname;
+        $body.querySelector('.account__setting-input-email').value = data.email;
+        $body.querySelector('.account__setting-input-tlg').value = data.tlg;
+    }
+})
+.catch((error) => {
+    $body.querySelectorAll('.account__setting-error').forEach($errorMessage => {
+        $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';
+    });
+    console.error('Fetch error: ' + error);
+});
+
+// Change user parameters
+$body.querySelectorAll('.account__form').forEach($form => {
+    changeUserParameter($form);
+});
+
+// Change user parameter function
+function changeUserParameter($form) {
+    const $input = $form.querySelector('.account__setting-input');
+    const $setBtn = $form.querySelector('.account__setting-set');
+    const $submitDtn = $form.querySelector('.account__setting-submit');
+    const $errorMessage = $form.querySelector('.account__setting-error');
+    console.log($errorMessage)
+
+    $setBtn.addEventListener('click', () => {
+        $setBtn.style.display = 'none';
+        $submitDtn.style.display = 'block';
+
+        $input.removeAttribute('readonly');
+        $input.value = '';
+        $input.focus();
+    });
+
+    $input.addEventListener('focus', () => {
+        if ($errorMessage.textContent) {
+            $input.style.border = '';
+            $errorMessage.textContent = '';
+        }
+    });
+    $input.addEventListener('input', () => {
+        if ($errorMessage.textContent) {
+            $input.style.border = '';
+            $errorMessage.textContent = '';
+        }
+    });
+
+    $form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        if ($input.classList.contains('account__setting-input-nickname')) {
+            if (!(/^[a-zA-Z][a-zA-Z0-9-_\.]{1,20}$/.test($input.value))) {
+                $input.style.border = '2px solid red';
+                $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect nickname' : 'Неккоректный никнейм';
+            }
+        } else {
+            fetch(`${HOST}/api/change_user_nickname`, {
+                method: 'POST', 
+                credentials: 'include',
+                body: JSON.stringify({
+                    newNickname: $input.value,
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(async (res) => {
+                const status = res.status;
+                const data = await res.json();
+    
+                if (status !== 200) {
+                    try {
+                        $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                    } catch (error) {
+                        console.error('Error: ' + error);
+                    }
+                } else {
+                    $input.addAttribute('readonly');
+                    $errorMessage.style.color = '#33CC66';
+                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
+                }
+            })
+            .catch((error) => {
+                $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                console.error('Fetch error: ' + error);
+            });
+        }
+    });
+}

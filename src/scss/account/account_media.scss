@@ -103,8 +103,10 @@
             display: block;
             margin-bottom: calc_rem(2);
         }
-        &__setting-input {
+        &__setting-input-container {
             margin-bottom: calc_rem(25);
+        }
+        &__setting-input {
         }
         &__setting-input-nickname {}
         &__setting-set {
