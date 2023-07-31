@@ -1,5 +1,5 @@
 const database = require('../database/database.js');
-const cookieService = require('../services/cookie_service.js');
+const tokenService = require('../services/token_service.js');
 const jwt = require('jsonwebtoken');
 const ress = require('../services/response_service.js');
 require('dotenv').config();
@@ -12,7 +12,7 @@ class adminController {
 
     async isAdmin(req, res) {
         try {
-            const tokenFromReq = cookieService.findCookieByKey(req, 'token');
+            const tokenFromReq = tokenService.getToken(req);
 
             try {
                 const data = jwt.verify(tokenFromReq, secret);

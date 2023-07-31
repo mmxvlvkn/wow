@@ -1,5 +1,5 @@
 const database = require('../database/database.js');
-const cookieService = require('../services/cookie_service.js');
+const tokenService = require('../services/token_service.js');
 const jwt = require('jsonwebtoken');
 const ress = require('../services/response_service.js');
 require('dotenv').config();
@@ -12,7 +12,7 @@ class productController {
 
     async saveOrder(req, res) {
         try {
-            const tokenFromReq = cookieService.findCookieByKey(req, 'token');
+            const tokenFromReq = tokenService.getToken(req);
 
             try {
                 let data = jwt.verify(tokenFromReq, secret);
@@ -200,7 +200,7 @@ class productController {
     }
     async getUserProducts(req, res) {
         try {
-            const tokenFromReq = cookieService.findCookieByKey(req, 'token');
+            const tokenFromReq = tokenService.getToken(req);
 
             try {
                 let data = jwt.verify(tokenFromReq, secret);
@@ -240,7 +240,7 @@ class productController {
     }
     async getAllProducts(req, res) {
         try {
-            const tokenFromReq = cookieService.findCookieByKey(req, 'token');
+            const tokenFromReq = tokenService.getToken(req);
 
             try {
                 let data = jwt.verify(tokenFromReq, secret);
@@ -284,7 +284,7 @@ class productController {
     }
     async createOtherProduct(req, res) {
         try {
-            const tokenFromReq = cookieService.findCookieByKey(req, 'token');
+            const tokenFromReq = tokenService.getToken(req);
 
             try {
                 let data = jwt.verify(tokenFromReq, secret);
@@ -347,7 +347,7 @@ class productController {
     }
     async getUserOtherProducts(req, res) {
         try {
-            const tokenFromReq = cookieService.findCookieByKey(req, 'token');
+            const tokenFromReq = tokenService.getToken(req);
 
             try {
                 let data = jwt.verify(tokenFromReq, secret);
@@ -387,7 +387,7 @@ class productController {
     }
     async getAllOtherProducts(req, res) {
         try {
-            const tokenFromReq = cookieService.findCookieByKey(req, 'token');
+            const tokenFromReq = tokenService.getToken(req);
 
             try {
                 let data = jwt.verify(tokenFromReq, secret);

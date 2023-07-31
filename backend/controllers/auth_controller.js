@@ -1,6 +1,6 @@
 const database = require('../database/database.js');
 const emailService = require('../services/email_service.js');
-const cookieService = require('../services/cookie_service.js');
+const tokenService = require('../services/token_service.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const ress = require('../services/response_service.js');
@@ -87,7 +87,7 @@ class authController {
 
             // Making, recording and email-sening access code
 
-            const code = this.generateEmailCode();
+            const code = emailService.generateEmailCode();
 
             data = await database.query('SELECT * FROM person_bufer WHERE email = $1', [req.body.email]);
 
@@ -130,7 +130,7 @@ class authController {
 
                     // Make account and token
 
-                    const token = this.generateAccessToken(req.body.email, 'user', '720h');
+                    const token = tokenService.generateAccessToken(req.body.email, 'user', '720h');
 
                     await database.query('INSERT INTO person (email, nickname, tlg, pass, roole, token) values ($1, $2, $3, $4, $5, $6)', [data.rows[0].email, data.rows[0].nickname, data.rows[0].tlg, data.rows[0].pass, 'user', token]);
 
@@ -173,14 +173,13 @@ class authController {
     async logIn(req, res) {
         try {
             const data = await database.query('SELECT pass, roole, token FROM person WHERE email = $1', [req.body.email]);
-
             if (data.rows.length === 1) {
                 let token = data.rows[0].token;
 
                 if (bcrypt.compareSync(req.body.pass, data.rows[0].pass)) {
                     jwt.verify(token, secret, async (err) => {
                         if (err) {
-                            token = this.generateAccessToken(req.body.email, data.rows[0].roole, '720h');
+                            token = tokenService.generateAccessToken(req.body.email, data.rows[0].roole, '720h');
                             await database.query('UPDATE person SET token = $2 WHERE email = $1', [req.body.email, token])
                         }
                     });
@@ -210,12 +209,13 @@ class authController {
 
     async checkToken(req, res) {
         try {
-            const tokenFromReq = cookieService.findCookieByKey(req, 'token');
+            const tokenFromReq = tokenService.getToken(req);
 
             try {
                 const data = jwt.verify(tokenFromReq, secret);
 
                 let token = await database.query('SELECT token FROM person WHERE email = $1', [data.email]);
+                
                 if (token.rows.length === 1) {
                     token = token.rows[0].token;
                 } else {
@@ -245,7 +245,7 @@ class authController {
 
             if (data.rows.length === 1) {
                 if (!data.rows[0].code) {
-                    code = this.generateEmailCode();
+                    code = emailService.generateEmailCode();
                 } else {
                     code = data.rows[0].code;
                 }
@@ -271,7 +271,7 @@ class authController {
             if (data.rows.length === 1) {
                 if (data.rows[0].code) {
                     if (data.rows[0].code === req.body.code) {
-                        const token = this.generateAccessToken(req.body.email, 'refresh_pass', '20m');
+                        const token = tokenService.generateAccessToken(req.body.email, 'refresh_pass', '20m');
                         await database.query('UPDATE person SET token = $2, code = $3 WHERE email = $1', [req.body.email, token, '']);
 
                         return ress.create(res, 200, 'OK', ['token', `Bearer ${token}`, {
@@ -312,7 +312,7 @@ class authController {
             }
 
             if (passwordIsValid) {
-                const tokenFromReq = cookieService.findCookieByKey(req, 'token');
+                const tokenFromReq = tokenService.getToken(req);
 
                 jwt.verify(tokenFromReq, secret, async (err, payload) => {
                     if (!err) {
@@ -320,7 +320,7 @@ class authController {
                             const data = await database.query('SELECT * FROM person WHERE email = $1', [payload.email]);
                             if (data.rows.length === 1) {
                                 if (data.rows[0].token === tokenFromReq) {
-                                    const token = this.generateAccessToken(data.rows[0].email, data.rows[0].roole, '720h');
+                                    const token = tokenService.generateAccessToken(data.rows[0].email, data.rows[0].roole, '720h');
                                     await database.query('UPDATE person SET token = $2, pass = $3 WHERE email = $1', [data.rows[0].email, token, bcrypt.hashSync(req.body.pass, 7)]);
 
                                     return ress.create(res, 200, 'ok', ['token', `Bearer ${token}`, {
@@ -351,21 +351,6 @@ class authController {
 
     stringLengthCheck(str, len) {
         return str.length >= len;
-    }
-
-    generateAccessToken(email, role, exp) {
-        const payload = {
-            email,
-            role
-        }
-        
-        return jwt.sign(payload, secret, {expiresIn: exp});
-    }
-
-    generateEmailCode() {
-        // Returns a string with a six digit number
-
-        return String(Math.floor(Math.random() * (1000000 - 100000) + 100000));
     }
 }
 

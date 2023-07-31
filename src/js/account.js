@@ -420,6 +420,8 @@ function changeUserParameter($form) {
                 $input.style.border = '2px solid red';
                 $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect nickname' : 'Неккоректный никнейм';
             } else {
+                $submitBtn.setAttribute('disabled', 'true');
+
                 fetch(`${HOST}/api/change_user_nickname`, {
                     method: 'POST', 
                     credentials: 'include',
@@ -431,6 +433,8 @@ function changeUserParameter($form) {
                     }
                 })
                 .then(async (res) => {
+                    $submitBtn.removeAttribute('disabled');
+
                     const status = res.status;
                     const data = await res.json();
         
@@ -456,6 +460,8 @@ function changeUserParameter($form) {
                     }
                 })
                 .catch((error) => {
+                    $submitBtn.removeAttribute('disabled');
+
                     $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
                     console.error('Fetch error: ' + error);
                 });
@@ -465,6 +471,8 @@ function changeUserParameter($form) {
                 $input.style.border = '2px solid red';
                 $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect telegram' : 'Неккоректный телеграмм';
             } else {
+                $submitBtn.setAttribute('disabled', 'true');
+
                 fetch(`${HOST}/api/change_user_telegram`, {
                     method: 'POST', 
                     credentials: 'include',
@@ -476,6 +484,8 @@ function changeUserParameter($form) {
                     }
                 })
                 .then(async (res) => {
+                    $submitBtn.removeAttribute('disabled');
+
                     const status = res.status;
                     const data = await res.json();
         
@@ -501,58 +511,118 @@ function changeUserParameter($form) {
                     }
                 })
                 .catch((error) => {
+                    $submitBtn.removeAttribute('disabled');
+
                     $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
                     console.error('Fetch error: ' + error);
                 });
             }
         } else if ($input.classList.contains('account__setting-input-email')) {
-            if (!(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu.test($input.value))) {
-                $input.style.border = '2px solid red';
-                $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect email' : 'Неккоректный эл. почта';
-            } else {
-                fetch(`${HOST}/api/send_code_for_change_email`, {
-                    method: 'POST', 
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        newTlg: $input.value,
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(async (res) => {
-                    const status = res.status;
-                    const data = await res.json();
-        
-                    if (status !== 200) {
-                        try {
-                            $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
-                        } catch (error) {
-                            console.error('Error: ' + error);
-                        }
-                    } else {
-                        $errorMessage.style.color = '##ffcc00';
-                        $errorMessage.textContent = (currentLanguage === 'en') ? `Enter the code from ${currentEmail}` : `Введите код из ${currentEmail}`;;
-                        $errorMessage.style.fontSize = '14px';
-                        // $input.setAttribute('readonly', 'true');
-                        // $errorMessage.style.color = '#33CC66';
-                        // $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
-                        // $errorMessage.style.fontSize = '12px';
-                        // setTimeout(() => {
-                        //     $errorMessage.style.color = 'red';
-                        //     $errorMessage.textContent = '';
-                        //     $errorMessage.style.fontSize = '10px';
-                        // }, 2000);
+            if (needSendEmailCode) {
+                if (!(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu.test($input.value))) {
+                    $input.style.border = '2px solid red';
+                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect email' : 'Неккоректный эл. почта';
+                } else {
+                    $submitBtn.setAttribute('disabled', 'true');
 
-                        // $setBtn.style.display = 'block';
-                        // $submitBtn.style.display = 'none';
-                    }
-                })
-                .catch((error) => {
-                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
-                    console.error('Fetch error: ' + error);
-                });
+                    fetch(`${HOST}/api/send_code_for_change_email`, {
+                        method: 'POST', 
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            newEmail: $input.value,
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(async (res) => {
+                        $submitBtn.removeAttribute('disabled');
+
+                        const status = res.status;
+                        const data = await res.json();
+            
+                        if (status !== 200) {
+                            try {
+                                $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                            } catch (error) {
+                                console.error('Error: ' + error);
+                            }
+                        } else {
+                            $errorMessage.style.color = '#33CC66';
+                            $errorMessage.textContent = (currentLanguage === 'en') ? `Enter the code from ${currentEmail}` : `Введите код из ${currentEmail}`;;
+                            $errorMessage.style.fontSize = '14px';
+                            newEmail = $input.value;
+                            $input.value = '';
+                            $input.setAttribute('placeholder', 'CODE');
+                            needSendEmailCode = false;
+                        }
+                    })
+                    .catch((error) => {
+                        $submitBtn.removeAttribute('disabled');
+
+                        $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                        console.error('Fetch error: ' + error);
+                    });
+                }
+            } else {
+                $errorMessage.style.color = 'red';
+                if (!(/^[0-9]{6}$/.test($input.value))) {
+                    $input.style.border = '2px solid red';
+                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect code' : 'Неккоректный код';
+                } else {
+                    $submitBtn.setAttribute('disabled', 'true');
+
+                    fetch(`${HOST}/api/change_user_email`, {
+                        method: 'POST', 
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            code: $input.value,
+                            newEmail
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(async (res) => {
+                        $submitBtn.removeAttribute('disabled');
+
+                        const status = res.status;
+                        const data = await res.json();
+            
+                        if (status !== 200) {
+                            try {
+                                $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                            } catch (error) {
+                                console.error('Error: ' + error);
+                            }
+                        } else {
+                            $input.setAttribute('readonly', 'true');
+                            $errorMessage.style.color = '#33CC66';
+                            $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
+                            $errorMessage.style.fontSize = '12px';
+                            setTimeout(() => {
+                                $errorMessage.style.color = 'red';
+                                $errorMessage.textContent = '';
+                                $errorMessage.style.fontSize = '10px';
+                            }, 2000);
+                            $input.setAttribute('placeholder', '');
+                            $input.value = newEmail
+
+                            $setBtn.style.display = 'block';
+                            $submitBtn.style.display = 'none';
+
+                            needSendEmailCode = true;
+                        }
+                    })
+                    .catch((error) => {
+                        $submitBtn.removeAttribute('disabled');
+                        
+                        $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                        console.error('Fetch error: ' + error);
+                    });
+                }
             }
+            
         }
     });
 }

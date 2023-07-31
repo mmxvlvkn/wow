@@ -10,7 +10,7 @@ class EmailService {
             auth: {
                 user: process.env.emailToSend,
                 pass: process.env.emailToSendPassword
-            }
+            },
         })
     }
 
@@ -30,7 +30,7 @@ class EmailService {
                     `
             });
         } catch (error) {
-            console.log('Error: send activation code error');
+            console.log('Error: ' + error + ',(send activation code error)');
             throw new Error('Send activation code error');
         }
             
@@ -54,6 +54,11 @@ class EmailService {
         } catch (error) {
             console.log('Error: send refresh code error');
         }
+    }
+    generateEmailCode() {
+        // Returns a string with a six digit number
+
+        return String(Math.floor(Math.random() * (1000000 - 100000) + 100000));
     }
 }
 
