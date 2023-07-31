@@ -340,6 +340,8 @@ $accountSubtitles.forEach($elem => {
 });
 
 // Getting info about user 
+
+let currentEmail;
 fetch(`${HOST}/api/get_user_info`, {
     method: 'GET', 
     credentials: 'include',
@@ -363,6 +365,7 @@ fetch(`${HOST}/api/get_user_info`, {
         $body.querySelector('.account__setting-input-nickname').value = data.nickname;
         $body.querySelector('.account__setting-input-email').value = data.email;
         $body.querySelector('.account__setting-input-tlg').value = data.tlg;
+        currentEmail = data.email;
     }
 })
 .catch((error) => {
@@ -381,13 +384,13 @@ $body.querySelectorAll('.account__form').forEach($form => {
 function changeUserParameter($form) {
     const $input = $form.querySelector('.account__setting-input');
     const $setBtn = $form.querySelector('.account__setting-set');
-    const $submitDtn = $form.querySelector('.account__setting-submit');
+    const $submitBtn = $form.querySelector('.account__setting-submit');
     const $errorMessage = $form.querySelector('.account__setting-error');
     console.log($errorMessage)
 
     $setBtn.addEventListener('click', () => {
         $setBtn.style.display = 'none';
-        $submitDtn.style.display = 'block';
+        $submitBtn.style.display = 'block';
 
         $input.removeAttribute('readonly');
         $input.value = '';
@@ -407,6 +410,8 @@ function changeUserParameter($form) {
         }
     });
 
+    let needSendEmailCode = true;
+    let newEmail;
     $form.addEventListener('submit', (event) => {
         event.preventDefault();
 
@@ -414,38 +419,140 @@ function changeUserParameter($form) {
             if (!(/^[a-zA-Z][a-zA-Z0-9-_\.]{1,20}$/.test($input.value))) {
                 $input.style.border = '2px solid red';
                 $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect nickname' : 'Неккоректный никнейм';
-            }
-        } else {
-            fetch(`${HOST}/api/change_user_nickname`, {
-                method: 'POST', 
-                credentials: 'include',
-                body: JSON.stringify({
-                    newNickname: $input.value,
-                }),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(async (res) => {
-                const status = res.status;
-                const data = await res.json();
-    
-                if (status !== 200) {
-                    try {
-                        $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
-                    } catch (error) {
-                        console.error('Error: ' + error);
+            } else {
+                fetch(`${HOST}/api/change_user_nickname`, {
+                    method: 'POST', 
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        newNickname: $input.value,
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
                     }
-                } else {
-                    $input.addAttribute('readonly');
-                    $errorMessage.style.color = '#33CC66';
-                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
-                }
-            })
-            .catch((error) => {
-                $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
-                console.error('Fetch error: ' + error);
-            });
+                })
+                .then(async (res) => {
+                    const status = res.status;
+                    const data = await res.json();
+        
+                    if (status !== 200) {
+                        try {
+                            $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                        } catch (error) {
+                            console.error('Error: ' + error);
+                        }
+                    } else {
+                        $input.setAttribute('readonly', 'true');
+                        $errorMessage.style.color = '#33CC66';
+                        $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
+                        $errorMessage.style.fontSize = '12px';
+                        setTimeout(() => {
+                            $errorMessage.style.color = 'red';
+                            $errorMessage.textContent = '';
+                            $errorMessage.style.fontSize = '10px';
+                        }, 2000);
+
+                        $setBtn.style.display = 'block';
+                        $submitBtn.style.display = 'none';
+                    }
+                })
+                .catch((error) => {
+                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                    console.error('Fetch error: ' + error);
+                });
+            }
+        } else if ($input.classList.contains('account__setting-input-tlg')) {
+            if (!(/^[@]{1}[^а-яё]+$/.test($input.value))) {
+                $input.style.border = '2px solid red';
+                $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect telegram' : 'Неккоректный телеграмм';
+            } else {
+                fetch(`${HOST}/api/change_user_telegram`, {
+                    method: 'POST', 
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        newTlg: $input.value,
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(async (res) => {
+                    const status = res.status;
+                    const data = await res.json();
+        
+                    if (status !== 200) {
+                        try {
+                            $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                        } catch (error) {
+                            console.error('Error: ' + error);
+                        }
+                    } else {
+                        $input.setAttribute('readonly', 'true');
+                        $errorMessage.style.color = '#33CC66';
+                        $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
+                        $errorMessage.style.fontSize = '12px';
+                        setTimeout(() => {
+                            $errorMessage.style.color = 'red';
+                            $errorMessage.textContent = '';
+                            $errorMessage.style.fontSize = '10px';
+                        }, 2000);
+
+                        $setBtn.style.display = 'block';
+                        $submitBtn.style.display = 'none';
+                    }
+                })
+                .catch((error) => {
+                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                    console.error('Fetch error: ' + error);
+                });
+            }
+        } else if ($input.classList.contains('account__setting-input-email')) {
+            if (!(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu.test($input.value))) {
+                $input.style.border = '2px solid red';
+                $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect email' : 'Неккоректный эл. почта';
+            } else {
+                fetch(`${HOST}/api/send_code_for_change_email`, {
+                    method: 'POST', 
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        newTlg: $input.value,
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(async (res) => {
+                    const status = res.status;
+                    const data = await res.json();
+        
+                    if (status !== 200) {
+                        try {
+                            $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                        } catch (error) {
+                            console.error('Error: ' + error);
+                        }
+                    } else {
+                        $errorMessage.style.color = '##ffcc00';
+                        $errorMessage.textContent = (currentLanguage === 'en') ? `Enter the code from ${currentEmail}` : `Введите код из ${currentEmail}`;;
+                        $errorMessage.style.fontSize = '14px';
+                        // $input.setAttribute('readonly', 'true');
+                        // $errorMessage.style.color = '#33CC66';
+                        // $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
+                        // $errorMessage.style.fontSize = '12px';
+                        // setTimeout(() => {
+                        //     $errorMessage.style.color = 'red';
+                        //     $errorMessage.textContent = '';
+                        //     $errorMessage.style.fontSize = '10px';
+                        // }, 2000);
+
+                        // $setBtn.style.display = 'block';
+                        // $submitBtn.style.display = 'none';
+                    }
+                })
+                .catch((error) => {
+                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                    console.error('Fetch error: ' + error);
+                });
+            }
         }
     });
 }
