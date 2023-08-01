@@ -1,8 +1,13 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const secret = process.env.secret;
+const database = require('../database/database.js');
 
 class TokenService {
+    constructor() {
+        this.userVerificationByToken = this.userVerificationByToken.bind(this);
+    }
+
     findCookieByKey(req, keyName) {
         try {
             const regExpForCookieKey = new RegExp(`^${keyName}`);
@@ -62,6 +67,33 @@ class TokenService {
         }
         
         return jwt.sign(payload, secret, {expiresIn: exp});
+    }
+    async userVerificationByToken(req) {
+        try {
+            const tokenFromReq = this.getToken(req);
+            console.log(tokenFromReq)
+            let tokenData;
+            jwt.verify(tokenFromReq, secret, async (err, payload) => {
+                if (err) {
+                    return {status: false};
+                } else {
+                    tokenData = payload;
+                }
+            });
+
+            let dbData = await database.query('SELECT * FROM person WHERE email = $1', [tokenData.email]);
+            
+            if (dbData.rows.length === 1) {
+                dbData = dbData.rows[0];
+                return (tokenFromReq !== dbData.token) ? {status: false} : {status: true, tokenData, dbData};
+            } else {
+                console.log('Error: more than one account registered with email');
+                return {status: false};
+            }
+        } catch (error) {
+            console.log('Error: ' + error);
+            throw error;
+        }
     }
 }
 

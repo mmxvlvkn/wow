@@ -13,32 +13,16 @@ class userController {
 
     async getUserInfo(req, res) {
         try {
-            const tokenFromReq = tokenService.getToken(req);
+            const tokenInfo = await tokenService.userVerificationByToken(req);
 
-            try {
-                const data = jwt.verify(tokenFromReq, secret);
-
-                let dbData = await database.query('SELECT * FROM person WHERE email = $1', [data.email]);
-
-                if (dbData.rows.length === 1) {
-                    dbData = dbData.rows[0];
-                } else {
-                    return ress.create(res, 409, 'More than one account registered with email');
-                }
-                
-                if (tokenFromReq === dbData.token) {
-                    return ress.create(res, 200, {
-                        nickname: dbData.nickname,
-                        email: dbData.email,
-                        tlg: dbData.tlg
-                    });
-                } else {
-                    return ress.create(res, 409, 'Tokens don\'t match');
-                }
-            } catch (error) {
-                console.log('Error: ' + error);
-                return ress.create(res, 401, {en: 'Invalid token', ru: 'Неверный токен'});        
-
+            if (tokenInfo.status) {
+                return ress.create(res, 200, {
+                    nickname: tokenInfo.dbData.nickname,
+                    email: tokenInfo.dbData.email,
+                    tlg: tokenInfo.dbData.tlg
+                });
+            } else {
+                return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
             }
         } catch (error) {
             console.log('Error: ' + error);
@@ -47,19 +31,9 @@ class userController {
     }
     async changeUserNickname(req, res) {
         try {
-            const tokenFromReq = tokenService.getToken(req);
+            const tokenInfo = await tokenService.userVerificationByToken(req);
 
-            const data = jwt.verify(tokenFromReq, secret);
-
-            let dbData = await database.query('SELECT * FROM person WHERE email = $1', [data.email]);
-
-            if (dbData.rows.length === 1) {
-                dbData = dbData.rows[0];
-            } else {
-                return ress.create(res, 409, 'More than one account registered with email');
-            }
-            
-            if (tokenFromReq === dbData.token) {
+            if (tokenInfo.status) {
                 if (!(/^[a-zA-Z][a-zA-Z0-9-_\.]{1,20}$/.test(req.body.newNickname))) {
                     return ress.create(res, 409, {en: 'Incorrect nickname', ru: 'Некорректный никнейм'});
                 } else {
@@ -68,7 +42,7 @@ class userController {
                         return ress.create(res, 409, {en: 'User with this nickname already exists', ru: 'Пользователь с таким никнеймом уже существует'});
                     } else {
                         try {
-                            await database.query('UPDATE person SET nickname = $2 WHERE email = $1', [data.email, req.body.newNickname]);
+                            await database.query('UPDATE person SET nickname = $2 WHERE email = $1', [tokenInfo.tokenData.email, req.body.newNickname]);
                             return ress.create(res, 200, 'OK');
                         } catch (error) {
                             console.log('Error: ' + error);
@@ -77,7 +51,7 @@ class userController {
                     }
                 }
             } else {
-                return ress.create(res, 409, 'Tokens don\'t match');
+                return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
             }
         } catch (error) {
             console.log('Error: ' + error);
@@ -86,24 +60,14 @@ class userController {
     }
     async changeUserTlg(req, res) {
         try {
-            const tokenFromReq = tokenService.getToken(req);
+            const tokenInfo = await tokenService.userVerificationByToken(req);
 
-            const data = jwt.verify(tokenFromReq, secret);
-
-            let dbData = await database.query('SELECT * FROM person WHERE email = $1', [data.email]);
-
-            if (dbData.rows.length === 1) {
-                dbData = dbData.rows[0];
-            } else {
-                return ress.create(res, 409, 'More than one account registered with email');
-            }
-            
-            if (tokenFromReq === dbData.token) {
+            if (tokenInfo.status) {
                 if (!(/^[@]{1}[^а-яё]+$/.test(req.body.newTlg))) {
                     return ress.create(res, 409, {en: 'Incorrect telegram', ru: 'Некорректный телеграмм'});
                 } else {
                     try {
-                        await database.query('UPDATE person SET tlg = $2 WHERE email = $1', [data.email, req.body.newTlg]);
+                        await database.query('UPDATE person SET tlg = $2 WHERE email = $1', [tokenInfo.tokenData.email, req.body.newTlg]);
                         return ress.create(res, 200, 'OK');
                     } catch (error) {
                         console.log('Error: ' + error);
@@ -111,7 +75,7 @@ class userController {
                     }
                 }
             } else {
-                return ress.create(res, 409, 'Tokens don\'t match');
+                return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
             }
         } catch (error) {
             console.log('Error: ' + error);
@@ -120,19 +84,9 @@ class userController {
     }
     async sendCodeForChangeEmail(req, res) {
         try {
-            const tokenFromReq = tokenService.getToken(req);
-
-            const data = jwt.verify(tokenFromReq, secret);
-
-            let dbData = await database.query('SELECT * FROM person WHERE email = $1', [data.email]);
-
-            if (dbData.rows.length === 1) {
-                dbData = dbData.rows[0];
-            } else {
-                return ress.create(res, 409, 'More than one account registered with email');
-            }
+            const tokenInfo = await tokenService.userVerificationByToken(req);
             
-            if (tokenFromReq === dbData.token) {
+            if (tokenInfo.status) {
                 if (!(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu.test(req.body.newEmail))) {
                     return ress.create(res, 409, {en: 'Incorrect email', ru: 'Некорректная эл. почта'});
                 } else {
@@ -142,9 +96,9 @@ class userController {
                     } else {
                         try {
                             const code = emailService.generateEmailCode();
-                            await database.query('UPDATE person SET code = $2 WHERE email = $1', [data.email, code]);
+                            await database.query('UPDATE person SET code = $2 WHERE email = $1', [tokenInfo.tokenData.email, code]);
                             try {
-                                await emailService.sendActivationCode(data.email, code);
+                                await emailService.sendActivationCode(tokenInfo.tokenData.email, code);
                             } catch (error) {
                                 console.log('Error: ' + error);
                                 return ress.create(res, 500, {en: 'Unexpected send email code error', ru: 'Непредвиденная ошибка отправки кода регистации'}); 
@@ -152,7 +106,7 @@ class userController {
 
                             try {
                                 setTimeout(async () => {
-                                    await database.query('UPDATE person SET code = $2 WHERE email = $1', [data.email, '']);
+                                    await database.query('UPDATE person SET code = $2 WHERE email = $1', [tokenInfo.tokenData.email, '']);
                                 }, 1000 * 60 * 5);
                             } catch (error) {
                                 console.log('Error: ' + 'Delete code eroor');
@@ -166,7 +120,7 @@ class userController {
                     }
                 }
             } else {
-                return ress.create(res, 409, 'Tokens don\'t match');
+                return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
             }
         } catch (error) {
             console.log('Error: ' + error);
@@ -175,20 +129,10 @@ class userController {
     }
     async changeUserEmail(req, res) {
         try {
-            const tokenFromReq = tokenService.getToken(req);
-
-            const data = jwt.verify(tokenFromReq, secret);
-
-            let dbData = await database.query('SELECT * FROM person WHERE email = $1', [data.email]);
-
-            if (dbData.rows.length === 1) {
-                dbData = dbData.rows[0];
-            } else {
-                return ress.create(res, 409, 'More than one account registered with email');
-            }
+            const tokenInfo = await tokenService.userVerificationByToken(req);
             
-            if (tokenFromReq === dbData.token) {
-                const otherUsers = await database.query('SELECT code FROM person WHERE email = $1', [data.email]);
+            if (tokenInfo.status) {
+                const otherUsers = await database.query('SELECT code FROM person WHERE email = $1', [tokenInfo.tokenData.email]);
 
                 if (!(/^[0-9]{6}$/.test(req.body.code))) {
                     return ress.create(res, 409, {en: 'Incorrect code', ru: 'Некорректный код'});
@@ -198,9 +142,9 @@ class userController {
                     return ress.create(res, 409, {en: 'Incorrect code', ru: 'Неверный код'});
                 }else {
                     try {
-                        await database.query('UPDATE person SET email = $2 WHERE email = $1', [data.email, req.body.newEmail]);
+                        await database.query('UPDATE person SET email = $2 WHERE email = $1', [tokenInfo.tokenData.email, req.body.newEmail]);
 
-                        const token = tokenService.generateAccessToken(req.body.newEmail, dbData.roole, '720h');
+                        const token = tokenService.generateAccessToken(req.body.newEmail, tokenInfo.dbData.roole, '720h');
                         await database.query('UPDATE person SET token = $2 WHERE email = $1', [req.body.newEmail, token]);
 
                         return ress.create(res, 200, 'OK', ['token', `Bearer ${token}`, {
@@ -213,7 +157,7 @@ class userController {
                     }
                 }
             } else {
-                return ress.create(res, 409, 'Tokens don\'t match');
+                return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
             }
         } catch (error) {
             console.log('Error: ' + error);

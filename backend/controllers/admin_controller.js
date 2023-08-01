@@ -12,33 +12,18 @@ class adminController {
 
     async isAdmin(req, res) {
         try {
-            const tokenFromReq = tokenService.getToken(req);
-
-            try {
-                const data = jwt.verify(tokenFromReq, secret);
-
-                let dbData = await database.query('SELECT * FROM person WHERE email = $1', [data.email]);
-
-                if (dbData.rows.length === 1) {
-                    dbData = dbData.rows[0];
+            const tokenInfo = await tokenService.userVerificationByToken(req);
+            
+            if (tokenInfo.status) {
+                if (tokenInfo.dbData.roole === 'admin') {
+                    return ress.create(res, 200, 'True');
                 } else {
-                    return ress.create(res, 409, 'More than one account registered with email');
+                    return ress.create(res, 417, 'False');
                 }
+
                 
-                if (tokenFromReq === dbData.token) {
-                    if (dbData.roole === 'admin') {
-                        return ress.create(res, 200, 'True');
-                    } else {
-                        return ress.create(res, 417, 'False');
-                    }
-
-                    
-                } else {
-                    return ress.create(res, 409, 'Tokens don\'t match');
-                }
-            } catch (error) {
-                return ress.create(res, 401, 'Invalid token');        
-
+            } else {
+                return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
             }
         } catch (error) {
             console.log('Error: ' + error);

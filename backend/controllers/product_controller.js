@@ -12,120 +12,107 @@ class productController {
 
     async saveOrder(req, res) {
         try {
-            const tokenFromReq = tokenService.getToken(req);
+            const tokenInfo = await tokenService.userVerificationByToken(req);
 
-            try {
-                let data = jwt.verify(tokenFromReq, secret);
-                let token;
-                data = await database.query('SELECT * FROM person WHERE email = $1', [data.email]);
-                if (data.rows.length === 1) {
-                    data = data.rows[0];
-                    token = data.token;
-                } else {
-                    return ress.create(res, 409, 'More than one account registered with email');
-                }
+            if (tokenInfo.status) {
+                try {
+                    let title = req.body.title;
+                    const sendingData = req.body.data;
+                    let dataForPriceFormation = await database.query('SELECT price_data FROM price_formation WHERE price_name = $1', [title]);
+                    dataForPriceFormation = JSON.parse(dataForPriceFormation.rows[0].price_data);
 
-                if (tokenFromReq === token) {
+                    //Price and description formation
+                    let orderDescription = 'radio:\n';
+                    let price = dataForPriceFormation.base_price;
+                    let coef = 1;
+
+                    console.log(123)
+                    for (let key in dataForPriceFormation.radio) {
+                        orderDescription += '    ' + key + ':\n';
+                        orderDescription += '        ' + sendingData.radio[key] + ',\n';
+                        const optionsObject = dataForPriceFormation.radio[key][sendingData.radio[key]];
+                        if (optionsObject.is_coef) {
+                            coef *= optionsObject.value;
+                        } else {
+                            price += optionsObject.value;
+                        }
+                    }
+                    orderDescription += 'range:\n';
+                    for (let key in dataForPriceFormation.range) {
+                        orderDescription += '    ' + key + ':\n';
+                        orderDescription += '        ' + sendingData.range[key] + ',\n';
+                        const optionsObject = dataForPriceFormation.range[key];
+                        if (optionsObject.is_coef) {
+                            coef *= sendingData.range[key] * optionsObject.value;
+                        } else {
+                            price += sendingData.range[key] * optionsObject.value;
+                        }
+                    }
+                    orderDescription += 'checkbox:\n';
+                    for (let key in dataForPriceFormation.checkbox) {
+                        orderDescription += '    ' + key + ':\n';
+                        for (let item of sendingData.checkbox[key]) {
+                            orderDescription += '        ' + item + ',\n';
+                            const optionsObject = dataForPriceFormation.checkbox[key][item];
+                            if (optionsObject.is_coef) {
+                                coef *= optionsObject.value;
+                            } else {
+                                price += optionsObject.value;
+                            }
+                        }
+                    }
+                    orderDescription += 'select:\n';
+                    for (let key in dataForPriceFormation.select) {
+                        orderDescription += '    ' + key + ':\n';
+                        orderDescription += '        ' + sendingData.select[key] + ',\n';
+                        const optionsObject = dataForPriceFormation.select[key][sendingData.select[key]];
+                        if (optionsObject.is_coef) {
+                            coef *= optionsObject.value;
+                        } else {
+                            price += optionsObject.value;
+                        }
+                    }
+                    price *= coef;
+                    price = price.toFixed(2);
+
+                    let userData = await database.query('SELECT * FROM person WHERE email = $1', [tokenInfo.dbData.email]);
+                    userData = userData.rows[0];
+
+                    // Formation title
+                    title = title.replace(/_/g, ' ');
+                    title = title[0].toUpperCase() + title.slice(1);
+
+                    //get current order number
+                    let orderNumder = await database.query('SELECT * FROM current_order_number');
+                    orderNumder = Number(orderNumder.rows[0].order_number) + 1;
+
+                    let count = 1;
+                    let tempOrderNumber = orderNumder;
+                    let newOrderNumber = '';
+                    while (tempOrderNumber > 9) {
+                        tempOrderNumber = Math.floor(tempOrderNumber / 10);
+                        count++;
+                    }
+                    for (let i = 0; i < 6 - count; i++) {
+                        newOrderNumber += '0';                       
+                    }
+                    newOrderNumber += orderNumder;
+                    
                     try {
-                        let title = req.body.title;
-                        const sendingData = req.body.data;
-                        let dataForPriceFormation = await database.query('SELECT price_data FROM price_formation WHERE price_name = $1', [title]);
-                        dataForPriceFormation = JSON.parse(dataForPriceFormation.rows[0].price_data);
-
-                        //Price and description formation
-                        let orderDescription = 'radio:\n';
-                        let price = dataForPriceFormation.base_price;
-                        let coef = 1;
-
-                        for (let key in dataForPriceFormation.radio) {
-                            orderDescription += '    ' + key + ':\n';
-                            orderDescription += '        ' + sendingData.radio[key] + ',\n';
-                            const optionsObject = dataForPriceFormation.radio[key][sendingData.radio[key]];
-                            if (optionsObject.is_coef) {
-                                coef *= optionsObject.value;
-                            } else {
-                                price += optionsObject.value;
-                            }
-                        }
-                        orderDescription += 'range:\n';
-                        for (let key in dataForPriceFormation.range) {
-                            orderDescription += '    ' + key + ':\n';
-                            orderDescription += '        ' + sendingData.range[key] + ',\n';
-                            const optionsObject = dataForPriceFormation.range[key];
-                            if (optionsObject.is_coef) {
-                                coef *= sendingData.range[key] * optionsObject.value;
-                            } else {
-                                price += sendingData.range[key] * optionsObject.value;
-                            }
-                        }
-                        orderDescription += 'checkbox:\n';
-                        for (let key in dataForPriceFormation.checkbox) {
-                            orderDescription += '    ' + key + ':\n';
-                            for (let item of sendingData.checkbox[key]) {
-                                orderDescription += '        ' + item + ',\n';
-                                const optionsObject = dataForPriceFormation.checkbox[key][item];
-                                if (optionsObject.is_coef) {
-                                    coef *= optionsObject.value;
-                                } else {
-                                    price += optionsObject.value;
-                                }
-                            }
-                        }
-                        orderDescription += 'select:\n';
-                        for (let key in dataForPriceFormation.select) {
-                            orderDescription += '    ' + key + ':\n';
-                            orderDescription += '        ' + sendingData.select[key] + ',\n';
-                            const optionsObject = dataForPriceFormation.select[key][sendingData.select[key]];
-                            if (optionsObject.is_coef) {
-                                coef *= optionsObject.value;
-                            } else {
-                                price += optionsObject.value;
-                            }
-                        }
-                        price *= coef;
-                        price = price.toFixed(2);
-
-                        let userData = await database.query('SELECT * FROM person WHERE email = $1', [data.email]);
-                        userData = userData.rows[0];
-
-                        // Formation title
-                        title = title.replace(/_/g, ' ');
-                        title = title[0].toUpperCase() + title.slice(1);
-
-                        //get current order number
-                        let orderNumder = await database.query('SELECT * FROM current_order_number');
-                        orderNumder = Number(orderNumder.rows[0].order_number) + 1;
-
-                        let count = 1;
-                        let tempOrderNumber = orderNumder;
-                        let newOrderNumber = '';
-                        while (tempOrderNumber > 9) {
-                            tempOrderNumber = Math.floor(tempOrderNumber / 10);
-                            count++;
-                        }
-                        for (let i = 0; i < 6 - count; i++) {
-                            newOrderNumber += '0';                       
-                        }
-                        newOrderNumber += orderNumder;
-                        
-                        try {
-                            await database.query('INSERT INTO orders (order_number, id, email, nickname, tlg, title, order_description, price) values ($1, $2, $3, $4, $5, $6, $7, $8)', [newOrderNumber, data.id, data.email, data.nickname, data.tlg, title, orderDescription, price]);
-                            await database.query('UPDATE current_order_number SET order_number = $2 WHERE order_number = $1', [orderNumder - 1, orderNumder]);
-                        } catch (error) {
-                            console.log('Error: ' + error)
-                            return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
-                        }
-
-                        return ress.create(res, 200, newOrderNumber);
+                        await database.query('INSERT INTO orders (order_number, id, email, nickname, tlg, title, order_description, price) values ($1, $2, $3, $4, $5, $6, $7, $8)', [newOrderNumber, tokenInfo.dbData.id, tokenInfo.dbData.email, tokenInfo.dbData.nickname, tokenInfo.dbData.tlg, title, orderDescription, price]);
+                        await database.query('UPDATE current_order_number SET order_number = $2 WHERE order_number = $1', [orderNumder - 1, orderNumder]);
                     } catch (error) {
                         console.log('Error: ' + error)
-                        return ress.create(res, 409, 'Ordering error');
+                        return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
                     }
-                } else {
-                    return ress.create(res, 409, 'Tokens don\'t match');
+
+                    return ress.create(res, 200, newOrderNumber);
+                } catch (error) {
+                    console.log('Error: ' + error)
+                    return ress.create(res, 409, 'Ordering error');
                 }
-            } catch (error) {
-                return ress.create(res, 401, 'Invalid token');        
+            } else {
+                return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
             }
         } catch (error) {
             console.log('Error: ' + error);
@@ -200,38 +187,25 @@ class productController {
     }
     async getUserProducts(req, res) {
         try {
-            const tokenFromReq = tokenService.getToken(req);
+            const tokenInfo = await tokenService.userVerificationByToken(req);
 
-            try {
-                let data = jwt.verify(tokenFromReq, secret);
-                let token;
-                data = await database.query('SELECT * FROM person WHERE email = $1', [data.email]);
-                if (data.rows.length === 1) {
-                    data = data.rows[0];
-                    token = data.token;
-                } else {
-                    return ress.create(res, 409, 'More than one account registered with email');
-                }
-
-                if (tokenFromReq === token) {
-                    try {  
-                        try {
-                            data = await database.query('SELECT * FROM products WHERE email = $1', [data.email]);
-                        } catch (error) {
-                            console.log('Error: ' + error)
-                            return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
-                        }
-
-                        return ress.create(res, 200, data.rows);
+            if (tokenInfo.status) {
+                try {  
+                    let productsData;
+                    try {
+                        productsData = await database.query('SELECT * FROM products WHERE email = $1', [tokenInfo.dbData.email]);
                     } catch (error) {
                         console.log('Error: ' + error)
-                        return ress.create(res, 409, 'Geting products error');
+                        return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
                     }
-                } else {
-                    return ress.create(res, 409, 'Tokens don\'t match');
+
+                    return ress.create(res, 200, productsData.rows);
+                } catch (error) {
+                    console.log('Error: ' + error)
+                    return ress.create(res, 409, 'Geting products error');
                 }
-            } catch (error) {
-                return ress.create(res, 401, 'Invalid token');       
+            } else {
+                return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
             }
         } catch (error) {
             console.log('Error: ' + error);
@@ -240,42 +214,29 @@ class productController {
     }
     async getAllProducts(req, res) {
         try {
-            const tokenFromReq = tokenService.getToken(req);
+            const tokenInfo = await tokenService.userVerificationByToken(req);
 
-            try {
-                let data = jwt.verify(tokenFromReq, secret);
-                let token;
-                data = await database.query('SELECT * FROM person WHERE email = $1', [data.email]);
-                if (data.rows.length === 1) {
-                    data = data.rows[0];
-                    token = data.token;
-                } else {
-                    return ress.create(res, 409, 'More than one account registered with email');
-                }
-
-                if (tokenFromReq === token) {
-                    if (data.roole === 'admin') {
-                        try {  
-                            try {
-                                data = await database.query('SELECT * FROM products');
-                            } catch (error) {
-                                console.log('Error: ' + error)
-                                return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
-                            }
-
-                            return ress.create(res, 200, data.rows);
+            if (tokenInfo.status) {
+                if (tokenInfo.dbData.roole === 'admin') {
+                    try {  
+                        let productsData;
+                        try {
+                            productsData = await database.query('SELECT * FROM products');
                         } catch (error) {
                             console.log('Error: ' + error)
-                            return ress.create(res, 409, 'Geting products error');
+                            return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
                         }
-                    } else {
-                        return ress.create(res, 400, 'You are not admin');
+
+                        return ress.create(res, 200, productsData.rows);
+                    } catch (error) {
+                        console.log('Error: ' + error)
+                        return ress.create(res, 409, 'Geting products error');
                     }
                 } else {
-                    return ress.create(res, 409, 'Tokens don\'t match');
+                    return ress.create(res, 400, 'You are not admin');
                 }
-            } catch (error) {
-                return ress.create(res, 401, 'Invalid token');        
+            } else {
+                return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
             }
         } catch (error) {
             console.log('Error: ' + error);
@@ -334,7 +295,7 @@ class productController {
                         return ress.create(res, 409, 'Ordering error');
                     }
                 } else {
-                    return ress.create(res, 409, 'Tokens don\'t match');
+                    return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
                 }
             } catch (error) {
                 return ress.create(res, 401, 'Invalid token');        
@@ -375,7 +336,7 @@ class productController {
                         return ress.create(res, 409, 'Geting products error');
                     }
                 } else {
-                    return ress.create(res, 409, 'Tokens don\'t match');
+                    return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
                 }
             } catch (error) {
                 return ress.create(res, 401, 'Invalid token');       
@@ -419,7 +380,7 @@ class productController {
                         return ress.create(res, 400, 'You are not admin');
                     }
                 } else {
-                    return ress.create(res, 409, 'Tokens don\'t match');
+                    return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
                 }
             } catch (error) {
                 return ress.create(res, 401, 'Invalid token');        

@@ -209,27 +209,12 @@ class authController {
 
     async checkToken(req, res) {
         try {
-            const tokenFromReq = tokenService.getToken(req);
-
-            try {
-                const data = jwt.verify(tokenFromReq, secret);
-
-                let token = await database.query('SELECT token FROM person WHERE email = $1', [data.email]);
-                
-                if (token.rows.length === 1) {
-                    token = token.rows[0].token;
-                } else {
-                    return ress.create(res, 409, 'More than one account registered with email');
-                }
-                
-                if (tokenFromReq === token) {
-                    return ress.create(res, 200, 'OK');
-                } else {
-                    return ress.create(res, 409, 'Tokens don\'t match');
-                }
-            } catch (error) {
-                return ress.create(res, 401, 'Invalid token');        
-
+            const tokenInfo = await tokenService.userVerificationByToken(req);
+            
+            if (tokenInfo) {
+                return ress.create(res, 200, 'OK');
+            } else {
+                return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
             }
         } catch (error) {
             console.log('Error: ' + error);
