@@ -12,4 +12,4 @@
 
 import './html/index.html'
 import './scss/style.scss'
-//import './js/account.js'
+import './js/account.js'

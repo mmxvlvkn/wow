@@ -383,7 +383,7 @@ fetch(`${HOST}/api/get_user_info`, {
     console.error('Fetch error: ' + error);
 });
 
-// Change user parameters
+// Display user parameters
 $body.querySelectorAll('.account__form').forEach($form => {
     changeUserParameter($form);
 });
@@ -634,3 +634,85 @@ function changeUserParameter($form) {
         }
     });
 }
+
+// SET-PASS
+
+const $setPassForm = $accountSetPass.querySelector('.account__set-pass-form');
+const $currentPass = $setPassForm.querySelector('.account__set-pass-current-input');
+const $newPass = $setPassForm.querySelector('.account__set-pass-new-input');
+const $repeatPass = $setPassForm.querySelector('.account__set-pass-repeat-input');
+const $setPassCurrentError = $setPassForm.querySelector('.account__set-pass-error-current');
+const $setPassNewError = $setPassForm.querySelector('.account__set-pass-error-new');
+
+$setPassForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    let isValid = true;
+
+    if ($currentPass.value.length < 6) {
+        $currentPass.style.border = '2px solid red';
+        $setPassCurrentError.textContent = (currentLanguage === 'en') ? 'Password less than 6 characters' : 'Пароль меньше 6 символов';
+        isValid = false;
+    }
+
+    if (!(/^(?=.*\d)(?=.*[a-zA-Z])(?!.*\s).*$/.test($currentPass.value))) {
+        $currentPass.style.border = '2px solid red';
+        $setPassCurrentError.textContent = (currentLanguage === 'en') ? 'Password must contain latin letters and numbers' : 'Пароль должен содержать латинские буквы и цифры';
+        isValid = false;
+    }
+
+    if ($newPass.value !== $repeatPass.value) {
+        $newPass.style.border = '2px solid red';
+        $repeatPass.style.border = '2px solid red';
+        $setPassNewError.textContent = (currentLanguage === 'en') ? 'Passwords do not match' : 'Пароли не совпадают';
+        isValid = false;
+    }
+    
+    if ($newPass.value.length < 6) {
+        $newPass.style.border = '2px solid red';
+        $setPassNewError.textContent = (currentLanguage === 'en') ? 'Password less than 6 characters' : 'Пароль меньше 6 символов';
+        isValid = false;
+    }
+
+    if (!(/^(?=.*\d)(?=.*[a-zA-Z])(?!.*\s).*$/.test($newPass.value))) {
+        $newPass.style.border = '2px solid red';
+        $setPassNewError.textContent = (currentLanguage === 'en') ? 'Password must contain latin letters and numbers' : 'Пароль должен содержать латинские буквы и цифры';
+        isValid = false;
+    }
+
+    if ($repeatPass.value.length < 6) {
+        $repeatPass.style.border = '2px solid red';
+        $setPassNewError.textContent = (currentLanguage === 'en') ? 'Password less than 6 characters' : 'Пароль меньше 6 символов';
+        isValid = false;
+    }
+
+    if (!(/^(?=.*\d)(?=.*[a-zA-Z])(?!.*\s).*$/.test($repeatPass.value))) {
+        $repeatPass.style.border = '2px solid red';
+        $setPassNewError.textContent = (currentLanguage === 'en') ? 'Password must contain latin letters and numbers' : 'Пароль должен содержать латинские буквы и цифры';
+        isValid = false;
+    }
+});
+
+$currentPass.addEventListener('focus', () => {
+    $currentPass.style.border = '';
+    $setPassCurrentError.textContent = '';
+}); 
+
+$currentPass.addEventListener('input', () => {
+    $currentPass.style.border = '';
+    $setPassCurrentError.textContent = '';
+}); 
+
+[$newPass, $repeatPass].forEach($input => {
+    $input.addEventListener('focus', () => {
+        $newPass.style.border = '';
+        $repeatPass.style.border = '';
+        $setPassNewError.textContent = '';
+    }); 
+    
+    $input.addEventListener('input', () => {
+        $newPass.style.border = '';
+        $repeatPass.style.border = '';
+        $setPassNewError.textContent = '';
+    }); 
+});

@@ -190,17 +190,25 @@
         color: black;
     }
     &__set-pass-current-input {
-        margin-bottom: calc_rem(20);
+        margin-bottom: calc_rem(2);
     }
-    &__set-pass-error {}
-    &__set-pass-error-current {}
+    &__set-pass-error {
+        color: red;
+        font-size: calc_rem(10);
+        height: calc_rem(10);
+    }
+    &__set-pass-error-current {
+        margin-bottom: calc_rem(8);
+    }
     &__set-pass-new-input {
         margin-bottom: calc_rem(5);
     }
     &__set-pass-repeat-input {
-        margin-bottom: calc_rem(40);
+        margin-bottom: calc_rem(2);
     }
-    &__set-pass-error-new {}
+    &__set-pass-error-new {
+        margin-bottom: calc_rem(28);
+    }
     &__set-pass-submit {
         display: flex;
         justify-content: center;
@@ -215,6 +223,10 @@
         box-shadow: 0 0 3px 1px rgba(black, 0.1);
         
         &:hover {
+            background-color: $color_2_hover;
+        }
+
+        &:focus {
             background-color: $color_2_hover;
         }
 
