@@ -2,6 +2,9 @@ body {
     font-family: Roboto, sans-serif;
     font-weight: 500;
     overflow-x: hidden;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
 
     &._lock {
         overflow: hidden;

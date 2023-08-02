@@ -9,7 +9,7 @@ const secret = process.env.secret;
 class userController {
     constructor() {
         //this.sendEmailCode = this.sendEmailCode.bind(this);
-    }
+    } 
 
     async getUserInfo(req, res) {
         try {

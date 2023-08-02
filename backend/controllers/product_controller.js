@@ -119,7 +119,6 @@ class productController {
             return ress.create(res, 500, {en: 'Unexpected registration error', ru: 'Непредвиденная ошибка регистации'});
         }
     }
-
     async getPriceFormation(req, res) {
         try {
             try {
@@ -245,61 +244,46 @@ class productController {
     }
     async createOtherProduct(req, res) {
         try {
-            const tokenFromReq = tokenService.getToken(req);
+            const tokenInfo = await tokenService.userVerificationByToken(req);
 
-            try {
-                let data = jwt.verify(tokenFromReq, secret);
-                let token;
-                data = await database.query('SELECT * FROM person WHERE email = $1', [data.email]);
-                if (data.rows.length === 1) {
-                    data = data.rows[0];
-                    token = data.token;
-                } else {
-                    return ress.create(res, 409, 'More than one account registered with email');
-                }
+            if (tokenInfo.status) {
+                try {
+                    const sendingData = req.body;
 
-                if (tokenFromReq === token) {
+                    //get current order number
+                    let orderNumder = await database.query('SELECT * FROM current_order_number');
+                    orderNumder = Number(orderNumder.rows[0].order_number) + 1;
+
+                    let count = 1;
+                    let tempOrderNumber = orderNumder;
+                    let newOrderNumber = '';
+                    while (tempOrderNumber > 9) {
+                        tempOrderNumber = Math.floor(tempOrderNumber / 10);
+                        count++;
+                    }
+                    for (let i = 0; i < 6 - count; i++) {
+                        newOrderNumber += '0';                       
+                    }
+                    newOrderNumber += orderNumder;
+
+                    const date = new Date;
+                    const currentDate = `${(date.getDate() < 10) ? '0' + date.getDate() : date.getDate()}.${(date.getMonth() + 1 < 10) ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}.${(date.getFullYear() % 100 < 10) ? '0' + (date.getFullYear() % 100) : date.getFullYear() % 100}`;
+                    
                     try {
-                        const sendingData = req.body;
-
-                        //get current order number
-                        let orderNumder = await database.query('SELECT * FROM current_order_number');
-                        orderNumder = Number(orderNumder.rows[0].order_number) + 1;
-
-                        let count = 1;
-                        let tempOrderNumber = orderNumder;
-                        let newOrderNumber = '';
-                        while (tempOrderNumber > 9) {
-                            tempOrderNumber = Math.floor(tempOrderNumber / 10);
-                            count++;
-                        }
-                        for (let i = 0; i < 6 - count; i++) {
-                            newOrderNumber += '0';                       
-                        }
-                        newOrderNumber += orderNumder;
-
-                        const date = new Date;
-                        const currentDate = `${(date.getDate() < 10) ? '0' + date.getDate() : date.getDate()}.${(date.getMonth() + 1 < 10) ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}.${(date.getFullYear() % 100 < 10) ? '0' + (date.getFullYear() % 100) : date.getFullYear() % 100}`;
-                        
-                        try {
-                            await database.query('INSERT INTO other_products (order_number, id, email, nickname, tlg, title, order_description, price, create_date) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)', [newOrderNumber, data.id, data.email, data.nickname, data.tlg, 'Other product', sendingData.orderDescription, sendingData.price, currentDate]);
-                            await database.query('UPDATE current_order_number SET order_number = $2 WHERE order_number = $1', [orderNumder - 1, orderNumder]);
-                        } catch (error) {
-                            console.log('Error: ' + error)
-                            return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
-                        }
-
-                        return ress.create(res, 200, newOrderNumber);
+                        await database.query('INSERT INTO other_products (order_number, id, email, nickname, tlg, title, order_description, price, create_date) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)', [newOrderNumber, tokenInfo.dbData.id, tokenInfo.dbData.email, tokenInfo.dbData.nickname, tokenInfo.dbData.tlg, 'Other product', sendingData.orderDescription, sendingData.price, currentDate]);
+                        await database.query('UPDATE current_order_number SET order_number = $2 WHERE order_number = $1', [orderNumder - 1, orderNumder]);
                     } catch (error) {
                         console.log('Error: ' + error)
-                        return ress.create(res, 409, 'Ordering error');
+                        return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
                     }
-                } else {
-                    return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
-                }
-            } catch (error) {
-                return ress.create(res, 401, 'Invalid token');        
 
+                    return ress.create(res, 200, newOrderNumber);
+                } catch (error) {
+                    console.log('Error: ' + error)
+                    return ress.create(res, 409, 'Ordering error');
+                }
+            } else {
+                return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
             }
         } catch (error) {
             console.log('Error: ' + error);
@@ -308,38 +292,26 @@ class productController {
     }
     async getUserOtherProducts(req, res) {
         try {
-            const tokenFromReq = tokenService.getToken(req);
+            const tokenInfo = await tokenService.userVerificationByToken(req);
 
-            try {
-                let data = jwt.verify(tokenFromReq, secret);
-                let token;
-                data = await database.query('SELECT * FROM person WHERE email = $1', [data.email]);
-                if (data.rows.length === 1) {
-                    data = data.rows[0];
-                    token = data.token;
-                } else {
-                    return ress.create(res, 409, 'More than one account registered with email');
-                }
-
-                if (tokenFromReq === token) {
-                    try {  
-                        try {
-                            data = await database.query('SELECT * FROM other_products WHERE email = $1', [data.email]);
-                        } catch (error) {
-                            console.log('Error: ' + error)
-                            return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
-                        }
-
-                        return ress.create(res, 200, data.rows);
+            if (tokenInfo.status) {
+                try {  
+                    let productsData;
+                    try {
+                        productsData = await database.query('SELECT * FROM other_products WHERE email = $1', [tokenInfo.tokenData.email]);
                     } catch (error) {
                         console.log('Error: ' + error)
-                        return ress.create(res, 409, 'Geting products error');
+                        return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
                     }
-                } else {
-                    return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
+                    console.log(productsData.rows)
+
+                    return ress.create(res, 200, productsData.rows);
+                } catch (error) {
+                    console.log('Error: ' + error)
+                    return ress.create(res, 409, 'Geting products error');
                 }
-            } catch (error) {
-                return ress.create(res, 401, 'Invalid token');       
+            } else {
+                return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
             }
         } catch (error) {
             console.log('Error: ' + error);
@@ -348,42 +320,30 @@ class productController {
     }
     async getAllOtherProducts(req, res) {
         try {
-            const tokenFromReq = tokenService.getToken(req);
+            const tokenInfo = await tokenService.userVerificationByToken(req);
 
-            try {
-                let data = jwt.verify(tokenFromReq, secret);
-                let token;
-                data = await database.query('SELECT * FROM person WHERE email = $1', [data.email]);
-                if (data.rows.length === 1) {
-                    data = data.rows[0];
-                    token = data.token;
-                } else {
-                    return ress.create(res, 409, 'More than one account registered with email');
-                }
-
-                if (tokenFromReq === token) {
-                    if (data.roole === 'admin') {
-                        try {  
-                            try {
-                                data = await database.query('SELECT * FROM other_products');
-                            } catch (error) {
-                                console.log('Error: ' + error)
-                                return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
-                            }
-
-                            return ress.create(res, 200, data.rows);
+            if (tokenInfo.status) {
+                console.log(tokenInfo)
+                if (tokenInfo.dbData.roole === 'admin') {
+                    try {  
+                        let productsData;
+                        try {
+                            productsData = await database.query('SELECT * FROM other_products');
                         } catch (error) {
                             console.log('Error: ' + error)
-                            return ress.create(res, 409, 'Geting products error');
+                            return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
                         }
-                    } else {
-                        return ress.create(res, 400, 'You are not admin');
+
+                        return ress.create(res, 200, productsData.rows);
+                    } catch (error) {
+                        console.log('Error: ' + error)
+                        return ress.create(res, 409, 'Geting products error');
                     }
                 } else {
-                    return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
+                    return ress.create(res, 400, 'You are not admin');
                 }
-            } catch (error) {
-                return ress.create(res, 401, 'Invalid token');        
+            } else {
+                return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
             }
         } catch (error) {
             console.log('Error: ' + error);

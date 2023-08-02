@@ -148,7 +148,11 @@ window.addEventListener('DOMContentLoaded', () => {
                         $accountOrders.append($productArticle);
                     });
                 } else {
-                    $accountOrders.innerHTML = (currentLanguage === 'en') ? 'No orders' : 'Заказы отсутствуют';
+                    const $innerInfo = document.createElement('span');
+                    $innerInfo.innerHTML = (currentLanguage === 'en') ? 'No orders' : 'Заказы отсутствуют';
+                    $innerInfo.style.display = 'block';
+                    $innerInfo.style.marginBottom = '10px';
+                    $accountOrders.append($innerInfo);
                 }
             }
         })
@@ -172,7 +176,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         // Other product parse
 
                         const $subtitle = document.createElement('h2');
-                        $subtitle.className = "account__subtitle";
+                        $subtitle.className = "account__subtitle account__personal-services-subtitle";
                         let $subtitleSpan = document.createElement('span');
                         if (localStorage.getItem('currentLanguage') === 'en') {
                             $subtitleSpan.className = "en _shown";
@@ -264,7 +268,11 @@ window.addEventListener('DOMContentLoaded', () => {
             console.error('Fetch error: ' + error);
         });
     } else {
-        $accountOrders.innerHTML = (currentLanguage === 'en') ? 'No orders' : 'Заказы отсутствуют';
+        const $innerInfo = document.createElement('span');
+        $innerInfo.innerHTML = (currentLanguage === 'en') ? 'No orders' : 'Заказы отсутствуют';
+        $innerInfo.style.display = 'block';
+        $innerInfo.style.marginBottom = '10px';
+        $accountOrders.append($innerInfo);
     }
 });
 

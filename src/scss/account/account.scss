@@ -1,7 +1,4 @@
 .account {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
     color: white;
 
     &__main {
@@ -36,6 +33,11 @@
             }
         }
     }
+    &__personal-services-subtitle {
+        &:hover {
+            color:white;
+        }
+    }
     &__subpage {
         display: none;
     }
@@ -61,7 +63,7 @@
         align-items: center;
         height: calc_rem(120);
         max-width: calc_rem(600);
-        border-radius: calc_rem(3);
+        border-radius: calc_rem(2);
         color: black;
 
         &:last-child {
@@ -163,7 +165,63 @@
     &__form-tlg {}
     &__setting-input-tlg {}
     &__setting-set-tlg {}
-    &__set-pass {}
+    &__set-pass {
+        padding: calc_rem(20);
+        background-color: white;
+        border-radius: calc_rem(2);
+        color: black;
+    }
+    &__set-pass-form {}
+    &__setting-label {
+        display: block;
+        font-size: calc_rem(14);
+        font-weight: 700;
+        margin-bottom: calc_rem(3);
+    }
+    &__set-pass-input {
+        border-bottom: 2px solid $color_2;
+        padding: calc_rem(2);
+        padding-left: calc_rem(10);
+        font-size: calc_rem(20);
+        width: calc_rem(220);
+        height: calc_rem(35);
+        border-radius: calc_rem(2) calc_rem(2) 0 0;
+        background-color: rgba($color_6, 0.1);
+        color: black;
+    }
+    &__set-pass-current-input {
+        margin-bottom: calc_rem(20);
+    }
+    &__set-pass-error {}
+    &__set-pass-error-current {}
+    &__set-pass-new-input {
+        margin-bottom: calc_rem(5);
+    }
+    &__set-pass-repeat-input {
+        margin-bottom: calc_rem(40);
+    }
+    &__set-pass-error-new {}
+    &__set-pass-submit {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: calc_rem(115);
+        height: calc_rem(40);
+        border-radius: calc_rem(4);
+        color: white;
+        font-size: calc_rem(18);
+        font-weight: 500;
+        background-color: $color_2;
+        box-shadow: 0 0 3px 1px rgba(black, 0.1);
+        
+        &:hover {
+            background-color: $color_2_hover;
+        }
+
+        &:active {
+            background-color: $color_2_active;
+        }
+    }
 }
 
 .order-item {
@@ -219,3 +277,9 @@
     &__setting-error {}
     &__setting-error-nickname {}
 }
+
+
+
+
+
+
