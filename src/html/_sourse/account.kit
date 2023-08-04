@@ -15,9 +15,9 @@
                 <div class="content">
                     <h1 class="account__title"><span class="en">My account</span><span class="ru">Мой аккаунт</span></h1>
                     <nav class="account__nav">
-                        <button type="button" class="account__subtitle account__subtitle-orders"><span class="en">Orders</span><span class="ru">Заказы</span></button>
+                        <button type="button" class="account__subtitle account__subtitle-orders _selected"><span class="en">Orders</span><span class="ru">Заказы</span></button>
                         <button type="button" class="account__subtitle account__subtitle-settings"><span class="en">Main settings</span><span class="ru">Основные настройки</span></button>
-                        <button type="button" class="account__subtitle account__subtitle-set-pass _selected"><span class="en">Set password</span><span class="ru">Изменить пароль</span></button>
+                        <button type="button" class="account__subtitle account__subtitle-set-pass"><span class="en">Set password</span><span class="ru">Изменить пароль</span></button>
                     </nav>
                     <div class="account__subpage account__orders"></div>
                     <div class="account__subpage account__settings">
@@ -66,6 +66,17 @@
                             <input tabindex="3" id="account_repeat_pass" type="password" class="account__set-pass-input account__set-pass-repeat-input">
                             <p class="account__set-pass-error account__set-pass-error-new"></p>
                             <button tabindex="4" type="submit" class="account__set-pass-submit"><span class="en">Send</span><span class="ru">Отправить</span></button>
+                        </form>
+                        <form action="#" class="account__set-pass-form-code _hidden">
+                            <button type="button" class="account__set-pass-back">
+                                <span class="account__set-pass-back-line account__set-pass-back-line-1"></span>
+                                <span class="account__set-pass-back-line account__set-pass-back-line-2"></span>
+                                <span class="account__set-pass-back-line account__set-pass-back-line-3"></span>
+                            </button>
+                            <laber class="account__setting-label" for="account_pass_code"><span class="en">Email code</span><span class="ru">Email код</span></laber>
+                            <input id="account_pass_code" type="text" class="account__set-pass-input account__set-pass-code-input">
+                            <p class="account__set-pass-error account__set-pass-error-code"></p>
+                            <button type="submit" class="account__set-pass-submit account__set-pass-code-submit"><span class="en">Send</span><span class="ru">Отправить</span></button>
                         </form>
                     </div>
                 </div>

@@ -196,7 +196,6 @@ window.addEventListener('DOMContentLoaded', () => {
                         $accountOrders.append($subtitle);
 
                         data.forEach(product => {
-                            console.log(product)
                             let $productArticle = document.createElement('article');
                             $productArticle.className = "account__order order-item";
                             const $productDate = document.createElement('div');
@@ -317,6 +316,18 @@ if ($accountSubtitleOrders.classList.contains('_selected')) {
     $accountSetPass.style.display = 'block';
 }
 
+// Set hight for set-pass-container
+
+//? $accountSetPass
+const $setPassForm = $accountSetPass.querySelector('.account__set-pass-form');
+const $setPassFormCode = $accountSetPass.querySelector('.account__set-pass-form-code');
+
+if ($setPassForm.clientHeight < $setPassFormCode.clientHeight) {
+    $accountSetPass.style.height = `${$setPassFormCode.clientHeight + 40}px`;
+} else {
+    $accountSetPass.style.height = `${$setPassForm.clientHeight + 40}px`;
+}
+
 // Change selected subpage
 $accountSubtitles.forEach($elem => {
     $elem.addEventListener('click', () => {
@@ -342,6 +353,15 @@ $accountSubtitles.forEach($elem => {
                 $accountOrders.style.display = 'none';
                 $accountSettings.style.display = 'none';
                 $accountSetPass.style.display = 'block';
+            }
+
+            
+            // Set hight for set-pass-container
+
+            if ($setPassForm.clientHeight < $setPassFormCode.clientHeight) {
+                $accountSetPass.style.height = `${$setPassFormCode.clientHeight + 40}px`;
+            } else {
+                $accountSetPass.style.height = `${$setPassForm.clientHeight + 40}px`;
             }
         }
     });
@@ -389,6 +409,7 @@ $body.querySelectorAll('.account__form').forEach($form => {
 });
 
 // Change user parameter function
+
 function changeUserParameter($form) {
     const $input = $form.querySelector('.account__setting-input');
     const $setBtn = $form.querySelector('.account__setting-set');
@@ -418,7 +439,10 @@ function changeUserParameter($form) {
         }
     });
 
-    let needSendEmailCode = true;
+    // 1: Send email
+    // 2: Confirm old Email
+    // 3: Confirm new Email
+    let setEmailStatus = 1;
     let newEmail;
     $form.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -526,7 +550,7 @@ function changeUserParameter($form) {
                 });
             }
         } else if ($input.classList.contains('account__setting-input-email')) {
-            if (needSendEmailCode) {
+            if (setEmailStatus === 1) {
                 if (!(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu.test($input.value))) {
                     $input.style.border = '2px solid red';
                     $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect email' : 'Неккоректный эл. почта';
@@ -551,6 +575,7 @@ function changeUserParameter($form) {
             
                         if (status !== 200) {
                             try {
+                                $errorMessage.style.color = 'red';
                                 $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
                             } catch (error) {
                                 console.error('Error: ' + error);
@@ -562,17 +587,18 @@ function changeUserParameter($form) {
                             newEmail = $input.value;
                             $input.value = '';
                             $input.setAttribute('placeholder', 'CODE');
-                            needSendEmailCode = false;
+                            setEmailStatus = 2;
                         }
                     })
                     .catch((error) => {
                         $submitBtn.removeAttribute('disabled');
 
+                        $errorMessage.style.color = 'red';
                         $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
                         console.error('Fetch error: ' + error);
                     });
                 }
-            } else {
+            } else if (setEmailStatus === 2) {
                 $errorMessage.style.color = 'red';
                 if (!(/^[0-9]{6}$/.test($input.value))) {
                     $input.style.border = '2px solid red';
@@ -584,7 +610,11 @@ function changeUserParameter($form) {
                         method: 'POST', 
                         credentials: 'include',
                         body: JSON.stringify({
+                            // false: confirm old email
+                            // true: confirm new email and set email
+                            status: false,
                             code: $input.value,
+                            oldEmail: currentEmail,
                             newEmail
                         }),
                         headers: {
@@ -599,36 +629,85 @@ function changeUserParameter($form) {
             
                         if (status !== 200) {
                             try {
+                                $errorMessage.style.color = 'red';
                                 $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
                             } catch (error) {
                                 console.error('Error: ' + error);
                             }
                         } else {
-                            $input.setAttribute('readonly', 'true');
                             $errorMessage.style.color = '#33CC66';
-                            $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
-                            $errorMessage.style.fontSize = '12px';
-                            setTimeout(() => {
-                                $errorMessage.style.color = 'red';
-                                $errorMessage.textContent = '';
-                                $errorMessage.style.fontSize = '10px';
-                            }, 2000);
-                            $input.setAttribute('placeholder', '');
-                            $input.value = newEmail
-
-                            $setBtn.style.display = 'block';
-                            $submitBtn.style.display = 'none';
-
-                            needSendEmailCode = true;
+                            $errorMessage.textContent = (currentLanguage === 'en') ? `Enter the code from ${newEmail}` : `Введите код из ${newEmail}`;;
+                            $errorMessage.style.fontSize = '14px';
+                            $input.value = '';
+                            setEmailStatus = 3;
                         }
                     })
                     .catch((error) => {
                         $submitBtn.removeAttribute('disabled');
                         
+                        $errorMessage.style.color = 'red';
                         $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
                         console.error('Fetch error: ' + error);
                     });
                 }
+            } else if (setEmailStatus === 3) {
+                $submitBtn.setAttribute('disabled', 'true');
+
+                fetch(`${HOST}/api/change_user_email`, {
+                    method: 'POST', 
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        // false: confirm old email
+                        // true: confirm new email and set email
+                        status: true,
+                        code: $input.value,
+                        oldEmail: currentEmail,
+                        newEmail
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(async (res) => {
+                    $submitBtn.removeAttribute('disabled');
+
+                    const status = res.status;
+                    const data = await res.json();
+        
+                    if (status !== 200) {
+                        try {
+                            $errorMessage.style.color = 'red';
+                            $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                        } catch (error) {
+                            console.error('Error: ' + error);
+                        }
+                    } else {
+                        $input.setAttribute('readonly', 'true');
+                        $errorMessage.style.color = '#33CC66';
+                        $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
+                        $errorMessage.style.fontSize = '14px';
+                        setTimeout(() => {
+                            $errorMessage.style.color = 'red';
+                            $errorMessage.textContent = '';
+                            $errorMessage.style.fontSize = '10px';
+                        }, 2000);
+                        
+                        $input.setAttribute('placeholder', '');
+                        $input.value = newEmail;
+
+                        $setBtn.style.display = 'block';
+                        $submitBtn.style.display = 'none';
+
+                        setEmailStatus = 1;
+                    }
+                })
+                .catch((error) => {
+                    $submitBtn.removeAttribute('disabled');
+                    
+                    $errorMessage.style.color = 'red';
+                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                    console.error('Fetch error: ' + error);
+                });   
             }
             
         }
@@ -637,13 +716,15 @@ function changeUserParameter($form) {
 
 // SET-PASS
 
-const $setPassForm = $accountSetPass.querySelector('.account__set-pass-form');
 const $currentPass = $setPassForm.querySelector('.account__set-pass-current-input');
 const $newPass = $setPassForm.querySelector('.account__set-pass-new-input');
 const $repeatPass = $setPassForm.querySelector('.account__set-pass-repeat-input');
 const $setPassCurrentError = $setPassForm.querySelector('.account__set-pass-error-current');
 const $setPassNewError = $setPassForm.querySelector('.account__set-pass-error-new');
 
+// Send code for set password
+
+let newPass;
 $setPassForm.addEventListener('submit', (event) => {
     event.preventDefault();
 
@@ -691,6 +772,51 @@ $setPassForm.addEventListener('submit', (event) => {
         $setPassNewError.textContent = (currentLanguage === 'en') ? 'Password must contain latin letters and numbers' : 'Пароль должен содержать латинские буквы и цифры';
         isValid = false;
     }
+
+    if ($newPass.value === $currentPass.value) {
+        $newPass.style.border = '2px solid red';
+        $repeatPass.style.border = '2px solid red';
+        $setPassNewError.textContent = (currentLanguage === 'en') ? 'Old and new passwords are match' : 'Старый и новый пароли совпадают';
+        isValid = false;
+    }
+
+    if (isValid) {
+        newPass = $repeatPass.value
+        fetch(`${HOST}/api/send_code_for_set_pass`, {
+            method: 'POST', 
+            credentials: 'include',
+            body: JSON.stringify({
+                currentPass: $currentPass.value,
+                newPass
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(async (res) => {
+            const status = res.status;
+            const data = await res.json();
+
+            if (status !== 200) {
+                try {
+                    $setPassNewError.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                } catch (error) {
+                    console.error('Error: ' + error);
+                }
+            } else {
+                $setPassForm.classList.add('_hidden');
+                $setPassFormCode.classList.remove('_hidden');
+
+                $currentPass.value = '';
+                $newPass.value = '';
+                $repeatPass.value = '';
+            }
+        })
+        .catch((error) => {
+            $setPassNewError.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+            console.error('Fetch error: ' + error);
+        });
+    }
 });
 
 $currentPass.addEventListener('focus', () => {
@@ -715,4 +841,69 @@ $currentPass.addEventListener('input', () => {
         $repeatPass.style.border = '';
         $setPassNewError.textContent = '';
     }); 
+});
+
+// Actived back button
+
+const $setPassBackBtn = $setPassFormCode.querySelector('.account__set-pass-back');
+
+$setPassBackBtn.addEventListener('click', () => {
+    $setPassForm.classList.remove('_hidden');
+    $setPassFormCode.classList.add('_hidden');
+})
+
+// Send code
+
+const $setPassCodeInput = $setPassFormCode.querySelector('.account__set-pass-code-input');
+const $setPassCodeError = $setPassFormCode.querySelector('.account__set-pass-error-code');
+
+$setPassFormCode.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    if (!(/^[0-9]{6}$/.test($setPassCodeInput.value))) {
+        $setPassCodeInput.style.border = '2px solid red';
+        $setPassCodeError.textContent = (currentLanguage === 'en') ? 'Incorrect email code' : 'Неверный код';
+    } else {
+        fetch(`${HOST}/api/set_user_password`, {
+            method: 'POST', 
+            credentials: 'include',
+            body: JSON.stringify({
+                code: $setPassCodeInput.value, 
+                newPass
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(async (res) => {
+            const status = res.status;
+            const data = await res.json();
+
+            if (status !== 200) {
+                try {
+                    $setPassCodeError.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                } catch (error) {
+                    console.error('Error: ' + error);
+                }
+            } else {
+                $setPassCodeInput.value = '';
+                $setPassCodeError.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
+                $setPassCodeError.style.color = '#00FF66';
+                $setPassCodeError.style.fontSize = '14px';
+
+                setTimeout(() => {
+                    $setPassForm.classList.remove('_hidden');
+                    $setPassFormCode.classList.add('_hidden');
+
+                    $setPassCodeError.textContent = '';
+                    $setPassCodeError.style.color = 'red';
+                    $setPassCodeError.style.fontSize = '10px';
+                }, 3000)
+            }
+        })
+        .catch((error) => {
+            $setPassNewError.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+            console.error('Fetch error: ' + error);
+        });
+    }
 });

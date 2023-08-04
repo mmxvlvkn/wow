@@ -6,7 +6,7 @@ create TABLE person(
     pass VARCHAR(100),
     roole VARCHAR(10),
     token VARCHAR(250), 
-    code VARCHAR(7)
+    code VARCHAR(20)
 );
 
 create TABLE person_bufer(

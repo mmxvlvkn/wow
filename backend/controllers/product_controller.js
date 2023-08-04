@@ -26,7 +26,6 @@ class productController {
                     let price = dataForPriceFormation.base_price;
                     let coef = 1;
 
-                    console.log(123)
                     for (let key in dataForPriceFormation.radio) {
                         orderDescription += '    ' + key + ':\n';
                         orderDescription += '        ' + sendingData.radio[key] + ',\n';
@@ -303,7 +302,6 @@ class productController {
                         console.log('Error: ' + error)
                         return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
                     }
-                    console.log(productsData.rows)
 
                     return ress.create(res, 200, productsData.rows);
                 } catch (error) {
@@ -323,7 +321,6 @@ class productController {
             const tokenInfo = await tokenService.userVerificationByToken(req);
 
             if (tokenInfo.status) {
-                console.log(tokenInfo)
                 if (tokenInfo.dbData.roole === 'admin') {
                     try {  
                         let productsData;

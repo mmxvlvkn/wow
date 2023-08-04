@@ -166,12 +166,23 @@
     &__setting-input-tlg {}
     &__setting-set-tlg {}
     &__set-pass {
+        position: relative;
         padding: calc_rem(20);
         background-color: white;
         border-radius: calc_rem(2);
         color: black;
     }
-    &__set-pass-form {}
+    &__set-pass-form {
+        position: absolute;
+        left: calc_rem(20);
+        top: calc_rem(20);
+
+        &._hidden {
+            visibility: hidden;
+            opacity: 0;
+        }
+    }
+    
     &__setting-label {
         display: block;
         font-size: calc_rem(14);
@@ -234,6 +245,48 @@
             background-color: $color_2_active;
         }
     }
+    &__set-pass-form-code {
+        position: absolute;
+        left: calc_rem(20);
+        top: calc_rem(20);
+
+        &._hidden {
+            visibility: hidden;
+            opacity: 0;
+        }
+    }
+    &__set-pass-back {
+        position: relative;
+        margin-bottom: calc_rem(20);
+        width: calc_rem(30);
+        height: calc_rem(30);
+    }
+    &__set-pass-back-line {
+        position: absolute;
+        height: calc_rem(5);
+        background-color: $color_2;
+        border-radius: calc_rem(1);
+    }
+    &__set-pass-back-line-1 {
+        left: calc_rem(0);
+        top: 42%;
+        width: calc_rem(30);
+    }
+    &__set-pass-back-line-2 {
+        left: calc_rem(-1);
+        top: 21%;
+        transform: rotate(-45deg);
+        width: calc_rem(18);
+    }
+    &__set-pass-back-line-3 {
+        left: calc_rem(-1);
+        top: 62%;
+        transform: rotate(45deg);
+        width: calc_rem(18);
+    }
+    &__set-pass-error-code {
+        margin-bottom: calc_rem(10);
+    }
 }
 
 .order-item {
@@ -282,13 +335,13 @@
     }
 }
 
-.account {
-    &__setting-input-container {}
-    &__setting-input {}
-    &__setting-input-nickname {}
-    &__setting-error {}
-    &__setting-error-nickname {}
-}
+
+
+
+
+
+
+
 
 
 
