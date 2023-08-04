@@ -15,8 +15,8 @@
                 <div class="content">
                     <h1 class="account__title"><span class="en">My account</span><span class="ru">Мой аккаунт</span></h1>
                     <nav class="account__nav">
-                        <button type="button" class="account__subtitle account__subtitle-orders _selected"><span class="en">Orders</span><span class="ru">Заказы</span></button>
-                        <button type="button" class="account__subtitle account__subtitle-settings"><span class="en">Main settings</span><span class="ru">Основные настройки</span></button>
+                        <button type="button" class="account__subtitle account__subtitle-orders"><span class="en">Orders</span><span class="ru">Заказы</span></button>
+                        <button type="button" class="account__subtitle account__subtitle-settings _selected"><span class="en">Main settings</span><span class="ru">Основные настройки</span></button>
                         <button type="button" class="account__subtitle account__subtitle-set-pass"><span class="en">Set password</span><span class="ru">Изменить пароль</span></button>
                     </nav>
                     <div class="account__subpage account__orders"></div>
@@ -36,11 +36,17 @@
                             <form action="#" class="account__form account__form-email">
                                 <laber class="account__setting-label" for="account_email"><span class="en">Email</span><span class="ru">Эл. почта</span></laber>
                                 <div class="account__setting-input-container">
+                                    <button type="button" class="account__setting-email-back _hidden">
+                                        <span class="account__setting-email-back-line account__setting-email-back-line-1"></span>
+                                        <span class="account__setting-email-back-line account__setting-email-back-line-2"></span>
+                                        <span class="account__setting-email-back-line account__setting-email-back-line-3"></span>
+                                        <span class="en">back</span><span class="ru">Назад</span>
+                                    </button>
                                     <input readonly id="account_email" type="text" class="account__setting-input account__setting-input-email">
                                     <p class="account__setting-error account__setting-error-email"></p>
                                 </div>
                                 <button type="button" class="account__setting-set account__setting-set-email"><span class="en">Set</span><span class="ru">Изменить</span></button>
-                                <button type="submit" class="account__setting-submit"><span class="en">Confirm</span><span class="ru">Подтвердить</span></button>
+                                <button type="submit" class="account__setting-submit account__setting-submit-email"><span class="en">Confirm</span><span class="ru">Подтвердить</span></button>
                             </form>
                         </div>
                         <div class="account__setting account__setting-tlg">

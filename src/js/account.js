@@ -409,12 +409,18 @@ $body.querySelectorAll('.account__form').forEach($form => {
 });
 
 // Change user parameter function
+const $backEmailBtn = $accountSettings.querySelector('.account__setting-email-back');
 
+// 1: Send email
+// 2: Confirm old Email
+// 3: Confirm new Email
+let setEmailStatus = 1;
 function changeUserParameter($form) {
     const $input = $form.querySelector('.account__setting-input');
     const $setBtn = $form.querySelector('.account__setting-set');
     const $submitBtn = $form.querySelector('.account__setting-submit');
     const $errorMessage = $form.querySelector('.account__setting-error');
+    
     console.log($errorMessage)
 
     $setBtn.addEventListener('click', () => {
@@ -439,10 +445,6 @@ function changeUserParameter($form) {
         }
     });
 
-    // 1: Send email
-    // 2: Confirm old Email
-    // 3: Confirm new Email
-    let setEmailStatus = 1;
     let newEmail;
     $form.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -588,6 +590,7 @@ function changeUserParameter($form) {
                             $input.value = '';
                             $input.setAttribute('placeholder', 'CODE');
                             setEmailStatus = 2;
+                            $backEmailBtn.classList.remove('_hidden');
                         }
                     })
                     .catch((error) => {
@@ -699,6 +702,7 @@ function changeUserParameter($form) {
                         $submitBtn.style.display = 'none';
 
                         setEmailStatus = 1;
+                        $backEmailBtn.classList.add('_hidden');
                     }
                 })
                 .catch((error) => {
@@ -714,6 +718,26 @@ function changeUserParameter($form) {
     });
 }
 
+// Activate set email - back button
+
+const $setEmailInput = $accountSettings.querySelector('.account__setting-input-email');
+const $setEmailBtn = $accountSettings.querySelector('.account__setting-set-email');
+const $submitEmailBtn = $accountSettings.querySelector('.account__setting-submit-email');
+const $setEmailErrorMessage = $accountSettings.querySelector('.account__setting-error-email');
+
+$backEmailBtn.addEventListener('click', () => {
+    $setEmailInput.setAttribute('readonly', 'true');
+    $setEmailInput.setAttribute('placeholder', '');
+    $setEmailInput.value = currentEmail;
+    $setEmailErrorMessage.style.color = 'red';
+    $setEmailErrorMessage.textContent = '';
+    $setEmailErrorMessage.style.fontSize = '10px';
+    $setEmailBtn.style.display = 'block';
+    $submitEmailBtn.style.display = 'none';
+    setEmailStatus = 1;
+    $backEmailBtn.classList.add('_hidden');
+});
+
 // SET-PASS
 
 const $currentPass = $setPassForm.querySelector('.account__set-pass-current-input');
@@ -721,6 +745,7 @@ const $newPass = $setPassForm.querySelector('.account__set-pass-new-input');
 const $repeatPass = $setPassForm.querySelector('.account__set-pass-repeat-input');
 const $setPassCurrentError = $setPassForm.querySelector('.account__set-pass-error-current');
 const $setPassNewError = $setPassForm.querySelector('.account__set-pass-error-new');
+console.log($backEmailBtn)
 
 // Send code for set password
 

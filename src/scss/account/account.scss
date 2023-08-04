@@ -156,6 +156,56 @@
         background-color: #c5c5c5;
     }
     &__form-email {}
+    &__setting-email-back {
+        padding-left: calc_rem(18);
+        position: absolute;
+        left: calc_rem(0);
+        top: -55%;
+        font-size: calc_rem(14);
+        color: $color_2;
+        transition-duration: 300;
+
+        &._hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        &:hover {
+            color: $color_2_hover;
+            &__setting-email-back-line {
+                background-color: $color_2_hover;
+            }
+        }
+        &:active {
+            color: $color_2_active;
+            & .account__setting-email-back-line {
+                background-color: $color_2_active;
+            }
+        }
+    }
+    &__setting-email-back-line {
+        position: absolute;
+        height: calc_rem(2);
+        background-color: $color_2;
+        border-radius: calc_rem(1);
+    }
+    &__setting-email-back-line-1 {
+        left: calc_rem(0);
+        top: 45%;
+        width: calc_rem(15);
+    }
+    &__setting-email-back-line-2 {
+        transform: rotate(-45deg);
+        left: calc_rem(-1);
+        top: 25%;
+        width: calc_rem(9);
+    }
+    &__setting-email-back-line-3 {
+        transform: rotate(45deg);
+        left: calc_rem(0.1);
+        top: 65%;
+        width: calc_rem(9);
+    }
     &__setting-input-email {
     }
     &__setting-set-email {}
@@ -334,9 +384,6 @@
         background-color: #c5c5c5;
     }
 }
-
-
-
 
 
 
