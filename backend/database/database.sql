@@ -25,10 +25,7 @@ create TABLE price_formation(
 
 create TABLE orders(
     order_number VARCHAR(8),
-    id BIGINT,
-    email VARCHAR(200),
-    nickname VARCHAR(30),
-    tlg VARCHAR(200),
+    user_id BIGINT,
     title VARCHAR(250),
     order_description VARCHAR(2000),
     price REAL
@@ -38,25 +35,37 @@ create TABLE current_order_number(
     order_number BIGINT
 );
 
+// Statuses
+// 0: canceled,
+// 1: paid,
+// 2: performed,
+// 3: completed,
+
 create TABLE products(
     order_number VARCHAR(8),
-    id BIGINT,
-    email VARCHAR(200),
-    nickname VARCHAR(30),
-    tlg VARCHAR(200),
+    user_id BIGINT,
     title VARCHAR(250),
     order_description VARCHAR(2000),
-    price REAL,
-    create_date  VARCHAR(20)
+    price VARCHAR(15),
+    create_date VARCHAR(20), 
+    create_time VARCHAR(10),
+    product_status INT
 );
+
+// Statuses
+// 0: canceled,
+// 1: under consideration,
+// 2: paid,
+// 3: performed,
+// 4: completed,
+
 create TABLE other_products(
     order_number VARCHAR(8),
-    id BIGINT,
-    email VARCHAR(200),
-    nickname VARCHAR(30),
-    tlg VARCHAR(200),
+    user_id BIGINT,
     title VARCHAR(30),
     order_description VARCHAR(2000),
-    price VARCHAR(200),
-    create_date  VARCHAR(20)
+    price VARCHAR(15),
+    create_date  VARCHAR(20),
+    create_time VARCHAR(10),
+    product_status INT
 );

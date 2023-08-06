@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         $productArticle.className = "account__order order-item";
                         const $productDate = document.createElement('div');
                         $productDate.className = "order-item__option";
-                        $productDate.innerHTML = product.create_date;
+                        $productDate.innerHTML = `<p style="margin-bottom: 7px">${product.create_date}</p><p>${product.create_time}</p>`;
                         $productArticle.append($productDate);
 
                         const $productNumber = document.createElement('div');
@@ -112,10 +112,19 @@ window.addEventListener('DOMContentLoaded', () => {
 
                         const $productUserInfo = document.createElement('div');
                         $productUserInfo.className = "order-item__option";
-                        const $productUserNick = document.createElement('div');
+                        const $productStatus = document.createElement('div');
                         let $userInfoElement = document.createElement('div');
                         $userInfoElement.className = 'payment__description-object';
-                        let HTMLForuserInfoElement = `<p class="payment__description-subtitle">${'Nickname' + ':'}</p>`;
+                        $userInfoElement.style.marginBottom = '10px'
+                        let HTMLForuserInfoElement = `<p class="payment__description-subtitle">${'Status' + ':'}</p>`;
+                        HTMLForuserInfoElement += `<p class="payment__description-value">${product.product_status}</p>`;
+                        $userInfoElement.innerHTML = HTMLForuserInfoElement;
+                        $productStatus.append($userInfoElement);
+                        $productUserInfo.append($productStatus);
+                        const $productUserNick = document.createElement('div');
+                        $userInfoElement = document.createElement('div');
+                        $userInfoElement.className = 'payment__description-object';
+                        HTMLForuserInfoElement = `<p class="payment__description-subtitle">${'Nickname' + ':'}</p>`;
                         HTMLForuserInfoElement += `<p class="payment__description-value">${product.nickname + ','}</p>`;
                         $userInfoElement.innerHTML = HTMLForuserInfoElement;
                         $productUserNick.append($userInfoElement);
@@ -140,9 +149,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
                         $adminOrders.append($productArticle);
+                        languageChanges();
                     });
                 } else {
-                    $accountOrders.innerHTML = (currentLanguage === 'en') ? 'No orders' : 'Заказы отсутствуют';
+                    $adminOrders.innerHTML = (currentLanguage === 'en') ? 'No orders' : 'Заказы отсутствуют';
                 }
             }
         })
@@ -187,7 +197,7 @@ window.addEventListener('DOMContentLoaded', () => {
                             $productArticle.className = "account__order order-item";
                             const $productDate = document.createElement('div');
                             $productDate.className = "order-item__option";
-                            $productDate.innerHTML = product.create_date;
+                            $productDate.innerHTML = `<p style="margin-bottom: 7px">${product.create_date}</p><p>${product.create_time}</p>`;
                             $productArticle.append($productDate);
     
                             const $productNumber = document.createElement('div');
@@ -212,10 +222,19 @@ window.addEventListener('DOMContentLoaded', () => {
     
                             const $productUserInfo = document.createElement('div');
                             $productUserInfo.className = "order-item__option";
-                            const $productUserNick = document.createElement('div');
+                            const $productStatus = document.createElement('div');
                             let $userInfoElement = document.createElement('div');
                             $userInfoElement.className = 'payment__description-object';
-                            let HTMLForuserInfoElement = `<p class="payment__description-subtitle">${'Nickname' + ':'}</p>`;
+                            $userInfoElement.style.marginBottom = '10px'
+                            let HTMLForuserInfoElement = `<p class="payment__description-subtitle">${'Status' + ':'}</p>`;
+                            HTMLForuserInfoElement += `<p class="payment__description-value">${product.product_status}</p>`;
+                            $userInfoElement.innerHTML = HTMLForuserInfoElement;
+                            $productStatus.append($userInfoElement);
+                            $productUserInfo.append($productStatus);
+                            const $productUserNick = document.createElement('div');
+                            $userInfoElement = document.createElement('div');
+                            $userInfoElement.className = 'payment__description-object';
+                            HTMLForuserInfoElement = `<p class="payment__description-subtitle">${'Nickname' + ':'}</p>`;
                             HTMLForuserInfoElement += `<p class="payment__description-value">${product.nickname + ','}</p>`;
                             $userInfoElement.innerHTML = HTMLForuserInfoElement;
                             $productUserNick.append($userInfoElement);
@@ -240,6 +259,7 @@ window.addEventListener('DOMContentLoaded', () => {
     
     
                             $adminOrders.append($productArticle);
+                            languageChanges();
                         });
                     }
                 }

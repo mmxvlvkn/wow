@@ -98,10 +98,8 @@ class userController {
                         try {
                             const codeforOldEmail = emailService.generateEmailCode();
                             const codeforNewEmail = emailService.generateEmailCode();
-                            console.log(codeforOldEmail + ';' + codeforNewEmail)
                             await database.query('UPDATE person SET code = $2 WHERE email = $1', [tokenInfo.tokenData.email, codeforOldEmail + ';' + codeforNewEmail]);
                             try {
-                                console.log(tokenInfo.tokenData.email + ' ' + req.body.newEmail)
                                 await emailService.sendActivationCode(tokenInfo.tokenData.email, codeforOldEmail);
                                 await emailService.sendActivationCode(req.body.newEmail, codeforNewEmail);
                             } catch (error) {
@@ -164,7 +162,6 @@ class userController {
                     }
                 } else {
                     const userData = await database.query('SELECT code FROM person WHERE email = $1', [tokenInfo.tokenData.email]);
-                    console.log("OK")
                     if (!userData.rows[0].code.includes(';')) {
                         
                         if (!(/^[0-9]{6}$/.test(req.body.code))) {
@@ -253,7 +250,6 @@ class userController {
     }
     async changeUserPassword(req, res) {
         try {
-            console.log('123')
             const tokenInfo = await tokenService.userVerificationByToken(req);
             if (tokenInfo.status) {
                 

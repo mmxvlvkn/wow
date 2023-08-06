@@ -71,7 +71,6 @@ class TokenService {
     async userVerificationByToken(req) {
         try {
             const tokenFromReq = this.getToken(req);
-            console.log(tokenFromReq)
             let tokenData;
             jwt.verify(tokenFromReq, secret, async (err, payload) => {
                 if (err) {

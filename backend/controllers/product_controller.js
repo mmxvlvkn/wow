@@ -98,7 +98,7 @@ class productController {
                     newOrderNumber += orderNumder;
                     
                     try {
-                        await database.query('INSERT INTO orders (order_number, id, email, nickname, tlg, title, order_description, price) values ($1, $2, $3, $4, $5, $6, $7, $8)', [newOrderNumber, tokenInfo.dbData.id, tokenInfo.dbData.email, tokenInfo.dbData.nickname, tokenInfo.dbData.tlg, title, orderDescription, price]);
+                        await database.query('INSERT INTO orders (order_number, user_id, title, order_description, price) values ($1, $2, $3, $4, $5)', [newOrderNumber, tokenInfo.dbData.id, title, orderDescription, price]);
                         await database.query('UPDATE current_order_number SET order_number = $2 WHERE order_number = $1', [orderNumder - 1, orderNumder]);
                     } catch (error) {
                         console.log('Error: ' + error)
@@ -165,9 +165,10 @@ class productController {
                 order = order.rows[0];
                 const date = new Date;
                 const currentDate = `${(date.getDate() < 10) ? '0' + date.getDate() : date.getDate()}.${(date.getMonth() + 1 < 10) ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}.${(date.getFullYear() % 100 < 10) ? '0' + (date.getFullYear() % 100) : date.getFullYear() % 100}`;
+                const currentTime = `${(date.getHours() < 10) ? '0' + date.getHours() : date.getHours()}:${(date.getMinutes() < 10) ? '0' + date.getMinutes() : date.getMinutes()}`;
 
                 try {
-                    await database.query('INSERT INTO products (order_number, id, email, nickname, tlg, title, order_description, price, create_date) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)', [order.order_number, order.id, order.email, order.nickname, order.tlg, order.title, order.order_description, order.price, currentDate]);
+                    await database.query('INSERT INTO products (order_number, user_id, title, order_description, price, create_date, create_time, product_status) values ($1, $2, $3, $4, $5, $6, $7, $8)', [order.order_number, order.user_id, order.title, order.order_description, order.price, currentDate, currentTime, 1]);
                 } catch (error) {
                     console.log('Error: ' + error);
                     return ress.create(res, 500, {en: 'Unexpected error of database', ru: 'Непредвиденная ошибка базы данных'});
@@ -189,15 +190,32 @@ class productController {
 
             if (tokenInfo.status) {
                 try {  
-                    let productsData;
+                    let sendData;
                     try {
-                        productsData = await database.query('SELECT * FROM products WHERE email = $1', [tokenInfo.dbData.email]);
+                        sendData = (await database.query('SELECT * FROM products WHERE user_id = $1', [tokenInfo.dbData.id])).rows;
+
+                        for (let i = 0; i < sendData.length; i++) {
+                            const userData = (await database.query('SELECT * FROM person WHERE id = $1', [sendData[i].user_id])).rows[0];
+                            sendData[i].email = userData.email;
+                            sendData[i].nickname = userData.nickname;
+                            sendData[i].tlg = userData.tlg;
+                            if (sendData[i].product_status === 0) {
+                                sendData[i].product_status = '<span class="en">Canceled,</span><span class="ru">Отменен,</span>';
+                            } else if (sendData[i].product_status === 1) {
+                                sendData[i].product_status = '<span class="en">Paid,</span><span class="ru">Оплачен,</span>';
+                            } else if (sendData[i].product_status === 2) {
+                                sendData[i].product_status = '<span class="en">Performed,</span><span class="ru">Выполняется,</span>';
+                            } else if (sendData[i].product_status === 3) {
+                                sendData[i].product_status = '<span class="en">Completed,</span><span class="ru">Выполнен,</span>';
+                            }
+                        }
                     } catch (error) {
                         console.log('Error: ' + error)
                         return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
                     }
 
-                    return ress.create(res, 200, productsData.rows);
+                    
+                    return ress.create(res, 200, sendData);
                 } catch (error) {
                     console.log('Error: ' + error)
                     return ress.create(res, 409, 'Geting products error');
@@ -217,15 +235,31 @@ class productController {
             if (tokenInfo.status) {
                 if (tokenInfo.dbData.roole === 'admin') {
                     try {  
-                        let productsData;
+                        let sendData;
                         try {
-                            productsData = await database.query('SELECT * FROM products');
+                            sendData = (await database.query('SELECT * FROM products')).rows;
+
+                            for (let i = 0; i < sendData.length; i++) {
+                                const userData = (await database.query('SELECT * FROM person WHERE id = $1', [sendData[i].user_id])).rows[0];
+                                sendData[i].email = userData.email;
+                                sendData[i].nickname = userData.nickname;
+                                sendData[i].tlg = userData.tlg;
+                                if (sendData[i].product_status === 0) {
+                                    sendData[i].product_status = '<span class="en">Canceled,</span><span class="ru">Отменен,</span>';
+                                } else if (sendData[i].product_status === 1) {
+                                    sendData[i].product_status = '<span class="en">Paid,</span><span class="ru">Оплачен,</span>';
+                                } else if (sendData[i].product_status === 2) {
+                                    sendData[i].product_status = '<span class="en">Performed,</span><span class="ru">Выполняется,</span>';
+                                } else if (sendData[i].product_status === 3) {
+                                    sendData[i].product_status = '<span class="en">Completed,</span><span class="ru">Выполнен,</span>';
+                                }
+                            }
                         } catch (error) {
                             console.log('Error: ' + error)
                             return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
                         }
 
-                        return ress.create(res, 200, productsData.rows);
+                        return ress.create(res, 200, sendData);
                     } catch (error) {
                         console.log('Error: ' + error)
                         return ress.create(res, 409, 'Geting products error');
@@ -267,9 +301,10 @@ class productController {
 
                     const date = new Date;
                     const currentDate = `${(date.getDate() < 10) ? '0' + date.getDate() : date.getDate()}.${(date.getMonth() + 1 < 10) ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}.${(date.getFullYear() % 100 < 10) ? '0' + (date.getFullYear() % 100) : date.getFullYear() % 100}`;
-                    
+                    const currentTime = `${(date.getHours() < 10) ? '0' + date.getHours() : date.getHours()}:${(date.getMinutes() < 10) ? '0' + date.getMinutes() : date.getMinutes()}`;
+
                     try {
-                        await database.query('INSERT INTO other_products (order_number, id, email, nickname, tlg, title, order_description, price, create_date) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)', [newOrderNumber, tokenInfo.dbData.id, tokenInfo.dbData.email, tokenInfo.dbData.nickname, tokenInfo.dbData.tlg, 'Other product', sendingData.orderDescription, sendingData.price, currentDate]);
+                        await database.query('INSERT INTO other_products (order_number, product_status, user_id, title, order_description, price, create_date, create_time) values ($1, $2, $3, $4, $5, $6, $7, $8)', [newOrderNumber, 1, tokenInfo.dbData.id, 'Other product', sendingData.orderDescription, sendingData.price, currentDate, currentTime]);
                         await database.query('UPDATE current_order_number SET order_number = $2 WHERE order_number = $1', [orderNumder - 1, orderNumder]);
                     } catch (error) {
                         console.log('Error: ' + error)
@@ -295,15 +330,33 @@ class productController {
 
             if (tokenInfo.status) {
                 try {  
-                    let productsData;
+                    let sendData;
                     try {
-                        productsData = await database.query('SELECT * FROM other_products WHERE email = $1', [tokenInfo.tokenData.email]);
+                        sendData = (await database.query('SELECT * FROM other_products WHERE user_id = $1', [tokenInfo.dbData.id])).rows;
+
+                        for (let i = 0; i < sendData.length; i++) {
+                            const userData = (await database.query('SELECT * FROM person WHERE id = $1', [sendData[i].user_id])).rows[0];
+                            sendData[i].email = userData.email;
+                            sendData[i].nickname = userData.nickname;
+                            sendData[i].tlg = userData.tlg;
+                            if (sendData[i].product_status === 0) {
+                                sendData[i].product_status = '<span class="en">Canceled,</span><span class="ru">Отменен,</span>';
+                            } else if (sendData[i].product_status === 1) {
+                                sendData[i].product_status = '<span class="en">Under consideration,</span><span class="ru">На рассмотрении,</span>';
+                            } else if (sendData[i].product_status === 2) {
+                                sendData[i].product_status = '<span class="en">Paid,</span><span class="ru">Оплачен,</span>';
+                            } else if (sendData[i].product_status === 3) {
+                                sendData[i].product_status = '<span class="en">Performed,</span><span class="ru">Выполняется,</span>';
+                            } else if (sendData[i].product_status === 3) {
+                                sendData[i].product_status = '<span class="en">Completed,</span><span class="ru">Выполнен,</span>';
+                            }
+                        }
                     } catch (error) {
                         console.log('Error: ' + error)
                         return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
                     }
 
-                    return ress.create(res, 200, productsData.rows);
+                    return ress.create(res, 200, sendData);
                 } catch (error) {
                     console.log('Error: ' + error)
                     return ress.create(res, 409, 'Geting products error');
@@ -323,15 +376,33 @@ class productController {
             if (tokenInfo.status) {
                 if (tokenInfo.dbData.roole === 'admin') {
                     try {  
-                        let productsData;
+                        let sendData;
                         try {
-                            productsData = await database.query('SELECT * FROM other_products');
+                            sendData = (await database.query('SELECT * FROM other_products')).rows;
+
+                            for (let i = 0; i < sendData.length; i++) {
+                                const userData = (await database.query('SELECT * FROM person WHERE id = $1', [sendData[i].user_id])).rows[0];
+                                sendData[i].email = userData.email;
+                                sendData[i].nickname = userData.nickname;
+                                sendData[i].tlg = userData.tlg;
+                                if (sendData[i].product_status === 0) {
+                                    sendData[i].product_status = '<span class="en">Canceled,</span><span class="ru">Отменен,</span>';
+                                } else if (sendData[i].product_status === 1) {
+                                    sendData[i].product_status = '<span class="en">Under consideration,</span><span class="ru">На рассмотрении,</span>';
+                                } else if (sendData[i].product_status === 2) {
+                                    sendData[i].product_status = '<span class="en">Paid,</span><span class="ru">Оплачен,</span>';
+                                } else if (sendData[i].product_status === 3) {
+                                    sendData[i].product_status = '<span class="en">Performed,</span><span class="ru">Выполняется,</span>';
+                                } else if (sendData[i].product_status === 3) {
+                                    sendData[i].product_status = '<span class="en">Completed,</span><span class="ru">Выполнен,</span>';
+                                }
+                            }
                         } catch (error) {
                             console.log('Error: ' + error)
                             return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
                         }
 
-                        return ress.create(res, 200, productsData.rows);
+                        return ress.create(res, 200, sendData);
                     } catch (error) {
                         console.log('Error: ' + error)
                         return ress.create(res, 409, 'Geting products error');
