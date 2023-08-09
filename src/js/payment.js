@@ -28,9 +28,9 @@ fetch(`${HOST}/api/get_order_description`, {
         $subtitle.textContent = data.title;
 
         if (data.current_language === 'ru') {
-            $price.textContent = data.price * usdRusCourse + 'руб.'
+            $price.textContent = (data.price * usdRusCourse).toFixed(2) + 'руб.'
         } else {
-            $price.textContent = data.price + '$';
+            $price.textContent = data.price.toFixed(2) + '$';
         }
 
         let tempDescription = data.order_description.match(/radio:([\s\S]+?)range:/)[1];
