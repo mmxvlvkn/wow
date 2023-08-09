@@ -28,7 +28,8 @@ create TABLE orders(
     user_id BIGINT,
     title VARCHAR(250),
     order_description VARCHAR(2000),
-    price REAL
+    price REAL,
+    current_language VARCHAR(5)
 );
 
 create TABLE current_order_number(
@@ -47,6 +48,7 @@ create TABLE products(
     title VARCHAR(250),
     order_description VARCHAR(2000),
     price VARCHAR(15),
+    current_language VARCHAR(5),
     create_date VARCHAR(20), 
     create_time VARCHAR(10),
     product_status INT
@@ -65,6 +67,7 @@ create TABLE other_products(
     title VARCHAR(30),
     order_description VARCHAR(2000),
     price VARCHAR(15),
+    current_language VARCHAR(5),
     create_date  VARCHAR(20),
     create_time VARCHAR(10),
     product_status INT

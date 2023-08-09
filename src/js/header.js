@@ -182,6 +182,19 @@ function languageChanges() {
     }
 }
 
+//
+
+// Show the price in Russian on the product map
+
+const usdRusCourse = 96.32;
+
+const $productCardsArray = $body.querySelectorAll('.product-card');
+
+$productCardsArray.forEach($productCard => {
+    $productCard.querySelector('.product-card__price-value .ru').textContent = ($productCard.querySelector('.product-card__price-value .en').textContent * usdRusCourse).toFixed(2);
+    $productCard.querySelector('.product-card__price-value-sale .ru').textContent = ($productCard.querySelector('.product-card__price-value-sale .en').textContent * usdRusCourse).toFixed(2);
+});
+
 // Adoptive
 
 const $headerBurgerButton = $body.querySelector('.burger__button');

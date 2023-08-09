@@ -11,7 +11,7 @@ class paymentController {
             let orderNumber = req.body.orderNumber;
             let data;
             try {
-                data = await database.query('SELECT title, order_description, price FROM orders WHERE order_number = $1', [orderNumber]);
+                data = await database.query('SELECT title, order_description, price, current_language FROM orders WHERE order_number = $1', [orderNumber]);
             } catch (error) {
                 console.log('Error: ' + error);
                 return ress.create(res, 500, {en: 'Unexpected error of database', ru: 'Непредвиденная ошибка базы данных'});

@@ -98,7 +98,7 @@ class productController {
                     newOrderNumber += orderNumder;
                     
                     try {
-                        await database.query('INSERT INTO orders (order_number, user_id, title, order_description, price) values ($1, $2, $3, $4, $5)', [newOrderNumber, tokenInfo.dbData.id, title, orderDescription, price]);
+                        await database.query('INSERT INTO orders (order_number, user_id, title, order_description, price, current_language) values ($1, $2, $3, $4, $5, $6)', [newOrderNumber, tokenInfo.dbData.id, title, orderDescription, price, req.body.currentLanguage]);
                         await database.query('UPDATE current_order_number SET order_number = $2 WHERE order_number = $1', [orderNumder - 1, orderNumder]);
                     } catch (error) {
                         console.log('Error: ' + error)
@@ -168,6 +168,8 @@ class productController {
                 const currentTime = `${(date.getHours() < 10) ? '0' + date.getHours() : date.getHours()}:${(date.getMinutes() < 10) ? '0' + date.getMinutes() : date.getMinutes()}`;
 
                 try {
+                    
+
                     await database.query('INSERT INTO products (order_number, user_id, title, order_description, price, create_date, create_time, product_status) values ($1, $2, $3, $4, $5, $6, $7, $8)', [order.order_number, order.user_id, order.title, order.order_description, order.price, currentDate, currentTime, 1]);
                 } catch (error) {
                     console.log('Error: ' + error);
@@ -304,7 +306,7 @@ class productController {
                     const currentTime = `${(date.getHours() < 10) ? '0' + date.getHours() : date.getHours()}:${(date.getMinutes() < 10) ? '0' + date.getMinutes() : date.getMinutes()}`;
 
                     try {
-                        await database.query('INSERT INTO other_products (order_number, product_status, user_id, title, order_description, price, create_date, create_time) values ($1, $2, $3, $4, $5, $6, $7, $8)', [newOrderNumber, 1, tokenInfo.dbData.id, 'Other product', sendingData.orderDescription, sendingData.price, currentDate, currentTime]);
+                        await database.query('INSERT INTO other_products (order_number, product_status, user_id, title, order_description, price, create_date, create_time, current_language) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)', [newOrderNumber, 1, tokenInfo.dbData.id, 'Other product', sendingData.orderDescription, sendingData.price, currentDate, currentTime, sendingData.currentLanguage]);
                         await database.query('UPDATE current_order_number SET order_number = $2 WHERE order_number = $1', [orderNumder - 1, orderNumder]);
                     } catch (error) {
                         console.log('Error: ' + error)

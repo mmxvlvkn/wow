@@ -25,8 +25,9 @@
             display: flex;
         }
         .product-card__price-value {
+            padding-bottom: calc_rem(2);
             color: $color_4;
-            font-size: calc_rem(18);
+            font-size: calc_rem(14);
             text-decoration: line-through;
         }
     }
@@ -69,7 +70,7 @@
     }
     &__price-value-container {
         display: flex;
-        font-size: calc_rem(22);
+        font-size: calc_rem(19);
         align-items: flex-end;
     }
     &__price-value-sale {

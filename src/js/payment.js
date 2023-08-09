@@ -6,6 +6,7 @@ const $description = document.querySelector('.payment__description');
 const $price = document.querySelector('.payment__price');
 const $articles = document.querySelectorAll('.payment__description-article');
 
+const usdRusCourse = 96.32;
 
 fetch(`${HOST}/api/get_order_description`, {
     method: 'POST', 
@@ -25,7 +26,12 @@ fetch(`${HOST}/api/get_order_description`, {
     } else {
         $orderNumber.textContent = '#' + localStorage.getItem('order_number');
         $subtitle.textContent = data.title;
-        $price.textContent = data.price + '$';
+
+        if (data.current_language === 'ru') {
+            $price.textContent = data.price * usdRusCourse + 'руб.'
+        } else {
+            $price.textContent = data.price + '$';
+        }
 
         let tempDescription = data.order_description.match(/radio:([\s\S]+?)range:/)[1];
         tempDescription = tempDescription.split(' ').join('').split('\n').join('');
@@ -172,6 +178,7 @@ $paymentForm.addEventListener('submit', (event) => {
                 $paymentError.classList.add('_shown');
                 $body.classList.add('_lock');
             } else {
+                console.log('fetch 2')
                 $paymentSuccess.classList.add('_shown');
                 $body.classList.add('_lock');
             }

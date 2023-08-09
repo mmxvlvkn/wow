@@ -296,7 +296,8 @@ fetch(`${HOST}/api/get_price_formation`, {
                             credentials: 'include',
                             body: JSON.stringify({
                                 title: $body.querySelector('.data-title').textContent,
-                                data: sendingData
+                                data: sendingData, 
+                                currentLanguage
                             }),
                             headers: {
                                 'Content-Type': 'application/json'
@@ -383,7 +384,8 @@ fetch(`${HOST}/api/get_price_formation`, {
                                 credentials: 'include',
                                 body: JSON.stringify({
                                     title: $body.querySelector('.data-title').textContent,
-                                    data: sendingData
+                                    data: sendingData, 
+                                    currentLanguage
                                 }),
                                 headers: {
                                     'Content-Type': 'application/json'
@@ -487,8 +489,8 @@ function priceFormation(dataForPriceFormation) {
     price *= coef;
     $productPricesEn[0].textContent = price.toFixed(2);
     $productPricesEn[1].textContent = price.toFixed(2);
-    $productPricesRu[0].textContent = (price * 76).toFixed(2);
-    $productPricesRu[1].textContent = (price * 76).toFixed(2);
+    $productPricesRu[0].textContent = (price * usdRusCourse).toFixed(2);
+    $productPricesRu[1].textContent = (price * usdRusCourse).toFixed(2);
 }
 
 // Show error
