@@ -40,7 +40,20 @@ window.addEventListener('DOMContentLoaded', () => {
 
                         const $productPrice = document.createElement('div');
                         $productPrice.className = "order-item__option";
-                        $productPrice.innerHTML = product.price + '$';
+                        product.price = Number(product.price)
+                        if (product.current_language === 'ru') {
+                            if (Number.isInteger(Number((product.price * usdRusCourse).toFixed(2)))) {
+                                $productPrice.innerHTML = Math.round(product.price * usdRusCourse) + 'руб.';
+                            } else {
+                                $productPrice.innerHTML = (product.price * usdRusCourse).toFixed(2) + 'руб.';
+                            }
+                        } else {
+                            if (Number.isInteger(Number((product.price).toFixed(2)))) {
+                                $productPrice.innerHTML = Math.round(product.price) + '$';
+                            } else {
+                                $productPrice.innerHTML = (product.price).toFixed(2) + '$';
+                            }
+                        }
                         $productArticle.append($productPrice);
 
                         const $productDescription = document.createElement('div');

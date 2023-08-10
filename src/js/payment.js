@@ -28,9 +28,17 @@ fetch(`${HOST}/api/get_order_description`, {
         $subtitle.textContent = data.title;
 
         if (data.current_language === 'ru') {
-            $price.textContent = (data.price * usdRusCourse).toFixed(2) + 'руб.'
+            if (Number.isInteger(Number((data.price * usdRusCourse).toFixed(2)))) {
+                $price.textContent = Math.round(data.price * usdRusCourse) + 'руб.';
+            } else {
+                $price.textContent = (data.price * usdRusCourse).toFixed(2) + 'руб.';
+            }
         } else {
-            $price.textContent = data.price.toFixed(2) + '$';
+            if (Number.isInteger(Number((data.price).toFixed(2)))) {
+                $price.textContent = Math.round(data.price) + '$';
+            } else {
+                $price.textContent = (data.price).toFixed(2) + '$';
+            }
         }
 
         let tempDescription = data.order_description.match(/radio:([\s\S]+?)range:/)[1];

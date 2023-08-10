@@ -487,10 +487,21 @@ function priceFormation(dataForPriceFormation) {
     });
 
     price *= coef;
-    $productPricesEn[0].textContent = price.toFixed(2);
-    $productPricesEn[1].textContent = price.toFixed(2);
-    $productPricesRu[0].textContent = (price * usdRusCourse).toFixed(2);
-    $productPricesRu[1].textContent = (price * usdRusCourse).toFixed(2);
+    if (Number.isInteger(Number(price.toFixed(2)))) {
+        $productPricesEn[0].textContent = price;
+        $productPricesEn[1].textContent = price;
+    } else {
+        $productPricesEn[0].textContent = price.toFixed(2);
+        $productPricesEn[1].textContent = price.toFixed(2);
+    }
+    if (Number.isInteger(Number((price * usdRusCourse).toFixed(2)))) {
+        $productPricesRu[0].textContent = Math.round(price * usdRusCourse);
+        $productPricesRu[1].textContent = Math.round(price * usdRusCourse);
+    } else {
+        $productPricesRu[0].textContent = (price * usdRusCourse).toFixed(2);
+        $productPricesRu[1].textContent = (price * usdRusCourse).toFixed(2);
+    }
+    
 }
 
 // Show error

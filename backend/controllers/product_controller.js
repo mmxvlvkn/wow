@@ -173,7 +173,7 @@ class productController {
 
                 try {
                     if ((await database.query('SELECT * FROM products WHERE order_number = $1', [order.order_number])).rows.length === 0) {
-                        await database.query('INSERT INTO products (order_number, user_id, title, order_description, price, create_date, create_time, product_status) values ($1, $2, $3, $4, $5, $6, $7, $8)', [order.order_number, order.user_id, order.title, order.order_description, order.price, currentDate, currentTime, 1]);
+                        await database.query('INSERT INTO products (order_number, user_id, title, order_description, price, create_date, create_time, product_status, current_language) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)', [order.order_number, order.user_id, order.title, order.order_description, order.price, currentDate, currentTime, 1, order.current_language]);
                     } else {
                         return ress.create(res, 400, {en: 'This product already exist', ru: 'Данный продукт уже оформлен'});
                     }
@@ -202,6 +202,7 @@ class productController {
                     let sendData;
                     try {
                         sendData = (await database.query('SELECT * FROM products WHERE user_id = $1', [tokenInfo.dbData.id])).rows;
+                        console.log(sendData)
 
                         for (let i = 0; i < sendData.length; i++) {
                             const userData = (await database.query('SELECT * FROM person WHERE id = $1', [sendData[i].user_id])).rows[0];

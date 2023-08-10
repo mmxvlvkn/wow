@@ -191,8 +191,23 @@ const usdRusCourse = 96.32;
 const $productCardsArray = $body.querySelectorAll('.product-card');
 
 $productCardsArray.forEach($productCard => {
-    $productCard.querySelector('.product-card__price-value .ru').textContent = ($productCard.querySelector('.product-card__price-value .en').textContent * usdRusCourse).toFixed(2);
-    $productCard.querySelector('.product-card__price-value-sale .ru').textContent = ($productCard.querySelector('.product-card__price-value-sale .en').textContent * usdRusCourse).toFixed(2);
+    const $priceValueRu = $productCard.querySelector('.product-card__price-value .ru');
+    const $priceValueEn = $productCard.querySelector('.product-card__price-value .en');
+    const $priceValueSaleRu = $productCard.querySelector('.product-card__price-value-sale .ru');
+    const $priceValueSaleEn = $productCard.querySelector('.product-card__price-value-sale .en');
+
+    console.log(Number.isInteger(Number($priceValueEn.textContent * usdRusCourse)))
+
+    if (Number.isInteger(Number(($priceValueEn.textContent * usdRusCourse).toFixed(2)))) {
+        $priceValueRu.textContent = Math.round($priceValueEn.textContent * usdRusCourse);
+    } else {
+        $priceValueRu.textContent = ($priceValueEn.textContent * usdRusCourse).toFixed(2);
+    }
+    if (Number.isInteger(Number(($priceValueSaleEn.textContent * usdRusCourse).toFixed(2)))) {
+        $priceValueSaleRu.textContent = Math.round($priceValueSaleEn.textContent * usdRusCourse);
+    } else {
+        $priceValueSaleRu.textContent = ($priceValueSaleEn.textContent * usdRusCourse).toFixed(2);
+    }
 });
 
 // Adoptive
