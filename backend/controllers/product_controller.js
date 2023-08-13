@@ -16,9 +16,13 @@ class productController {
 
             if (tokenInfo.status) {
                 try {
-                    let title = req.body.title;
+                    let titleEn = req.body.title;
                     const sendingData = req.body.data;
-                    let dataForPriceFormation = await database.query('SELECT price_data FROM price_formation WHERE price_name = $1', [title]);
+                    let dataForPriceFormation = await database.query('SELECT * FROM price_formation WHERE title_en = $1', [titleEn]);
+                    let titleRu = dataForPriceFormation.rows[0].title_ru;
+                    titleRu = titleRu.replace(/_/g, ' ');
+                    titleRu = titleRu[0].toUpperCase() + titleRu.slice(1);
+                    console.log(titleRu)
                     dataForPriceFormation = JSON.parse(dataForPriceFormation.rows[0].price_data);
 
                     //Price and description formation
@@ -78,8 +82,8 @@ class productController {
                     userData = userData.rows[0];
 
                     // Formation title
-                    title = title.replace(/_/g, ' ');
-                    title = title[0].toUpperCase() + title.slice(1);
+                    titleEn = titleEn.replace(/_/g, ' ');
+                    titleEn = titleEn[0].toUpperCase() + titleEn.slice(1);
 
                     //get current order number
                     let orderNumder = await database.query('SELECT * FROM current_order_number');
@@ -98,7 +102,7 @@ class productController {
                     newOrderNumber += orderNumder;
                     
                     try {
-                        await database.query('INSERT INTO orders (order_number, user_id, title, order_description, price, current_language) values ($1, $2, $3, $4, $5, $6)', [newOrderNumber, tokenInfo.dbData.id, title, orderDescription, price, req.body.currentLanguage]);
+                        await database.query('INSERT INTO orders (order_number, user_id, title_en, title_ru, order_description, price, current_language) values ($1, $2, $3, $4, $5, $6, $7)', [newOrderNumber, tokenInfo.dbData.id, titleEn, titleRu, orderDescription, price, req.body.currentLanguage]);
                         await database.query('UPDATE current_order_number SET order_number = $2 WHERE order_number = $1', [orderNumder - 1, orderNumder]);
 
                         setTimeout(async () => {
@@ -126,23 +130,24 @@ class productController {
         try {
             try {
                 const title = req.body.title;
-                let dataForPriceFormationTitles = await database.query('SELECT price_name FROM price_formation');
+                let dataForPriceFormationTitles = await database.query('SELECT title_en FROM price_formation');
                 dataForPriceFormationTitles = dataForPriceFormationTitles.rows;
 
                 let titleIsValid = false;
                 dataForPriceFormationTitles.forEach(data => {
-                    if (data.price_name == title) {
+                    if (data.title_en == title) {
                         titleIsValid = true;
                     }
                 });
 
                 if (titleIsValid) {
-                    let dataForPriceFormation = await database.query('SELECT price_data FROM price_formation WHERE price_name = $1', [title]);
+                    let dataForPriceFormation = await database.query('SELECT price_data FROM price_formation WHERE title_en = $1', [title]);
+                    
                     dataForPriceFormation = JSON.parse(dataForPriceFormation.rows[0].price_data);
 
                     return ress.create(res, 200, dataForPriceFormation);
                 } else {
-                    console.log('Error: ' + error);
+                    console.log('Data is not correct');
                     return ress.create(res, 400, {en: 'Bad Request', ru: 'Неккоректные данные'});
                 }
 
@@ -173,7 +178,7 @@ class productController {
 
                 try {
                     if ((await database.query('SELECT * FROM products WHERE order_number = $1', [order.order_number])).rows.length === 0) {
-                        await database.query('INSERT INTO products (order_number, user_id, title, order_description, price, create_date, create_time, product_status, current_language) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)', [order.order_number, order.user_id, order.title, order.order_description, order.price, currentDate, currentTime, 1, order.current_language]);
+                        await database.query('INSERT INTO products (order_number, user_id, title_en, title_ru, order_description, price, create_date, create_time, product_status, current_language) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)', [order.order_number, order.user_id, order.title_en, order.title_ru, order.order_description, order.price, currentDate, currentTime, 1, order.current_language]);
                     } else {
                         return ress.create(res, 400, {en: 'This product already exist', ru: 'Данный продукт уже оформлен'});
                     }
@@ -202,7 +207,6 @@ class productController {
                     let sendData;
                     try {
                         sendData = (await database.query('SELECT * FROM products WHERE user_id = $1', [tokenInfo.dbData.id])).rows;
-                        console.log(sendData)
 
                         for (let i = 0; i < sendData.length; i++) {
                             const userData = (await database.query('SELECT * FROM person WHERE id = $1', [sendData[i].user_id])).rows[0];

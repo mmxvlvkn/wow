@@ -25,7 +25,8 @@ fetch(`${HOST}/api/get_order_description`, {
         $orderNumber.style.color = 'red';
     } else {
         $orderNumber.textContent = '#' + localStorage.getItem('order_number');
-        $subtitle.textContent = data.title;
+        console.log(data)
+        $subtitle.textContent = (data.current_language === 'en') ? data.title_en : data.title_ru;
 
         if (data.current_language === 'ru') {
             if (Number.isInteger(Number((data.price * usdRusCourse).toFixed(2)))) {
@@ -138,64 +139,70 @@ const $paymentError = $body.querySelector('.payment-error');
 const $paymentSuccess = $body.querySelector('.payment-success');
 
 let date = new Date;
+let alreadySent = false;
 $paymentForm.addEventListener('submit', (event) => {
     event.preventDefault();
-    let isValid = true;
 
-    if (!/^\d{16}$/.test($paymentCardNumber.value)) {
-        isValid = false;
-        $paymentCardNumber.style = 'border: 1px solid red';
-    }
-    if (!/^\d{1,2}$/.test($paymentCardFirstDate.value) || !/^\d{2}$/.test($paymentCardSecondDate.value)) {
-        isValid = false;
-        $paymentCardFirstDate.style = 'border: 1px solid red';
-        $paymentCardSecondDate.style = 'border: 1px solid red';
-    } else if (!((0 < Number($paymentCardFirstDate.value) && Number($paymentCardFirstDate.value) <= 12)) || !(Number($paymentCardSecondDate.value) >= (date.getFullYear() % 100))) {
-        isValid = false;
-        $paymentCardFirstDate.style = 'border: 1px solid red';
-        $paymentCardSecondDate.style = 'border: 1px solid red';
-    } else if (Number($paymentCardSecondDate.value) === (date.getFullYear() % 100) && Number($paymentCardFirstDate.value) < date.getMonth() + 1) {
-        isValid = false;
-        $paymentCardFirstDate.style = 'border: 1px solid red';
-        $paymentCardSecondDate.style = 'border: 1px solid red';
-    }
-    if (!/^\d{3}$/.test($paymentCardCVV.value)) {
-        isValid = false;
-        $paymentCardCVV.style = 'border: 1px solid red';
-    }
-    if (!/^[a-zA-Z]{3,}\s[a-zA-Z]{3,}$/.test($paymentCardName.value)) {
-        isValid = false;
-        $paymentCardName.style = 'border: 1px solid red';
-    }
+    if (!alreadySent) {
+        let isValid = true;
 
-    if (isValid) {
-        fetch(`${HOST}/api/create_product`, {
-            method: 'POST', 
-            body: JSON.stringify({
-                status: 'OK',
-                orderNumber: localStorage.getItem('order_number')
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(async (res) => {
-            const status = res.status;
-            const data = await res.json();
-            if (status !== 200) {
+        if (!/^\d{16}$/.test($paymentCardNumber.value)) {
+            isValid = false;
+            $paymentCardNumber.style = 'border: 1px solid red';
+        }
+        if (!/^\d{1,2}$/.test($paymentCardFirstDate.value) || !/^\d{2}$/.test($paymentCardSecondDate.value)) {
+            isValid = false;
+            $paymentCardFirstDate.style = 'border: 1px solid red';
+            $paymentCardSecondDate.style = 'border: 1px solid red';
+        } else if (!((0 < Number($paymentCardFirstDate.value) && Number($paymentCardFirstDate.value) <= 12)) || !(Number($paymentCardSecondDate.value) >= (date.getFullYear() % 100))) {
+            isValid = false;
+            $paymentCardFirstDate.style = 'border: 1px solid red';
+            $paymentCardSecondDate.style = 'border: 1px solid red';
+        } else if (Number($paymentCardSecondDate.value) === (date.getFullYear() % 100) && Number($paymentCardFirstDate.value) < date.getMonth() + 1) {
+            isValid = false;
+            $paymentCardFirstDate.style = 'border: 1px solid red';
+            $paymentCardSecondDate.style = 'border: 1px solid red';
+        }
+        if (!/^\d{3}$/.test($paymentCardCVV.value)) {
+            isValid = false;
+            $paymentCardCVV.style = 'border: 1px solid red';
+        }
+        if (!/^[a-zA-Z]{3,}\s[a-zA-Z]{3,}$/.test($paymentCardName.value)) {
+            isValid = false;
+            $paymentCardName.style = 'border: 1px solid red';
+        }
+
+        if (isValid) {
+            alreadySent = true;
+
+            fetch(`${HOST}/api/create_product`, {
+                method: 'POST', 
+                body: JSON.stringify({
+                    status: 'OK',
+                    orderNumber: localStorage.getItem('order_number')
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(async (res) => {
+                const status = res.status;
+                const data = await res.json();
+                if (status !== 200) {
+                    $paymentError.classList.add('_shown');
+                    $body.classList.add('_lock');
+                } else {
+                    console.log('fetch 2')
+                    $paymentSuccess.classList.add('_shown');
+                    $body.classList.add('_lock');
+                }
+            })
+            .catch ((error) => {
                 $paymentError.classList.add('_shown');
                 $body.classList.add('_lock');
-            } else {
-                console.log('fetch 2')
-                $paymentSuccess.classList.add('_shown');
-                $body.classList.add('_lock');
-            }
-        })
-        .catch ((error) => {
-            $paymentError.classList.add('_shown');
-            $body.classList.add('_lock');
-            console.error("Fetch error: " + error);
-        });
+                console.error("Fetch error: " + error);
+            });
+        }
     }
 });
 

@@ -41,7 +41,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
                         const $productTitle = document.createElement('div');
                         $productTitle.className = "order-item__option";
-                        $productTitle.innerHTML = product.title;
+                        $productTitle.innerHTML = `<p class="en">${product.title_en}</p><p class="ru">${product.title_ru}</p>`;
                         $productArticle.append($productTitle);
 
                         const $productPrice = document.createElement('div');

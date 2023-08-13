@@ -19,14 +19,16 @@ create TABLE person_bufer(
 );
 
 create TABLE price_formation(
-    price_name VARCHAR(200),
+    title_ru VARCHAR(250),
+    title_en VARCHAR(250),
     price_data VARCHAR(5000)
 );
 
 create TABLE orders(
     order_number VARCHAR(8),
     user_id BIGINT,
-    title VARCHAR(250),
+    title_en VARCHAR(250),
+    title_ru VARCHAR(250),
     order_description VARCHAR(2000),
     price REAL,
     current_language VARCHAR(5)
@@ -45,7 +47,8 @@ create TABLE current_order_number(
 create TABLE products(
     order_number VARCHAR(8),
     user_id BIGINT,
-    title VARCHAR(250),
+    title_en VARCHAR(250),
+    title_ru VARCHAR(250),
     order_description VARCHAR(2000),
     price VARCHAR(15),
     current_language VARCHAR(5),
