@@ -1,11 +1,15 @@
 const $otherProductsForm = document.querySelector('.other-product__form');
 const $otherProductsDescription = $otherProductsForm.querySelector('.other-product__textarea');
-const $otherProductsPrice = $otherProductsForm.querySelector('.other-product__inpit');
+const $otherProductsPrice = $otherProductsForm.querySelectorAll('.other-product__inpit');
 const $paymentError = $body.querySelector('.payment-error');
 const $paymentSuccess = $body.querySelector('.payment-success');
 
 $otherProductsForm.addEventListener('submit', event => {
     event.preventDefault();
+
+    
+    const otherProductsPrice = (currentLanguage === 'en') ? $otherProductsPrice[0].value : $otherProductsPrice[1].value;
+
     let isValid = true;
 
     if (!$otherProductsDescription.value) {
@@ -13,8 +17,9 @@ $otherProductsForm.addEventListener('submit', event => {
         isValid = false;
     }
 
-    if (!(/^[0-9]([0-9.,]{0,})$/.test($otherProductsPrice.value))) {
-        $otherProductsPrice.style.border = '2px solid red';
+    if (!(/^[1-9]([0-9.,]{0,7})$/.test(otherProductsPrice) || /^[0][.]([0-9]{1,2})$/.test(otherProductsPrice))) {
+        $otherProductsPrice[0].style.border = '2px solid red';
+        $otherProductsPrice[1].style.border = '2px solid red';
         isValid = false;
     }
 
@@ -26,7 +31,8 @@ $otherProductsForm.addEventListener('submit', event => {
             credentials: 'include',
             body: JSON.stringify({
                 orderDescription: $otherProductsDescription.value,
-                price: $otherProductsPrice.value
+                price: otherProductsPrice,
+                currentLanguage
             }),
             headers: {
                 'Content-Type': 'application/json'
@@ -41,10 +47,12 @@ $otherProductsForm.addEventListener('submit', event => {
                 console.error("Fetch error: " + error);
             } else {
                 $otherProductsDescription.value = '';
-                $otherProductsPrice.value = '';
+                $otherProductsPrice[0].value = '';
+                $otherProductsPrice[1].value = '';
 
                 $otherProductsDescription.style.border = `2px solid ${COLOR_2}`;
-                $otherProductsPrice.style.border = `2px solid ${COLOR_2}`;
+                $otherProductsPrice[0].style.border = `2px solid ${COLOR_2}`;
+                $otherProductsPrice[1].style.border = `2px solid ${COLOR_2}`;
 
                 $paymentSuccess.classList.add('_shown');
                 $body.classList.add('_lock');
@@ -59,7 +67,8 @@ $otherProductsForm.addEventListener('submit', event => {
 });
 
 removeRedBorder($otherProductsDescription);
-removeRedBorder($otherProductsPrice);
+removeRedBorder($otherProductsPrice[0]);
+removeRedBorder($otherProductsPrice[1]);
 
 window.addEventListener('click', (event) => {
     if ($paymentError.classList.contains('_shown')) {

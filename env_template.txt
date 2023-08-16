@@ -1,0 +1,17 @@
+devMode='dev'
+
+secret='nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn'
+serverHost='http://nnnnnn'
+siteHost='http://nnnnnn'
+
+emailToSend='nnnnnn@gmail.com' 
+emailToSendPassword='nnnnnnnnnnnnnnnn'
+emailToSendHost='smtp.gmail.com'
+emailToSendPort=465
+emailToSendSecureMode=true
+
+dbUser='nnnnnnn'
+dbPass='nnnnnnnnn'
+dbName='nnn'
+
+

@@ -167,7 +167,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         $productArticle.append($productUserInfo);
 
 
-                        $accountOrders.append($productArticle);
+                        $accountOrders.prepend($productArticle);
                         languageChanges();
                     });
                 } else {
@@ -198,6 +198,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     if (data.length) {
                         // Other product parse
 
+                        console.log(data)
                         const $subtitle = document.createElement('h2');
                         $subtitle.className = "account__subtitle account__personal-services-subtitle";
                         let $subtitleSpan = document.createElement('span');
@@ -233,17 +234,17 @@ window.addEventListener('DOMContentLoaded', () => {
     
                             const $productTitle = document.createElement('div');
                             $productTitle.className = "order-item__option";
-                            $productTitle.innerHTML = product.title;
+                            $productTitle.innerHTML = `<p class="ru">${'Персональная услуга'}</p><p class="en">${'Personal service'}</p>`;
                             $productArticle.append($productTitle);
     
                             const $productDescription = document.createElement('div');
                             $productDescription.className = "order-item__option";
-                            $productDescription.innerHTML = product.order_description;
+                            $productDescription.innerHTML = (product.current_language === 'en') ? product.price + "$" : product.price + "руб.";
                             $productArticle.append($productDescription);
 
                             const $productPrice = document.createElement('div');
                             $productPrice.className = "order-item__option";
-                            $productPrice.innerHTML = product.price;
+                            $productPrice.innerHTML = product.order_description;
                             $productArticle.append($productPrice);
     
                             const $productUserInfo = document.createElement('div');
@@ -283,7 +284,7 @@ window.addEventListener('DOMContentLoaded', () => {
                             $productUserInfo.append($productUserTlg);
                             $productArticle.append($productUserInfo);
     
-    
+                            //!
                             $accountOrders.append($productArticle);
                             languageChanges();
                         });
