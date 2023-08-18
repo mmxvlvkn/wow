@@ -528,11 +528,11 @@ removeRedBorder($headerSignUpTlg);
 removeRedBorder($headerSignUpPassword);
 removeRedBorder($headerSignUpRepeatPassword);
 
-function removeRedBorder($input1, $input2) {
+function removeRedBorder($input1, $input2, color = COLOR_2) {
     $input1.addEventListener('focus', () => {
-        $input1.style.border = `2px solid ${COLOR_2}`;
+        $input1.style.border = `2px solid ${color}`;
         if ($input2) {
-            $input2.style.border = `2px solid ${COLOR_2}`;
+            $input2.style.border = `2px solid ${color}`;
         }
     });
 }
@@ -736,7 +736,7 @@ function doExit() {
 
 // LOG_IN
 
-// Show sign up popup
+// Show login popup
 
 //? $headerRightRowLog;
 const $headerLogInPopup = $body.querySelector('.header__log-in-popup');

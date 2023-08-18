@@ -33,11 +33,12 @@
         margin-bottom: calc_rem(30);
         font-size: calc_rem(18);
         color: white;
-        background-color: $color_3;
-        border: 2px solid $color_2;
+        background-color: rgba($color_3, 0.95);
+        border: 2px solid white;
         width: calc_rem(300);
         height: calc_rem(130);
         border-radius: calc_rem(3);
+        @extend %shadow;
         resize: none;
 
         &::-webkit-scrollbar {
@@ -60,9 +61,10 @@
         margin-bottom: calc_rem(70);
         font-size: calc_rem(18);
         color: white;
-        background-color: $color_3;
-        border: 2px solid $color_2;
+        background-color: rgba($color_3, 0.95);
+        border: 2px solid white;
         width: calc_rem(250);
+        border-radius: calc_rem(3);
         height: calc_rem(40);
         border-radius: calc_rem(3);
     }
