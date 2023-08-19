@@ -90,7 +90,6 @@ window.addEventListener('click', (event) => {
             setTimeout(() => {
                 isOtherProductForm = true;
             }, 2000);
-            isOtherProductForm = true;
         }
     }
     if ($paymentSuccess.classList.contains('_shown')) {

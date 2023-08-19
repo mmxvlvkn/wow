@@ -1,10 +1,10 @@
 const $accountOrders = $body.querySelector('.account__orders');
 
-// Product display
+// Products display
 
 window.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('isLoggedIn') === 'true') {
-        // Main product display
+        // Main products display
 
         fetch(`${HOST}/api/get_user_products`, {
             method: 'GET', 
@@ -27,72 +27,29 @@ window.addEventListener('DOMContentLoaded', () => {
                     data.forEach(product => {
                         // Main product parse
 
-                        let $productArticle = document.createElement('article');
-                        $productArticle.className = "account__order order-item";
-                        const $productDate = document.createElement('div');
-                        $productDate.className = "order-item__option";
-                        $productDate.innerHTML = `<p style="margin-bottom: 7px">${product.create_date}</p><p>${product.create_time}</p>`;
-                        $productArticle.append($productDate);
-
-                        const $productNumber = document.createElement('div');
-                        $productNumber.className = "order-item__option";
-                        $productNumber.innerHTML = '#' + product.order_number;
-                        $productArticle.append($productNumber);
-
-                        const $productTitle = document.createElement('div');
-                        $productTitle.className = "order-item__option";
-                        $productTitle.innerHTML = `<p class="en">${product.title_en}</p><p class="ru">${product.title_ru}</p>`;
-                        $productArticle.append($productTitle);
-
-                        const $productPrice = document.createElement('div');
-                        $productPrice.className = "order-item__option";
+                        // Price formation
                         product.price = Number(product.price)
                         if (product.current_language === 'ru') {
                             if (Number.isInteger(Number((product.price * usdRusCourse).toFixed(2)))) {
-                                $productPrice.innerHTML = Math.round(product.price * usdRusCourse) + 'руб.';
+                                product.price = Math.round(product.price * usdRusCourse) + 'руб.';
                             } else {
-                                $productPrice.innerHTML = (product.price * usdRusCourse).toFixed(2) + 'руб.';
+                                product.price = (product.price * usdRusCourse).toFixed(2) + 'руб.';
                             }
                         } else {
                             if (Number.isInteger(Number((product.price).toFixed(2)))) {
-                                $productPrice.innerHTML = Math.round(product.price) + '$';
+                                product.price = Math.round(product.price) + '$';
                             } else {
-                                $productPrice.innerHTML = (product.price).toFixed(2) + '$';
+                                product.price = (product.price).toFixed(2) + '$';
                             }
                         }
-                        $productArticle.append($productPrice);
 
-                        const $productDescription = document.createElement('div');
-                        $productDescription.className = "order-item__option";
+                        // Price description formation
+                        const $productDescription = getNewOrderItemOptionElement();
                         let tempDescription = product.order_description.match(/radio:([\s\S]+?)range:/)[1];
-                        tempDescription = tempDescription.split(' ').join('').split('\n').join('');
-                        if (stringIsValid(tempDescription)) {
-                            while (tempDescription.length) {
-                                let descriptionElement = document.createElement('div');
-                                descriptionElement.className = 'payment__description-object';
-                                let HTMLForDescriptionElement = `<p class="payment__description-subtitle">${tempDescription.match(/^([\s\S]+?):/)[1] + ':'}</p>`;
-                                tempDescription = tempDescription.slice(tempDescription.match(/^([\s\S]+?):/)[1].length + 1);
-                                HTMLForDescriptionElement += `<p class="payment__description-value">${tempDescription.match(/^([\s\S]+?),/)[1] + ','}</p>`;
-                                tempDescription = tempDescription.slice(tempDescription.match(/^([\s\S]+?),/)[1].length + 1);
-                                descriptionElement.innerHTML = HTMLForDescriptionElement;
-                                $productDescription.append(descriptionElement);
-                            }
-                        }
+                        formationProductDescriptionEmement(tempDescription, $productDescription)
 
                         tempDescription = product.order_description.match(/range:([\s\S]+?)checkbox:/)[1];
-                        tempDescription = tempDescription.split(' ').join('').split('\n').join('');
-                        if (stringIsValid(tempDescription)) {
-                            while (tempDescription.length) {
-                                let descriptionElement = document.createElement('div');
-                                descriptionElement.className = 'payment__description-object';
-                                let HTMLForDescriptionElement = `<p class="payment__description-subtitle">${tempDescription.match(/^([\s\S]+?):/)[1] + ':'}</p>`;
-                                tempDescription = tempDescription.slice(tempDescription.match(/^([\s\S]+?):/)[1].length + 1);
-                                HTMLForDescriptionElement += `<p class="payment__description-value">${tempDescription.match(/^([\s\S]+?),/)[1] + ','}</p>`;
-                                tempDescription = tempDescription.slice(tempDescription.match(/^([\s\S]+?),/)[1].length + 1);
-                                descriptionElement.innerHTML = HTMLForDescriptionElement;
-                                $productDescription.append(descriptionElement);
-                            }
-                        }
+                        formationProductDescriptionEmement(tempDescription, $productDescription)
 
                         tempDescription = product.order_description.match(/checkbox:([\s\S]+?)select:/)[1];
                         tempDescription = tempDescription.split(' ').join('').split('\n').join('');
@@ -114,68 +71,56 @@ window.addEventListener('DOMContentLoaded', () => {
                         }
 
                         tempDescription = product.order_description.match(/select:([\s\S]+?)$/)[1];
-                        tempDescription = tempDescription.split(' ').join('').split('\n').join('');
-                        if (stringIsValid(tempDescription)) {
-                            while (tempDescription.length) {
-                                let descriptionElement = document.createElement('div');
-                                descriptionElement.className = 'payment__description-object';
-                                let HTMLForDescriptionElement = `<p class="payment__description-subtitle">${tempDescription.match(/^([\s\S]+?):/)[1] + ':'}</p>`;
-                                tempDescription = tempDescription.slice(tempDescription.match(/^([\s\S]+?):/)[1].length + 1);
-                                HTMLForDescriptionElement += `<p class="payment__description-value">${tempDescription.match(/^([\s\S]+?),/)[1] + ','}</p>`;
-                                tempDescription = tempDescription.slice(tempDescription.match(/^([\s\S]+?),/)[1].length + 1);
-                                descriptionElement.innerHTML = HTMLForDescriptionElement;
-                                $productDescription.append(descriptionElement);
-                            }
-                        }
-                        $productArticle.append($productDescription);
+                        formationProductDescriptionEmement(tempDescription, $productDescription)
 
-                        const $productUserInfo = document.createElement('div');
-                        $productUserInfo.className = "order-item__option";
-                        const $productStatus = document.createElement('div');
-                        let $userInfoElement = document.createElement('div');
-                        $userInfoElement.className = 'payment__description-object';
-                        $userInfoElement.style.marginBottom = '10px'
-                        let HTMLForuserInfoElement = `<p class="payment__description-subtitle">${'Status' + ':'}</p>`;
-                        HTMLForuserInfoElement += `<p class="payment__description-value">${product.product_status}</p>`;
-                        $userInfoElement.innerHTML = HTMLForuserInfoElement;
-                        $productStatus.append($userInfoElement);
-                        $productUserInfo.append($productStatus);
-                        const $productUserNick = document.createElement('div');
-                        $userInfoElement = document.createElement('div');
-                        $userInfoElement.className = 'payment__description-object';
-                        HTMLForuserInfoElement = `<p class="payment__description-subtitle">${'Nickname' + ':'}</p>`;
-                        HTMLForuserInfoElement += `<p class="payment__description-value">${product.nickname + ','}</p>`;
-                        $userInfoElement.innerHTML = HTMLForuserInfoElement;
-                        $productUserNick.append($userInfoElement);
-                        $productUserInfo.append($productUserNick);
-                        const $productUserEmail = document.createElement('div');
-                        $userInfoElement = document.createElement('div');
-                        $userInfoElement.className = 'payment__description-object';
-                        HTMLForuserInfoElement = `<p class="payment__description-subtitle">${'Email' + ':'}</p>`;
-                        HTMLForuserInfoElement += `<p class="payment__description-value">${product.email + ','}</p>`;
-                        $userInfoElement.innerHTML = HTMLForuserInfoElement;
-                        $productUserEmail.append($userInfoElement);
-                        $productUserInfo.append($productUserEmail);
-                        const $productUserTlg = document.createElement('div');
-                        $userInfoElement = document.createElement('div');
-                        $userInfoElement.className = 'payment__description-object';
-                        HTMLForuserInfoElement = `<p class="payment__description-subtitle">${'Telegram' + ':'}</p>`;
-                        HTMLForuserInfoElement += `<p class="payment__description-value">${product.tlg + ','}</p>`;
-                        $userInfoElement.innerHTML = HTMLForuserInfoElement;
-                        $productUserTlg.append($userInfoElement);
-                        $productUserInfo.append($productUserTlg);
+                        // Formation info about user
+                        const $productUserInfo = getNewOrderItemOptionElement(
+                            `<div class="payment__description-object" style="margin-bottom: 10px;">
+                                <p class="payment__description-subtitle">Status:</p>
+                                <p class="payment__description-value">
+                                    ${product.product_status}
+                                </p>
+                            </div>
+                            <div class="payment__description-object">
+                                <p class="payment__description-subtitle">Nickname:</p>
+                                <p class="payment__description-value">${product.nickname + ','}</p>
+                            </div>
+                            <div class="payment__description-object">
+                                <p class="payment__description-subtitle">Email:</p>
+                                <p class="payment__description-value">${product.email + ','}</p>
+                            </div>
+                            <div class="payment__description-object">
+                                <p class="payment__description-subtitle">Telegram:</p>
+                                <p class="payment__description-value">${product.tlg + ','}</p>
+                            </div>`
+                        );
+
+                        // Display products
+                        let $productArticle = document.createElement('article');
+                        $productArticle.className = "account__order order-item";
+                        $productArticle.append(getNewOrderItemOptionElement(`<p style="margin-bottom: 7px">${product.create_date}</p><p>${product.create_time}</p>`));
+                        $productArticle.append(getNewOrderItemOptionElement('#' + product.order_number));
+                        $productArticle.append(getNewOrderItemOptionElement(`<p class="en">${product.title_en}</p><p class="ru">${product.title_ru}</p>`));
+                        $productArticle.append(getNewOrderItemOptionElement(product.price));
+                        $productArticle.append($productDescription);                      
                         $productArticle.append($productUserInfo);
-
-
                         $accountOrders.prepend($productArticle);
                         languageChanges();
                     });
                 } else {
-                    const $innerInfo = document.createElement('span');
-                    $innerInfo.innerHTML = (currentLanguage === 'en') ? 'No orders' : 'Заказы отсутствуют';
-                    $innerInfo.style.display = 'block';
-                    $innerInfo.style.marginBottom = '10px';
-                    $accountOrders.append($innerInfo);
+                    if (localStorage.getItem('isLoggedIn') === 'true') {
+                        const $innerInfo = document.createElement('span');
+                        $innerInfo.innerHTML = (currentLanguage === 'en') ? 'No orders' : 'Заказы отсутствуют';
+                        $innerInfo.style.display = 'block';
+                        $innerInfo.style.marginBottom = '10px';
+                        $accountOrders.append($innerInfo);
+                    } else {
+                        const $innerInfo = document.createElement('span');
+                        $innerInfo.innerHTML = (currentLanguage === 'en') ? 'You are not logged in' : 'Вы не вошли в аккаунт';
+                        $innerInfo.style.display = 'block';
+                        $innerInfo.style.marginBottom = '10px';
+                        $accountOrders.append($innerInfo);
+                    }
                 }
             }
         })
@@ -197,95 +142,45 @@ window.addEventListener('DOMContentLoaded', () => {
                 } else {
                     if (data.length) {
                         // Other product parse
-
-                        console.log(data)
                         const $subtitle = document.createElement('h2');
-                        $subtitle.className = "account__subtitle account__personal-services-subtitle";
-                        let $subtitleSpan = document.createElement('span');
-                        if (localStorage.getItem('currentLanguage') === 'en') {
-                            $subtitleSpan.className = "en _shown";
-                        } else {
-                            $subtitleSpan.className = "en _hidden";
-                        }
-                        $subtitleSpan.innerHTML = 'Personal services';
-                        $subtitle.append($subtitleSpan);
-                        $subtitleSpan = document.createElement('span');
-                        if (localStorage.getItem('currentLanguage') === 'en') {
-                            $subtitleSpan.className = "ru _hidden";
-                        } else {
-                            $subtitleSpan.className = "ru _shown";
-                        }
-                        $subtitleSpan.innerHTML = 'Персональные услуги';
-                        $subtitle.append($subtitleSpan);
+                        $subtitle.className = "account__subtitle";
+                        $subtitle.style.marginBottom = "2px";
+                        $subtitle.innerHTML = `<span class='en'>Personal services</span><span class='ru'>Персональные услуги</span>`;
                         $accountOrders.append($subtitle);
 
                         data.forEach(product => {
+                            // Formation info about user
+                            const $productUserInfo = getNewOrderItemOptionElement(
+                                `<div class="payment__description-object" style="margin-bottom: 10px;">
+                                    <p class="payment__description-subtitle">Status:</p>
+                                    <p class="payment__description-value">
+                                        ${product.product_status}
+                                    </p>
+                                </div>
+                                <div class="payment__description-object">
+                                    <p class="payment__description-subtitle">Nickname:</p>
+                                    <p class="payment__description-value">${product.nickname + ','}</p>
+                                </div>
+                                <div class="payment__description-object">
+                                    <p class="payment__description-subtitle">Email:</p>
+                                    <p class="payment__description-value">${product.email + ','}</p>
+                                </div>
+                                <div class="payment__description-object">
+                                    <p class="payment__description-subtitle">Telegram:</p>
+                                    <p class="payment__description-value">${product.tlg + ','}</p>
+                                </div>`
+                            );
+
+                            // Display products
                             let $productArticle = document.createElement('article');
                             $productArticle.className = "account__order order-item";
-                            const $productDate = document.createElement('div');
-                            $productDate.className = "order-item__option";
-                            $productDate.innerHTML = `<p style="margin-bottom: 7px">${product.create_date}</p><p>${product.create_time}</p>`;
-                            $productArticle.append($productDate);
-    
-                            const $productNumber = document.createElement('div');
-                            $productNumber.className = "order-item__option";
-                            $productNumber.innerHTML = '#' + product.order_number;
-                            $productArticle.append($productNumber);
-    
-                            const $productTitle = document.createElement('div');
-                            $productTitle.className = "order-item__option";
-                            $productTitle.innerHTML = `<p class="ru">${'Персональная услуга'}</p><p class="en">${'Personal service'}</p>`;
-                            $productArticle.append($productTitle);
-    
-                            const $productDescription = document.createElement('div');
-                            $productDescription.className = "order-item__option";
-                            $productDescription.innerHTML = (product.current_language === 'en') ? product.price + "$" : product.price + "руб.";
-                            $productArticle.append($productDescription);
-
-                            const $productPrice = document.createElement('div');
-                            $productPrice.className = "order-item__option";
-                            $productPrice.innerHTML = product.order_description;
-                            $productArticle.append($productPrice);
-    
-                            const $productUserInfo = document.createElement('div');
-                            $productUserInfo.className = "order-item__option";
-                            const $productStatus = document.createElement('div');
-                            let $userInfoElement = document.createElement('div');
-                            $userInfoElement.className = 'payment__description-object';
-                            $userInfoElement.style.marginBottom = '10px'
-                            let HTMLForuserInfoElement = `<p class="payment__description-subtitle">${'Status' + ':'}</p>`;
-                            HTMLForuserInfoElement += `<p class="payment__description-value">${product.product_status}</p>`;
-                            $userInfoElement.innerHTML = HTMLForuserInfoElement;
-                            $productStatus.append($userInfoElement);
-                            $productUserInfo.append($productStatus);
-                            const $productUserNick = document.createElement('div');
-                            $userInfoElement = document.createElement('div');
-                            $userInfoElement.className = 'payment__description-object';
-                            HTMLForuserInfoElement = `<p class="payment__description-subtitle">${'Nickname' + ':'}</p>`;
-                            HTMLForuserInfoElement += `<p class="payment__description-value">${product.nickname + ','}</p>`;
-                            $userInfoElement.innerHTML = HTMLForuserInfoElement;
-                            $productUserNick.append($userInfoElement);
-                            $productUserInfo.append($productUserNick);
-                            const $productUserEmail = document.createElement('div');
-                            $userInfoElement = document.createElement('div');
-                            $userInfoElement.className = 'payment__description-object';
-                            HTMLForuserInfoElement = `<p class="payment__description-subtitle">${'Email' + ':'}</p>`;
-                            HTMLForuserInfoElement += `<p class="payment__description-value">${product.email + ','}</p>`;
-                            $userInfoElement.innerHTML = HTMLForuserInfoElement;
-                            $productUserEmail.append($userInfoElement);
-                            $productUserInfo.append($productUserEmail);
-                            const $productUserTlg = document.createElement('div');
-                            $userInfoElement = document.createElement('div');
-                            $userInfoElement.className = 'payment__description-object';
-                            HTMLForuserInfoElement = `<p class="payment__description-subtitle">${'Telegram' + ':'}</p>`;
-                            HTMLForuserInfoElement += `<p class="payment__description-value">${product.tlg + ','}</p>`;
-                            $userInfoElement.innerHTML = HTMLForuserInfoElement;
-                            $productUserTlg.append($userInfoElement);
-                            $productUserInfo.append($productUserTlg);
+                            $productArticle.append(getNewOrderItemOptionElement(`<p style="margin-bottom: 7px">${product.create_date}</p><p>${product.create_time}</p>`));
+                            $productArticle.append(getNewOrderItemOptionElement('#' + product.order_number));
+                            $productArticle.append(getNewOrderItemOptionElement(`<p class="ru">${'Персональная услуга'}</p><p class="en">${'Personal service'}</p>`));
+                            $productArticle.append(getNewOrderItemOptionElement((product.current_language === 'en') ? product.price + "$" : product.price + "руб."));
+                            $productArticle.append(getNewOrderItemOptionElement(product.order_description));
                             $productArticle.append($productUserInfo);
-    
-                            //!
-                            $accountOrders.append($productArticle);
+                            $subtitle.after($productArticle);
                             languageChanges();
                         });
                     }
@@ -301,16 +196,49 @@ window.addEventListener('DOMContentLoaded', () => {
             console.error('Fetch error: ' + error);
         });
     } else {
-        const $innerInfo = document.createElement('span');
-        $innerInfo.innerHTML = (currentLanguage === 'en') ? 'No orders' : 'Заказы отсутствуют';
-        $innerInfo.style.display = 'block';
-        $innerInfo.style.marginBottom = '10px';
-        $accountOrders.append($innerInfo);
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+            const $innerInfo = document.createElement('span');
+            $innerInfo.innerHTML = (currentLanguage === 'en') ? 'No orders' : 'Заказы отсутствуют';
+            $innerInfo.style.display = 'block';
+            $innerInfo.style.marginBottom = '10px';
+            $accountOrders.append($innerInfo);
+        } else {
+            const $innerInfo = document.createElement('span');
+            $innerInfo.innerHTML = (currentLanguage === 'en') ? 'You are not logged in' : 'Вы не вошли в аккаунт';
+            $innerInfo.style.display = 'block';
+            $innerInfo.style.marginBottom = '10px';
+            $accountOrders.append($innerInfo);
+        }
     }
 });
 
-// Check validation of data
+function getNewOrderItemOptionElement(innerHTML = false) {
+    const $orderItemOption = document.createElement('div');
+    $orderItemOption.className = "order-item__option";
+    if (innerHTML) {
+        $orderItemOption.innerHTML = innerHTML;
+    }
 
+    return $orderItemOption;
+}
+
+function formationProductDescriptionEmement(tempDescription, $productDescription) {
+    tempDescription = tempDescription.split(' ').join('').split('\n').join('');
+    if (stringIsValid(tempDescription)) {
+        while (tempDescription.length) {
+            let descriptionElement = document.createElement('div');
+            descriptionElement.className = 'payment__description-object';
+            let HTMLForDescriptionElement = `<p class="payment__description-subtitle">${tempDescription.match(/^([\s\S]+?):/)[1] + ':'}</p>`;
+            tempDescription = tempDescription.slice(tempDescription.match(/^([\s\S]+?):/)[1].length + 1);
+            HTMLForDescriptionElement += `<p class="payment__description-value">${tempDescription.match(/^([\s\S]+?),/)[1] + ','}</p>`;
+            tempDescription = tempDescription.slice(tempDescription.match(/^([\s\S]+?),/)[1].length + 1);
+            descriptionElement.innerHTML = HTMLForDescriptionElement;
+            $productDescription.append(descriptionElement);
+        }
+    }
+}
+
+// Check validation of getting data
 function stringIsValid(str) {
     if (str.includes(':') && str.includes(',') && (str.indexOf(':') < str.indexOf(','))) {
         while (str.length) {
@@ -325,7 +253,7 @@ function stringIsValid(str) {
     return false;
 }
 
-// Navigation on page
+// NAVIGATION ON PAGE
 
 const $accountSubtitles = $body.querySelectorAll('.account__subtitle');
 const $accountSubtitleOrders = $body.querySelector('.account__subtitle-orders');
@@ -351,7 +279,6 @@ if ($accountSubtitleOrders.classList.contains('_selected')) {
 }
 
 // Set hight for set-pass-container
-
 //? $accountSetPass
 const $setPassForm = $accountSetPass.querySelector('.account__set-pass-form');
 const $setPassFormCode = $accountSetPass.querySelector('.account__set-pass-form-code');
@@ -391,7 +318,6 @@ $accountSubtitles.forEach($elem => {
 
             
             // Set hight for set-pass-container
-
             if ($setPassForm.clientHeight < $setPassFormCode.clientHeight) {
                 $accountSetPass.style.height = `${$setPassFormCode.clientHeight + 40}px`;
             } else {
@@ -402,7 +328,6 @@ $accountSubtitles.forEach($elem => {
 });
 
 // Getting info about user 
-
 let currentEmail;
 fetch(`${HOST}/api/get_user_info`, {
     method: 'GET', 
@@ -455,8 +380,6 @@ function changeUserParameter($form) {
     const $submitBtn = $form.querySelector('.account__setting-submit');
     const $errorMessage = $form.querySelector('.account__setting-error');
     
-    console.log($errorMessage)
-
     $setBtn.addEventListener('click', () => {
         $setBtn.style.display = 'none';
         $submitBtn.style.display = 'block';
@@ -483,6 +406,7 @@ function changeUserParameter($form) {
     $form.addEventListener('submit', (event) => {
         event.preventDefault();
 
+        // Change nickname
         if ($input.classList.contains('account__setting-input-nickname')) {
             if (!(/^[a-zA-Z][a-zA-Z0-9-_\.]{1,20}$/.test($input.value))) {
                 $input.style.border = '2px solid red';
@@ -534,6 +458,7 @@ function changeUserParameter($form) {
                     console.error('Fetch error: ' + error);
                 });
             }
+        // Change telegram
         } else if ($input.classList.contains('account__setting-input-tlg')) {
             if (!(/^[@]{1}[^а-яё]+$/.test($input.value))) {
                 $input.style.border = '2px solid red';
@@ -585,7 +510,9 @@ function changeUserParameter($form) {
                     console.error('Fetch error: ' + error);
                 });
             }
+        // Change email
         } else if ($input.classList.contains('account__setting-input-email')) {
+            // Input new email
             if (setEmailStatus === 1) {
                 if (!(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu.test($input.value))) {
                     $input.style.border = '2px solid red';
@@ -635,6 +562,7 @@ function changeUserParameter($form) {
                         console.error('Fetch error: ' + error);
                     });
                 }
+            // Comfirm old email
             } else if (setEmailStatus === 2) {
                 $errorMessage.style.color = 'red';
                 if (!(/^[0-9]{6}$/.test($input.value))) {
@@ -687,6 +615,7 @@ function changeUserParameter($form) {
                         console.error('Fetch error: ' + error);
                     });
                 }
+            // Comfirm new email
             } else if (setEmailStatus === 3) {
                 $submitBtn.setAttribute('disabled', 'true');
 
@@ -752,7 +681,7 @@ function changeUserParameter($form) {
     });
 }
 
-// Activate set email - back button
+// Activate email-back-button
 
 const $setEmailInput = $accountSettings.querySelector('.account__setting-input-email');
 const $setEmailBtn = $accountSettings.querySelector('.account__setting-set-email');
@@ -781,7 +710,7 @@ const $setPassCurrentError = $setPassForm.querySelector('.account__set-pass-erro
 const $setPassNewError = $setPassForm.querySelector('.account__set-pass-error-new');
 console.log($backEmailBtn)
 
-// Send code for set password
+// Send pass by code
 
 let newPass;
 $setPassForm.addEventListener('submit', (event) => {
@@ -902,7 +831,7 @@ $currentPass.addEventListener('input', () => {
     }); 
 });
 
-// Actived back button
+// Actived back-button
 
 const $setPassBackBtn = $setPassFormCode.querySelector('.account__set-pass-back');
 
@@ -911,7 +840,7 @@ $setPassBackBtn.addEventListener('click', () => {
     $setPassFormCode.classList.add('_hidden');
 })
 
-// Send code
+// Send code for set pass
 
 const $setPassCodeInput = $setPassFormCode.querySelector('.account__set-pass-code-input');
 const $setPassCodeError = $setPassFormCode.querySelector('.account__set-pass-error-code');
