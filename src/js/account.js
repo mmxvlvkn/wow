@@ -110,16 +110,18 @@ window.addEventListener('DOMContentLoaded', () => {
                 } else {
                     if (localStorage.getItem('isLoggedIn') === 'true') {
                         const $innerInfo = document.createElement('span');
-                        $innerInfo.innerHTML = (currentLanguage === 'en') ? 'No orders' : 'Заказы отсутствуют';
+                        $innerInfo.innerHTML = `<span class='en'>No orders</span><span class='ru'>Заказы отсутствуют</span>`;
                         $innerInfo.style.display = 'block';
                         $innerInfo.style.marginBottom = '10px';
                         $accountOrders.append($innerInfo);
+                        languageChanges();
                     } else {
                         const $innerInfo = document.createElement('span');
-                        $innerInfo.innerHTML = (currentLanguage === 'en') ? 'You are not logged in' : 'Вы не вошли в аккаунт';
+                        $innerInfo.innerHTML = `<span class='en'>You are not logged in</span><span class='ru'>Вы не вошли в аккаунт</span>`;
                         $innerInfo.style.display = 'block';
                         $innerInfo.style.marginBottom = '10px';
                         $accountOrders.append($innerInfo);
+                        languageChanges();
                     }
                 }
             }
@@ -198,16 +200,19 @@ window.addEventListener('DOMContentLoaded', () => {
     } else {
         if (localStorage.getItem('isLoggedIn') === 'true') {
             const $innerInfo = document.createElement('span');
-            $innerInfo.innerHTML = (currentLanguage === 'en') ? 'No orders' : 'Заказы отсутствуют';
+            $innerInfo.innerHTML = `<span class='en'>No orders</span><span class='ru'>Заказы отсутствуют</span>`;
+            //!
             $innerInfo.style.display = 'block';
             $innerInfo.style.marginBottom = '10px';
             $accountOrders.append($innerInfo);
+            languageChanges();
         } else {
             const $innerInfo = document.createElement('span');
-            $innerInfo.innerHTML = (currentLanguage === 'en') ? 'You are not logged in' : 'Вы не вошли в аккаунт';
+            $innerInfo.innerHTML = `<span class='en'>You are not logged in</span><span class='ru'>Вы не вошли в аккаунт</span>`;
             $innerInfo.style.display = 'block';
             $innerInfo.style.marginBottom = '10px';
             $accountOrders.append($innerInfo);
+            languageChanges();
         }
     }
 });
@@ -278,6 +283,14 @@ if ($accountSubtitleOrders.classList.contains('_selected')) {
     $accountSetPass.style.display = 'block';
 }
 
+// Hide user settings, if user isn't logged in 
+if (localStorage.getItem('isLoggedIn') === 'false') {
+    $accountSubtitleSettings.style.display = 'none';
+    $accountSubtitleSetPass.style.display = 'none';
+    $accountSettings.style.display = 'none';
+    $accountSetPass.style.display = 'none';
+}
+
 // Set hight for set-pass-container
 //? $accountSetPass
 const $setPassForm = $accountSetPass.querySelector('.account__set-pass-form');
@@ -329,38 +342,40 @@ $accountSubtitles.forEach($elem => {
 
 // Getting info about user 
 let currentEmail;
-fetch(`${HOST}/api/get_user_info`, {
-    method: 'GET', 
-    credentials: 'include',
-    headers: {
-        'Content-Type': 'application/json'
-    }
-})
-.then(async (res) => {
-    const status = res.status;
-    const data = await res.json();
-
-    if (status !== 200) {
-        try {
-            $body.querySelectorAll('.account__setting-error').forEach($errorMessage => {
-                $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
-            });
-        } catch (error) {
-            console.error('Error: ' + error);
+if (localStorage.getItem('isLoggedIn') === 'true') {
+    fetch(`${HOST}/api/get_user_info`, {
+        method: 'GET', 
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
         }
-    } else {
-        $body.querySelector('.account__setting-input-nickname').value = data.nickname;
-        $body.querySelector('.account__setting-input-email').value = data.email;
-        $body.querySelector('.account__setting-input-tlg').value = data.tlg;
-        currentEmail = data.email;
-    }
-})
-.catch((error) => {
-    $body.querySelectorAll('.account__setting-error').forEach($errorMessage => {
-        $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';
+    })
+    .then(async (res) => {
+        const status = res.status;
+        const data = await res.json();
+
+        if (status !== 200) {
+            try {
+                $body.querySelectorAll('.account__setting-error').forEach($errorMessage => {
+                    $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                });
+            } catch (error) {
+                console.error('Error: ' + error);
+            }
+        } else {
+            $body.querySelector('.account__setting-input-nickname').value = data.nickname;
+            $body.querySelector('.account__setting-input-email').value = data.email;
+            $body.querySelector('.account__setting-input-tlg').value = data.tlg;
+            currentEmail = data.email;
+        }
+    })
+    .catch((error) => {
+        $body.querySelectorAll('.account__setting-error').forEach($errorMessage => {
+            $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';
+        });
+        console.error('Fetch error: ' + error);
     });
-    console.error('Fetch error: ' + error);
-});
+}
 
 // Display user parameters
 $body.querySelectorAll('.account__form').forEach($form => {
@@ -403,128 +418,24 @@ function changeUserParameter($form) {
     });
 
     let newEmail;
-    $form.addEventListener('submit', (event) => {
-        event.preventDefault();
 
-        // Change nickname
-        if ($input.classList.contains('account__setting-input-nickname')) {
-            if (!(/^[a-zA-Z][a-zA-Z0-9-_\.]{1,20}$/.test($input.value))) {
-                $input.style.border = '2px solid red';
-                $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect nickname' : 'Неккоректный никнейм';
-            } else {
-                $submitBtn.setAttribute('disabled', 'true');
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+        $form.addEventListener('submit', (event) => {
+            event.preventDefault();
 
-                fetch(`${HOST}/api/change_user_nickname`, {
-                    method: 'POST', 
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        newNickname: $input.value,
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(async (res) => {
-                    $submitBtn.removeAttribute('disabled');
-
-                    const status = res.status;
-                    const data = await res.json();
-        
-                    if (status !== 200) {
-                        try {
-                            $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
-                        } catch (error) {
-                            console.error('Error: ' + error);
-                        }
-                    } else {
-                        $input.setAttribute('readonly', 'true');
-                        $errorMessage.style.color = '#33CC66';
-                        $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
-                        $errorMessage.style.fontSize = '12px';
-                        setTimeout(() => {
-                            $errorMessage.style.color = 'red';
-                            $errorMessage.textContent = '';
-                            $errorMessage.style.fontSize = '10px';
-                        }, 2000);
-
-                        $setBtn.style.display = 'block';
-                        $submitBtn.style.display = 'none';
-                    }
-                })
-                .catch((error) => {
-                    $submitBtn.removeAttribute('disabled');
-
-                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
-                    console.error('Fetch error: ' + error);
-                });
-            }
-        // Change telegram
-        } else if ($input.classList.contains('account__setting-input-tlg')) {
-            if (!(/^[@]{1}[^а-яё]+$/.test($input.value))) {
-                $input.style.border = '2px solid red';
-                $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect telegram' : 'Неккоректный телеграмм';
-            } else {
-                $submitBtn.setAttribute('disabled', 'true');
-
-                fetch(`${HOST}/api/change_user_telegram`, {
-                    method: 'POST', 
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        newTlg: $input.value,
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(async (res) => {
-                    $submitBtn.removeAttribute('disabled');
-
-                    const status = res.status;
-                    const data = await res.json();
-        
-                    if (status !== 200) {
-                        try {
-                            $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
-                        } catch (error) {
-                            console.error('Error: ' + error);
-                        }
-                    } else {
-                        $input.setAttribute('readonly', 'true');
-                        $errorMessage.style.color = '#33CC66';
-                        $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
-                        $errorMessage.style.fontSize = '12px';
-                        setTimeout(() => {
-                            $errorMessage.style.color = 'red';
-                            $errorMessage.textContent = '';
-                            $errorMessage.style.fontSize = '10px';
-                        }, 2000);
-
-                        $setBtn.style.display = 'block';
-                        $submitBtn.style.display = 'none';
-                    }
-                })
-                .catch((error) => {
-                    $submitBtn.removeAttribute('disabled');
-
-                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
-                    console.error('Fetch error: ' + error);
-                });
-            }
-        // Change email
-        } else if ($input.classList.contains('account__setting-input-email')) {
-            // Input new email
-            if (setEmailStatus === 1) {
-                if (!(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu.test($input.value))) {
+            // Change nickname
+            if ($input.classList.contains('account__setting-input-nickname')) {
+                if (!(/^[a-zA-Z][a-zA-Z0-9-_\.]{1,20}$/.test($input.value))) {
                     $input.style.border = '2px solid red';
-                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect email' : 'Неккоректный эл. почта';
+                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect nickname' : 'Неккоректный никнейм';
                 } else {
                     $submitBtn.setAttribute('disabled', 'true');
 
-                    fetch(`${HOST}/api/send_code_for_change_email`, {
+                    fetch(`${HOST}/api/change_user_nickname`, {
                         method: 'POST', 
                         credentials: 'include',
                         body: JSON.stringify({
-                            newEmail: $input.value,
+                            newNickname: $input.value,
                         }),
                         headers: {
                             'Content-Type': 'application/json'
@@ -538,37 +449,191 @@ function changeUserParameter($form) {
             
                         if (status !== 200) {
                             try {
-                                $errorMessage.style.color = 'red';
                                 $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
                             } catch (error) {
                                 console.error('Error: ' + error);
                             }
                         } else {
+                            $input.setAttribute('readonly', 'true');
                             $errorMessage.style.color = '#33CC66';
-                            $errorMessage.textContent = (currentLanguage === 'en') ? `Enter the code from ${currentEmail}` : `Введите код из ${currentEmail}`;;
-                            $errorMessage.style.fontSize = '14px';
-                            newEmail = $input.value;
-                            $input.value = '';
-                            $input.setAttribute('placeholder', 'CODE');
-                            setEmailStatus = 2;
-                            $backEmailBtn.classList.remove('_hidden');
+                            $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
+                            $errorMessage.style.fontSize = '12px';
+                            setTimeout(() => {
+                                $errorMessage.style.color = 'red';
+                                $errorMessage.textContent = '';
+                                $errorMessage.style.fontSize = '10px';
+                            }, 2000);
+
+                            $setBtn.style.display = 'block';
+                            $submitBtn.style.display = 'none';
                         }
                     })
                     .catch((error) => {
                         $submitBtn.removeAttribute('disabled');
 
-                        $errorMessage.style.color = 'red';
                         $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
                         console.error('Fetch error: ' + error);
                     });
                 }
-            // Comfirm old email
-            } else if (setEmailStatus === 2) {
-                $errorMessage.style.color = 'red';
-                if (!(/^[0-9]{6}$/.test($input.value))) {
+            // Change telegram
+            } else if ($input.classList.contains('account__setting-input-tlg')) {
+                if (!(/^[@]{1}[^а-яё]+$/.test($input.value))) {
                     $input.style.border = '2px solid red';
-                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect code' : 'Неккоректный код';
+                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect telegram' : 'Неккоректный телеграмм';
                 } else {
+                    $submitBtn.setAttribute('disabled', 'true');
+
+                    fetch(`${HOST}/api/change_user_telegram`, {
+                        method: 'POST', 
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            newTlg: $input.value,
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(async (res) => {
+                        $submitBtn.removeAttribute('disabled');
+
+                        const status = res.status;
+                        const data = await res.json();
+            
+                        if (status !== 200) {
+                            try {
+                                $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                            } catch (error) {
+                                console.error('Error: ' + error);
+                            }
+                        } else {
+                            $input.setAttribute('readonly', 'true');
+                            $errorMessage.style.color = '#33CC66';
+                            $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
+                            $errorMessage.style.fontSize = '12px';
+                            setTimeout(() => {
+                                $errorMessage.style.color = 'red';
+                                $errorMessage.textContent = '';
+                                $errorMessage.style.fontSize = '10px';
+                            }, 2000);
+
+                            $setBtn.style.display = 'block';
+                            $submitBtn.style.display = 'none';
+                        }
+                    })
+                    .catch((error) => {
+                        $submitBtn.removeAttribute('disabled');
+
+                        $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                        console.error('Fetch error: ' + error);
+                    });
+                }
+            // Change email
+            } else if ($input.classList.contains('account__setting-input-email')) {
+                // Input new email
+                if (setEmailStatus === 1) {
+                    if (!(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu.test($input.value))) {
+                        $input.style.border = '2px solid red';
+                        $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect email' : 'Неккоректный эл. почта';
+                    } else {
+                        $submitBtn.setAttribute('disabled', 'true');
+
+                        fetch(`${HOST}/api/send_code_for_change_email`, {
+                            method: 'POST', 
+                            credentials: 'include',
+                            body: JSON.stringify({
+                                newEmail: $input.value,
+                            }),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(async (res) => {
+                            $submitBtn.removeAttribute('disabled');
+
+                            const status = res.status;
+                            const data = await res.json();
+                
+                            if (status !== 200) {
+                                try {
+                                    $errorMessage.style.color = 'red';
+                                    $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                                } catch (error) {
+                                    console.error('Error: ' + error);
+                                }
+                            } else {
+                                $errorMessage.style.color = '#33CC66';
+                                $errorMessage.textContent = (currentLanguage === 'en') ? `Enter the code from ${currentEmail}` : `Введите код из ${currentEmail}`;;
+                                $errorMessage.style.fontSize = '14px';
+                                newEmail = $input.value;
+                                $input.value = '';
+                                $input.setAttribute('placeholder', 'CODE');
+                                setEmailStatus = 2;
+                                $backEmailBtn.classList.remove('_hidden');
+                            }
+                        })
+                        .catch((error) => {
+                            $submitBtn.removeAttribute('disabled');
+
+                            $errorMessage.style.color = 'red';
+                            $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                            console.error('Fetch error: ' + error);
+                        });
+                    }
+                // Comfirm old email
+                } else if (setEmailStatus === 2) {
+                    $errorMessage.style.color = 'red';
+                    if (!(/^[0-9]{6}$/.test($input.value))) {
+                        $input.style.border = '2px solid red';
+                        $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect code' : 'Неккоректный код';
+                    } else {
+                        $submitBtn.setAttribute('disabled', 'true');
+
+                        fetch(`${HOST}/api/change_user_email`, {
+                            method: 'POST', 
+                            credentials: 'include',
+                            body: JSON.stringify({
+                                // false: confirm old email
+                                // true: confirm new email and set email
+                                status: false,
+                                code: $input.value,
+                                oldEmail: currentEmail,
+                                newEmail
+                            }),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(async (res) => {
+                            $submitBtn.removeAttribute('disabled');
+
+                            const status = res.status;
+                            const data = await res.json();
+                
+                            if (status !== 200) {
+                                try {
+                                    $errorMessage.style.color = 'red';
+                                    $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                                } catch (error) {
+                                    console.error('Error: ' + error);
+                                }
+                            } else {
+                                $errorMessage.style.color = '#33CC66';
+                                $errorMessage.textContent = (currentLanguage === 'en') ? `Enter the code from ${newEmail}` : `Введите код из ${newEmail}`;;
+                                $errorMessage.style.fontSize = '14px';
+                                $input.value = '';
+                                setEmailStatus = 3;
+                            }
+                        })
+                        .catch((error) => {
+                            $submitBtn.removeAttribute('disabled');
+                            
+                            $errorMessage.style.color = 'red';
+                            $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                            console.error('Fetch error: ' + error);
+                        });
+                    }
+                // Comfirm new email
+                } else if (setEmailStatus === 3) {
                     $submitBtn.setAttribute('disabled', 'true');
 
                     fetch(`${HOST}/api/change_user_email`, {
@@ -577,7 +642,7 @@ function changeUserParameter($form) {
                         body: JSON.stringify({
                             // false: confirm old email
                             // true: confirm new email and set email
-                            status: false,
+                            status: true,
                             code: $input.value,
                             oldEmail: currentEmail,
                             newEmail
@@ -600,11 +665,24 @@ function changeUserParameter($form) {
                                 console.error('Error: ' + error);
                             }
                         } else {
+                            $input.setAttribute('readonly', 'true');
                             $errorMessage.style.color = '#33CC66';
-                            $errorMessage.textContent = (currentLanguage === 'en') ? `Enter the code from ${newEmail}` : `Введите код из ${newEmail}`;;
+                            $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
                             $errorMessage.style.fontSize = '14px';
-                            $input.value = '';
-                            setEmailStatus = 3;
+                            setTimeout(() => {
+                                $errorMessage.style.color = 'red';
+                                $errorMessage.textContent = '';
+                                $errorMessage.style.fontSize = '10px';
+                            }, 2000);
+                            
+                            $input.setAttribute('placeholder', '');
+                            $input.value = newEmail;
+
+                            $setBtn.style.display = 'block';
+                            $submitBtn.style.display = 'none';
+
+                            setEmailStatus = 1;
+                            $backEmailBtn.classList.add('_hidden');
                         }
                     })
                     .catch((error) => {
@@ -613,72 +691,12 @@ function changeUserParameter($form) {
                         $errorMessage.style.color = 'red';
                         $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
                         console.error('Fetch error: ' + error);
-                    });
+                    });   
                 }
-            // Comfirm new email
-            } else if (setEmailStatus === 3) {
-                $submitBtn.setAttribute('disabled', 'true');
-
-                fetch(`${HOST}/api/change_user_email`, {
-                    method: 'POST', 
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        // false: confirm old email
-                        // true: confirm new email and set email
-                        status: true,
-                        code: $input.value,
-                        oldEmail: currentEmail,
-                        newEmail
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(async (res) => {
-                    $submitBtn.removeAttribute('disabled');
-
-                    const status = res.status;
-                    const data = await res.json();
-        
-                    if (status !== 200) {
-                        try {
-                            $errorMessage.style.color = 'red';
-                            $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
-                        } catch (error) {
-                            console.error('Error: ' + error);
-                        }
-                    } else {
-                        $input.setAttribute('readonly', 'true');
-                        $errorMessage.style.color = '#33CC66';
-                        $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
-                        $errorMessage.style.fontSize = '14px';
-                        setTimeout(() => {
-                            $errorMessage.style.color = 'red';
-                            $errorMessage.textContent = '';
-                            $errorMessage.style.fontSize = '10px';
-                        }, 2000);
-                        
-                        $input.setAttribute('placeholder', '');
-                        $input.value = newEmail;
-
-                        $setBtn.style.display = 'block';
-                        $submitBtn.style.display = 'none';
-
-                        setEmailStatus = 1;
-                        $backEmailBtn.classList.add('_hidden');
-                    }
-                })
-                .catch((error) => {
-                    $submitBtn.removeAttribute('disabled');
-                    
-                    $errorMessage.style.color = 'red';
-                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
-                    console.error('Fetch error: ' + error);
-                });   
+                
             }
-            
-        }
-    });
+        });
+    }
 }
 
 // Activate email-back-button
@@ -713,99 +731,101 @@ console.log($backEmailBtn)
 // Send pass by code
 
 let newPass;
-$setPassForm.addEventListener('submit', (event) => {
-    event.preventDefault();
+if (localStorage.getItem('isLoggedIn') === 'true') {
+    $setPassForm.addEventListener('submit', (event) => {
+        event.preventDefault();
 
-    let isValid = true;
+        let isValid = true;
 
-    if ($currentPass.value.length < 6) {
-        $currentPass.style.border = '2px solid red';
-        $setPassCurrentError.textContent = (currentLanguage === 'en') ? 'Password less than 6 characters' : 'Пароль меньше 6 символов';
-        isValid = false;
-    }
+        if ($currentPass.value.length < 6) {
+            $currentPass.style.border = '2px solid red';
+            $setPassCurrentError.textContent = (currentLanguage === 'en') ? 'Password less than 6 characters' : 'Пароль меньше 6 символов';
+            isValid = false;
+        }
 
-    if (!(/^(?=.*\d)(?=.*[a-zA-Z])(?!.*\s).*$/.test($currentPass.value))) {
-        $currentPass.style.border = '2px solid red';
-        $setPassCurrentError.textContent = (currentLanguage === 'en') ? 'Password must contain latin letters and numbers' : 'Пароль должен содержать латинские буквы и цифры';
-        isValid = false;
-    }
+        if (!(/^(?=.*\d)(?=.*[a-zA-Z])(?!.*\s).*$/.test($currentPass.value))) {
+            $currentPass.style.border = '2px solid red';
+            $setPassCurrentError.textContent = (currentLanguage === 'en') ? 'Password must contain latin letters and numbers' : 'Пароль должен содержать латинские буквы и цифры';
+            isValid = false;
+        }
 
-    if ($newPass.value !== $repeatPass.value) {
-        $newPass.style.border = '2px solid red';
-        $repeatPass.style.border = '2px solid red';
-        $setPassNewError.textContent = (currentLanguage === 'en') ? 'Passwords do not match' : 'Пароли не совпадают';
-        isValid = false;
-    }
-    
-    if ($newPass.value.length < 6) {
-        $newPass.style.border = '2px solid red';
-        $setPassNewError.textContent = (currentLanguage === 'en') ? 'Password less than 6 characters' : 'Пароль меньше 6 символов';
-        isValid = false;
-    }
+        if ($newPass.value !== $repeatPass.value) {
+            $newPass.style.border = '2px solid red';
+            $repeatPass.style.border = '2px solid red';
+            $setPassNewError.textContent = (currentLanguage === 'en') ? 'Passwords do not match' : 'Пароли не совпадают';
+            isValid = false;
+        }
+        
+        if ($newPass.value.length < 6) {
+            $newPass.style.border = '2px solid red';
+            $setPassNewError.textContent = (currentLanguage === 'en') ? 'Password less than 6 characters' : 'Пароль меньше 6 символов';
+            isValid = false;
+        }
 
-    if (!(/^(?=.*\d)(?=.*[a-zA-Z])(?!.*\s).*$/.test($newPass.value))) {
-        $newPass.style.border = '2px solid red';
-        $setPassNewError.textContent = (currentLanguage === 'en') ? 'Password must contain latin letters and numbers' : 'Пароль должен содержать латинские буквы и цифры';
-        isValid = false;
-    }
+        if (!(/^(?=.*\d)(?=.*[a-zA-Z])(?!.*\s).*$/.test($newPass.value))) {
+            $newPass.style.border = '2px solid red';
+            $setPassNewError.textContent = (currentLanguage === 'en') ? 'Password must contain latin letters and numbers' : 'Пароль должен содержать латинские буквы и цифры';
+            isValid = false;
+        }
 
-    if ($repeatPass.value.length < 6) {
-        $repeatPass.style.border = '2px solid red';
-        $setPassNewError.textContent = (currentLanguage === 'en') ? 'Password less than 6 characters' : 'Пароль меньше 6 символов';
-        isValid = false;
-    }
+        if ($repeatPass.value.length < 6) {
+            $repeatPass.style.border = '2px solid red';
+            $setPassNewError.textContent = (currentLanguage === 'en') ? 'Password less than 6 characters' : 'Пароль меньше 6 символов';
+            isValid = false;
+        }
 
-    if (!(/^(?=.*\d)(?=.*[a-zA-Z])(?!.*\s).*$/.test($repeatPass.value))) {
-        $repeatPass.style.border = '2px solid red';
-        $setPassNewError.textContent = (currentLanguage === 'en') ? 'Password must contain latin letters and numbers' : 'Пароль должен содержать латинские буквы и цифры';
-        isValid = false;
-    }
+        if (!(/^(?=.*\d)(?=.*[a-zA-Z])(?!.*\s).*$/.test($repeatPass.value))) {
+            $repeatPass.style.border = '2px solid red';
+            $setPassNewError.textContent = (currentLanguage === 'en') ? 'Password must contain latin letters and numbers' : 'Пароль должен содержать латинские буквы и цифры';
+            isValid = false;
+        }
 
-    if ($newPass.value === $currentPass.value) {
-        $newPass.style.border = '2px solid red';
-        $repeatPass.style.border = '2px solid red';
-        $setPassNewError.textContent = (currentLanguage === 'en') ? 'Old and new passwords are match' : 'Старый и новый пароли совпадают';
-        isValid = false;
-    }
+        if ($newPass.value === $currentPass.value) {
+            $newPass.style.border = '2px solid red';
+            $repeatPass.style.border = '2px solid red';
+            $setPassNewError.textContent = (currentLanguage === 'en') ? 'Old and new passwords are match' : 'Старый и новый пароли совпадают';
+            isValid = false;
+        }
 
-    if (isValid) {
-        newPass = $repeatPass.value
-        fetch(`${HOST}/api/send_code_for_set_pass`, {
-            method: 'POST', 
-            credentials: 'include',
-            body: JSON.stringify({
-                currentPass: $currentPass.value,
-                newPass
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(async (res) => {
-            const status = res.status;
-            const data = await res.json();
-
-            if (status !== 200) {
-                try {
-                    $setPassNewError.textContent = (currentLanguage === 'en') ? data.en : data.ru;
-                } catch (error) {
-                    console.error('Error: ' + error);
+        if (isValid) {
+            newPass = $repeatPass.value
+            fetch(`${HOST}/api/send_code_for_set_pass`, {
+                method: 'POST', 
+                credentials: 'include',
+                body: JSON.stringify({
+                    currentPass: $currentPass.value,
+                    newPass
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-            } else {
-                $setPassForm.classList.add('_hidden');
-                $setPassFormCode.classList.remove('_hidden');
+            })
+            .then(async (res) => {
+                const status = res.status;
+                const data = await res.json();
 
-                $currentPass.value = '';
-                $newPass.value = '';
-                $repeatPass.value = '';
-            }
-        })
-        .catch((error) => {
-            $setPassNewError.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
-            console.error('Fetch error: ' + error);
-        });
-    }
-});
+                if (status !== 200) {
+                    try {
+                        $setPassNewError.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                    } catch (error) {
+                        console.error('Error: ' + error);
+                    }
+                } else {
+                    $setPassForm.classList.add('_hidden');
+                    $setPassFormCode.classList.remove('_hidden');
+
+                    $currentPass.value = '';
+                    $newPass.value = '';
+                    $repeatPass.value = '';
+                }
+            })
+            .catch((error) => {
+                $setPassNewError.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                console.error('Fetch error: ' + error);
+            });
+        }
+    });
+}
 
 $currentPass.addEventListener('focus', () => {
     $currentPass.style.border = '';
@@ -845,53 +865,55 @@ $setPassBackBtn.addEventListener('click', () => {
 const $setPassCodeInput = $setPassFormCode.querySelector('.account__set-pass-code-input');
 const $setPassCodeError = $setPassFormCode.querySelector('.account__set-pass-error-code');
 
-$setPassFormCode.addEventListener('submit', (event) => {
-    event.preventDefault();
+if (localStorage.getItem('isLoggedIn') === 'true') {
+    $setPassFormCode.addEventListener('submit', (event) => {
+        event.preventDefault();
 
-    if (!(/^[0-9]{6}$/.test($setPassCodeInput.value))) {
-        $setPassCodeInput.style.border = '2px solid red';
-        $setPassCodeError.textContent = (currentLanguage === 'en') ? 'Incorrect email code' : 'Неверный код';
-    } else {
-        fetch(`${HOST}/api/set_user_password`, {
-            method: 'POST', 
-            credentials: 'include',
-            body: JSON.stringify({
-                code: $setPassCodeInput.value, 
-                newPass
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(async (res) => {
-            const status = res.status;
-            const data = await res.json();
-
-            if (status !== 200) {
-                try {
-                    $setPassCodeError.textContent = (currentLanguage === 'en') ? data.en : data.ru;
-                } catch (error) {
-                    console.error('Error: ' + error);
+        if (!(/^[0-9]{6}$/.test($setPassCodeInput.value))) {
+            $setPassCodeInput.style.border = '2px solid red';
+            $setPassCodeError.textContent = (currentLanguage === 'en') ? 'Incorrect email code' : 'Неверный код';
+        } else {
+            fetch(`${HOST}/api/set_user_password`, {
+                method: 'POST', 
+                credentials: 'include',
+                body: JSON.stringify({
+                    code: $setPassCodeInput.value, 
+                    newPass
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-            } else {
-                $setPassCodeInput.value = '';
-                $setPassCodeError.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
-                $setPassCodeError.style.color = '#00FF66';
-                $setPassCodeError.style.fontSize = '14px';
+            })
+            .then(async (res) => {
+                const status = res.status;
+                const data = await res.json();
 
-                setTimeout(() => {
-                    $setPassForm.classList.remove('_hidden');
-                    $setPassFormCode.classList.add('_hidden');
+                if (status !== 200) {
+                    try {
+                        $setPassCodeError.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                    } catch (error) {
+                        console.error('Error: ' + error);
+                    }
+                } else {
+                    $setPassCodeInput.value = '';
+                    $setPassCodeError.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
+                    $setPassCodeError.style.color = '#00FF66';
+                    $setPassCodeError.style.fontSize = '14px';
 
-                    $setPassCodeError.textContent = '';
-                    $setPassCodeError.style.color = 'red';
-                    $setPassCodeError.style.fontSize = '10px';
-                }, 3000)
-            }
-        })
-        .catch((error) => {
-            $setPassNewError.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
-            console.error('Fetch error: ' + error);
-        });
-    }
-});
+                    setTimeout(() => {
+                        $setPassForm.classList.remove('_hidden');
+                        $setPassFormCode.classList.add('_hidden');
+
+                        $setPassCodeError.textContent = '';
+                        $setPassCodeError.style.color = 'red';
+                        $setPassCodeError.style.fontSize = '10px';
+                    }, 3000)
+                }
+            })
+            .catch((error) => {
+                $setPassNewError.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                console.error('Fetch error: ' + error);
+            });
+        }
+    });
+}

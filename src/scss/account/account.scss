@@ -371,7 +371,77 @@
     &__option:nth-child(6) {
         width: calc_rem(240);
     }
-    
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    &__admin {
+        width: 100%;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+    }
+    &__admin-status-container {
+        display: flex;
+    }
+    &__admin-status-form {
+        display: flex;
+        gap: calc_rem(15);
+    }
+    &__admin-status-select {
+        font-size: calc_rem(20);
+        width: calc_rem(110);
+        height: calc_rem(35);
+        background-color: rgba($color_2, 0.25);
+        border-radius: calc_rem(2);
+        border: 2px solid white;
+        color: white;
+    }
+    &__admin-status-btn {
+        font-size: calc_rem(20);
+        width: calc_rem(110);
+        height: calc_rem(35);
+        background-color: rgba($color_2, 0.25);
+        border-radius: calc_rem(2);
+        border: 2px solid white;
+        color: white;
+
+        &:hover {
+            background-color: rgba($color_2, 0.35);
+        }
+        &:active {
+            background-color: rgba($color_2, 0.4);
+        }
+    }
+    &__admin-status-submit {
+        font-size: calc_rem(20);
+        width: calc_rem(110);
+        height: calc_rem(35);
+        background-color: rgba($color_2, 0.25);
+        border-radius: calc_rem(2);
+        border: 2px solid white;
+        color: white;
+
+        &:hover {
+            background-color: rgba($color_2, 0.35);
+        }
+        &:active {
+            background-color: rgba($color_2, 0.4);
+        }
+    }
+    &__admin-delete {
+        font-size: calc_rem(20);
+        width: calc_rem(100);
+        height: calc_rem(35);
+        background-color: rgba(red, 0.25);
+        border-radius: calc_rem(2);
+        border: 2px solid white;
+        color: white;
+
+        &:hover {
+            background-color: rgba(red, 0.35);
+        }
+        &:active {
+            background-color: rgba(red, 0.4);
+        }
+    }
 }
 
 .order-item:nth-child(odd) {

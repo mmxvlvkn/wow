@@ -93,6 +93,35 @@ window.addEventListener('DOMContentLoaded', () => {
                             </div>`
                         );
 
+                        // Display admin-panel for product
+                        let $productMenu = document.createElement('div');
+                        $productMenu.classList.add('order-item__admin');
+                        $productMenu.innerHTML = (
+                                `<div class="order-item__admin-status-container">
+                                    <form class="order-item__admin-status-form">
+                                        <div class="en">
+                                            <select class="order-item__admin-status-select">
+                                                <option>Canceled</option>
+                                                <option>Paid</option>
+                                                <option>Performed</option>
+                                                <option>Completed</option>
+                                            </select>
+                                        </div>
+                                        <div class="ru">
+                                            <select class="order-item__admin-status-select">
+                                                <option>Отменен</option>
+                                                <option>Оплачен</option>
+                                                <option>Выполняется</option>
+                                                <option>Выполнен</option>
+                                            </select>
+                                        </div>
+                                        <button type="button" style="display: none;" class="order-item__admin-status-btn"><span class="en">Set</span><span class="ru">Изменить</span></button>
+                                        <button type="submit" class="order-item__admin-status-submit"><span class="en">Send</span><span class="ru">Отправить</span></button>
+                                    </form>
+                                </div>
+                                <button type="click" class="order-item__admin-delete"><span class="en">Delete</span><span class="ru">Удалить</span></button>`
+                            );
+
                         // Display products
                         let $productArticle = document.createElement('article');
                         $productArticle.className = "account__order order-item";
@@ -102,6 +131,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         $productArticle.append(getNewOrderItemOptionElement(product.price));
                         $productArticle.append($productDescription);                      
                         $productArticle.append($productUserInfo);
+                        $productArticle.append($productMenu);
                         $adminOrders.prepend($productArticle);
                         languageChanges();
                     });
@@ -109,16 +139,18 @@ window.addEventListener('DOMContentLoaded', () => {
                     console.log(localStorage.getItem('isLoggedIn'))
                     if (localStorage.getItem('isLoggedIn') === 'true') {
                         const $innerInfo = document.createElement('span');
-                        $innerInfo.innerHTML = (currentLanguage === 'en') ? 'No orders' : 'Заказы отсутствуют';
+                        $innerInfo.innerHTML = `<span class='en'>No orders</span><span class='ru'>Заказы отсутствуют</span>`;
                         $innerInfo.style.display = 'block';
                         $innerInfo.style.marginBottom = '10px';
                         $adminOrders.append($innerInfo);
+                        languageChanges();
                     } else {
                         const $innerInfo = document.createElement('span');
-                        $innerInfo.innerHTML = (currentLanguage === 'en') ? 'You are not logged in' : 'Вы не вошли в аккаунт';
+                        $innerInfo.innerHTML = `<span class='en'>You are not logged in</span><span class='ru'>Вы не вошли в аккаунт</span>`;
                         $innerInfo.style.display = 'block';
                         $innerInfo.style.marginBottom = '10px';
                         $adminOrders.append($innerInfo);
+                        languageChanges();
                     }
                 }
             }
@@ -195,16 +227,18 @@ window.addEventListener('DOMContentLoaded', () => {
     } else {
         if (localStorage.getItem('isLoggedIn') === 'true') {
             const $innerInfo = document.createElement('span');
-            $innerInfo.innerHTML = (currentLanguage === 'en') ? 'No orders' : 'Заказы отсутствуют';
+            $innerInfo.innerHTML = `<span class='en'>No orders</span><span class='ru'>Заказы отсутствуют</span>`;
             $innerInfo.style.display = 'block';
             $innerInfo.style.marginBottom = '10px';
             $adminOrders.append($innerInfo);
+            languageChanges();
         } else {
             const $innerInfo = document.createElement('span');
-            $innerInfo.innerHTML = (currentLanguage === 'en') ? 'You are not logged in' : 'Вы не вошли в аккаунт';
+            $innerInfo.innerHTML = `<span class='en'>You are not logged in</span><span class='ru'>Вы не вошли в аккаунт</span>`;
             $innerInfo.style.display = 'block';
             $innerInfo.style.marginBottom = '10px';
             $adminOrders.append($innerInfo);
+            languageChanges();
         }
     }
 });

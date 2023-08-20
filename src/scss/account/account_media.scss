@@ -160,6 +160,16 @@
         &__option:nth-child(6) {
             width: calc_rem(286);
         }
+        &__admin {
+            display: block;
+        }
+        &__admin-status-container {
+            margin-bottom: calc_rem(5);
+        }
+        &__admin-status-form {
+            display: flex;
+            gap: calc_rem(5);
+        }
     }
 }
 @media (max-width: 25.19em) {
