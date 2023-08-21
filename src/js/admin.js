@@ -97,29 +97,34 @@ window.addEventListener('DOMContentLoaded', () => {
                         let $productMenu = document.createElement('div');
                         $productMenu.classList.add('order-item__admin');
                         $productMenu.innerHTML = (
-                                `<div class="order-item__admin-status-container">
+                                `
+                                <div class="order-item__admin-status-container">
                                     <form class="order-item__admin-status-form">
                                         <div class="en">
-                                            <select class="order-item__admin-status-select">
-                                                <option>Canceled</option>
-                                                <option>Paid</option>
-                                                <option>Performed</option>
-                                                <option>Completed</option>
+                                            <select disabled class="order-item__admin-status-select">
+                                                <option value="0">Canceled</option>
+                                                <option value="1">Paid</option>
+                                                <option value="2">Performed</option>
+                                                <option value="3">Completed</option>
                                             </select>
                                         </div>
                                         <div class="ru">
-                                            <select class="order-item__admin-status-select">
-                                                <option>Отменен</option>
-                                                <option>Оплачен</option>
-                                                <option>Выполняется</option>
-                                                <option>Выполнен</option>
+                                            <select disabled class="order-item__admin-status-select">
+                                                <option value="0">Отменен</option>
+                                                <option value="1">Оплачен</option>
+                                                <option value="2">Выполняется</option>
+                                                <option value="3"n>Выполнен</option>
                                             </select>
                                         </div>
-                                        <button type="button" style="display: none;" class="order-item__admin-status-btn"><span class="en">Set</span><span class="ru">Изменить</span></button>
+                                        <button type="button" class="order-item__admin-status-btn"><span class="en">Set</span><span class="ru">Изменить</span></button>
                                         <button type="submit" class="order-item__admin-status-submit"><span class="en">Send</span><span class="ru">Отправить</span></button>
                                     </form>
                                 </div>
-                                <button type="click" class="order-item__admin-delete"><span class="en">Delete</span><span class="ru">Удалить</span></button>`
+                                <button type="click" class="order-item__admin-delete"><span class="en">Delete</span><span class="ru">Удалить</span></button>
+                                `.replaceAll(
+                                    `value="${String(product.product_status_number)}"`, 
+                                    `selected value="${String(product.product_status_number)}"`
+                                )
                             );
 
                         // Display products
@@ -136,7 +141,6 @@ window.addEventListener('DOMContentLoaded', () => {
                         languageChanges();
                     });
                 } else {
-                    console.log(localStorage.getItem('isLoggedIn'))
                     if (localStorage.getItem('isLoggedIn') === 'true') {
                         const $innerInfo = document.createElement('span');
                         $innerInfo.innerHTML = `<span class='en'>No orders</span><span class='ru'>Заказы отсутствуют</span>`;
@@ -154,6 +158,20 @@ window.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
+        })
+        .then(() => {
+            // PRODUCT ADMIN PANEL
+
+            // Active functionallity of set a status product
+            $body.querySelectorAll('.order-item__admin-status-btn').forEach($btn => {
+                $btn.addEventListener('click', () => {
+                    const $allElementsInForm = $btn.parentElement.children;
+                    $allElementsInForm[0].children[0].removeAttribute('disabled');
+                    $allElementsInForm[1].children[0].removeAttribute('disabled');
+                    $allElementsInForm[2].classList.add('_hidden');
+                    $allElementsInForm[3].classList.add('_shown');
+                });
+            });
         })
         .then(() => {
             // Other products display

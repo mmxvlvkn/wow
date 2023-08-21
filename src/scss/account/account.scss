@@ -340,6 +340,7 @@
 }
 
 .order-item {
+    width: calc_rem(1020);
     margin-bottom: calc_rem(20);
     display: flex;
     color: black;
@@ -387,7 +388,7 @@
     }
     &__admin-status-select {
         font-size: calc_rem(20);
-        width: calc_rem(110);
+        width: calc_rem(150);
         height: calc_rem(35);
         background-color: rgba($color_2, 0.25);
         border-radius: calc_rem(2);
@@ -409,8 +410,13 @@
         &:active {
             background-color: rgba($color_2, 0.4);
         }
+
+        &._hidden {
+            display: none;
+        }
     }
     &__admin-status-submit {
+        display: none;
         font-size: calc_rem(20);
         width: calc_rem(110);
         height: calc_rem(35);
@@ -424,6 +430,10 @@
         }
         &:active {
             background-color: rgba($color_2, 0.4);
+        }
+
+        &._shown {
+            display: block;
         }
     }
     &__admin-delete {

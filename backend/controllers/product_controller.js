@@ -258,6 +258,7 @@ class productController {
                                 sendData[i].email = userData.email;
                                 sendData[i].nickname = userData.nickname;
                                 sendData[i].tlg = userData.tlg;
+                                sendData[i].product_status_number = sendData[i].product_status;
                                 if (sendData[i].product_status === 0) {
                                     sendData[i].product_status = '<span class="en">Canceled,</span><span class="ru">Отменен,</span>';
                                 } else if (sendData[i].product_status === 1) {

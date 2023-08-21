@@ -1,5 +1,6 @@
 @media (max-width: 65.6em) {
     .order-item {
+        width: calc_rem(738);
         margin-bottom: calc_rem(20);
         display: flex;
         color: black;
@@ -36,6 +37,7 @@
 
 @media (max-width: 48em) {
     .order-item {
+        width: calc_rem(512);
         margin-bottom: calc_rem(20);
         display: flex;
         color: black;
@@ -129,6 +131,7 @@
 
 @media (max-width: 33.9em) {
     .order-item {
+        width: calc_rem(300);
         margin-bottom: calc_rem(20);
         display: flex;
         color: black;
