@@ -247,7 +247,7 @@ class productController {
             const tokenInfo = await tokenService.userVerificationByToken(req);
 
             if (tokenInfo.status) {
-                if (tokenInfo.dbData.roole === 'admin') {
+                if (tokenInfo.dbData.roole === 'admin' || tokenInfo.dbData.roole === 'main_admin') {
                     try {  
                         let sendData;
                         try {
@@ -389,7 +389,7 @@ class productController {
             const tokenInfo = await tokenService.userVerificationByToken(req);
 
             if (tokenInfo.status) {
-                if (tokenInfo.dbData.roole === 'admin') {
+                if (tokenInfo.dbData.roole === 'admin' || tokenInfo.dbData.roole === 'main_admin') {
                     try {  
                         let sendData;
                         try {
@@ -400,6 +400,7 @@ class productController {
                                 sendData[i].email = userData.email;
                                 sendData[i].nickname = userData.nickname;
                                 sendData[i].tlg = userData.tlg;
+                                sendData[i].product_status_number = sendData[i].product_status;
                                 if (sendData[i].product_status === 0) {
                                     sendData[i].product_status = '<span class="en">Canceled,</span><span class="ru">Отменен,</span>';
                                 } else if (sendData[i].product_status === 1) {
@@ -421,6 +422,106 @@ class productController {
                     } catch (error) {
                         console.log('Error: ' + error)
                         return ress.create(res, 409, 'Geting products error');
+                    }
+                } else {
+                    return ress.create(res, 400, 'You are not admin');
+                }
+            } else {
+                return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
+            }
+        } catch (error) {
+            console.log('Error: ' + error);
+            return ress.create(res, 500, {en: 'Unexpected registration error', ru: 'Непредвиденная ошибка регистации'});
+        }
+    }
+    async setProduct(req, res) {
+        try {
+            const tokenInfo = await tokenService.userVerificationByToken(req);
+
+            if (tokenInfo.status) {
+                if (tokenInfo.dbData.roole === 'admin' || tokenInfo.dbData.roole === 'main_admin') {
+                    try {
+                        await database.query('UPDATE products SET product_status = $2 WHERE order_number = $1', [req.body.productNumber, req.body.productStatus]);
+
+                        return ress.create(res, 200, 'OK');
+                    } catch (error) {
+                        console.log('Error: ' + error)
+                        return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
+                    }
+                } else {
+                    return ress.create(res, 400, 'You are not admin');
+                }
+            } else {
+                return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
+            }
+        } catch (error) {
+            console.log('Error: ' + error);
+            return ress.create(res, 500, {en: 'Unexpected registration error', ru: 'Непредвиденная ошибка регистации'});
+        }
+    }
+    async setOtherProduct(req, res) {
+        try {
+            const tokenInfo = await tokenService.userVerificationByToken(req);
+
+            if (tokenInfo.status) {
+                if (tokenInfo.dbData.roole === 'admin' || tokenInfo.dbData.roole === 'main_admin') {
+                    try {
+                        await database.query('UPDATE other_products SET product_status = $2 WHERE order_number = $1', [req.body.productNumber, req.body.productStatus]);
+
+                        return ress.create(res, 200, 'OK');
+                    } catch (error) {
+                        console.log('Error: ' + error)
+                        return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
+                    }
+                } else {
+                    return ress.create(res, 400, 'You are not admin');
+                }
+            } else {
+                return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
+            }
+        } catch (error) {
+            console.log('Error: ' + error);
+            return ress.create(res, 500, {en: 'Unexpected registration error', ru: 'Непредвиденная ошибка регистации'});
+        }
+    }
+    async deleteProduct(req, res) {
+        try {
+            const tokenInfo = await tokenService.userVerificationByToken(req);
+
+            if (tokenInfo.status) {
+                if (tokenInfo.dbData.roole === 'admin' || tokenInfo.dbData.roole === 'main_admin') {
+                    try {
+                        await database.query('DELETE FROM products WHERE order_number = $1', [req.body.productNumber]);
+
+                        return ress.create(res, 200, 'OK');
+                    } catch (error) {
+                        console.log('Error: ' + error)
+                        return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
+                    }
+                } else {
+                    return ress.create(res, 400, 'You are not admin');
+                }
+            } else {
+                return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
+            }
+        } catch (error) {
+            console.log('Error: ' + error);
+            return ress.create(res, 500, {en: 'Unexpected registration error', ru: 'Непредвиденная ошибка регистации'});
+        }
+    }
+    async deleteOtherProduct(req, res) {
+        try {
+            const tokenInfo = await tokenService.userVerificationByToken(req);
+
+            if (tokenInfo.status) {
+                if (tokenInfo.dbData.roole === 'admin' || tokenInfo.dbData.roole === 'main_admin') {
+                    try {
+                        await database.query('DELETE FROM other_products WHERE order_number = $1', [req.body.productNumber]);
+
+                        return ress.create(res, 200, 'OK');
+                    } catch (error) {
+                        console.log('Error: ' + error)
+                        return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
                     }
                 } else {
                     return ress.create(res, 400, 'You are not admin');

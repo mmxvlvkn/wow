@@ -372,6 +372,129 @@
     &__option:nth-child(6) {
         width: calc_rem(240);
     }
+    &__admin {
+        width: 100%;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+    }
+    &__admin-status-container {
+        display: flex;
+    }
+    &__admin-status-form {
+        display: flex;
+        gap: calc_rem(15);
+    }
+    &__admin-status-select {
+        font-size: calc_rem(20);
+        width: calc_rem(150);
+        height: calc_rem(35);
+        background-color: rgba($color_2, 0.25);
+        border-radius: calc_rem(2);
+        border: 2px solid white;
+        color: white;
+    }
+    &__admin-status-btn {
+        font-size: calc_rem(20);
+        width: calc_rem(110);
+        height: calc_rem(35);
+        background-color: rgba($color_2, 0.25);
+        border-radius: calc_rem(2);
+        border: 2px solid white;
+        color: white;
+
+        &:hover {
+            background-color: rgba($color_2, 0.35);
+        }
+        &:active {
+            background-color: rgba($color_2, 0.4);
+        }
+
+        &._hidden {
+            display: none;
+        }
+    }
+    &__admin-status-submit {
+        display: none;
+        font-size: calc_rem(20);
+        width: calc_rem(110);
+        height: calc_rem(35);
+        background-color: rgba($color_2, 0.25);
+        border-radius: calc_rem(2);
+        border: 2px solid white;
+        color: white;
+
+        &:hover {
+            background-color: rgba($color_2, 0.35);
+        }
+        &:active {
+            background-color: rgba($color_2, 0.4);
+        }
+
+        &._shown {
+            display: block;
+        }
+    }
+    &__admin-delete {
+        font-size: calc_rem(20);
+        width: calc_rem(100);
+        height: calc_rem(35);
+        background-color: rgba(red, 0.25);
+        border-radius: calc_rem(2);
+        border: 2px solid white;
+        color: white;
+
+        &:hover {
+            background-color: rgba(red, 0.35);
+        }
+        &:active {
+            background-color: rgba(red, 0.4);
+        }
+    }
+}
+
+.order-title {
+    width: calc_rem(1020);
+    margin-bottom: calc_rem(10);
+    display: flex;
+    color: black;
+    gap: calc_rem(6);
+    flex-wrap: wrap;
+    align-items: stretch;
+
+    &__option {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba($color_1, 0.4);
+        border-radius: calc_rem(2);
+        border: 2px solid rgba(white, 0.6);
+        color: white;
+        padding: calc_rem(6);
+        flex-wrap: 0 0 auto;
+        border-radius: calc_rem(3);
+        min-height: calc_rem(45);
+        font-size: calc_rem(14);
+        text-align: center;
+    }
+    &__option:nth-child(1) {
+        width: calc_rem(85);
+    }
+    &__option:nth-child(2) {
+        width: calc_rem(85);
+    }
+    &__option:nth-child(3) {
+        width: calc_rem(200);
+    }
+    &__option:nth-child(4) {
+        width: calc_rem(140);
+    }
+    &__option:nth-child(5) {
+        width: calc_rem(240);
+    }
+    &__option:nth-child(6) {
+        width: calc_rem(240);
+    }
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     &__admin {
         width: 100%;

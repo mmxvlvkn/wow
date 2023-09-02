@@ -107,6 +107,20 @@ window.addEventListener('DOMContentLoaded', () => {
                         $accountOrders.prepend($productArticle);
                         languageChanges();
                     });
+
+                    // Product title formation
+                    let $productTitle = document.createElement('article');
+                    $productTitle.className = "order-title";
+                    $productTitle.innerHTML = `
+                        <div class="order-title__option"><span class="en">Date and time</span><span class="ru">Дата и время</span></div>
+                        <div class="order-title__option"><span class="en">Order number</span><span class="ru">Номер заказа</span></div>
+                        <div class="order-title__option"><span class="en">Product name</span><span class="ru">Наименование продукта</span></div>
+                        <div class="order-title__option"><span class="en">Price</span><span class="ru">Цена</span></div>
+                        <div class="order-title__option"><span class="en">Product description</span><span class="ru">Описание продукта</span></div>
+                        <div class="order-title__option"><span class="en">User data</span><span class="ru">Данные пользователя</span></div>
+                    `;
+                    $accountOrders.prepend($productTitle);
+                    languageChanges();
                 } else {
                     if (localStorage.getItem('isLoggedIn') === 'true') {
                         const $innerInfo = document.createElement('span');
@@ -150,6 +164,20 @@ window.addEventListener('DOMContentLoaded', () => {
                         $subtitle.innerHTML = `<span class='en'>Personal services</span><span class='ru'>Персональные услуги</span>`;
                         $accountOrders.append($subtitle);
 
+                        // Product title formation
+                        let $productTitle = document.createElement('article');
+                        $productTitle.className = "order-title";
+                        $productTitle.innerHTML = `
+                            <div class="order-title__option"><span class="en">Date and time</span><span class="ru">Дата и время</span></div>
+                            <div class="order-title__option"><span class="en">Order number</span><span class="ru">Номер заказа</span></div>
+                            <div class="order-title__option"><span class="en">Product name</span><span class="ru">Наименование продукта</span></div>
+                            <div class="order-title__option"><span class="en">Price</span><span class="ru">Цена</span></div>
+                            <div class="order-title__option"><span class="en">Product description</span><span class="ru">Описание продукта</span></div>
+                            <div class="order-title__option"><span class="en">User data</span><span class="ru">Данные пользователя</span></div>
+                        `;
+                        $accountOrders.append($productTitle);
+                        languageChanges();
+
                         data.forEach(product => {
                             // Formation info about user
                             const $productUserInfo = getNewOrderItemOptionElement(
@@ -182,7 +210,7 @@ window.addEventListener('DOMContentLoaded', () => {
                             $productArticle.append(getNewOrderItemOptionElement((product.current_language === 'en') ? product.price + "$" : product.price + "руб."));
                             $productArticle.append(getNewOrderItemOptionElement(product.order_description));
                             $productArticle.append($productUserInfo);
-                            $subtitle.after($productArticle);
+                            $productTitle.after($productArticle);
                             languageChanges();
                         });
                     }

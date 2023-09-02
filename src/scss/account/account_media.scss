@@ -1,7 +1,7 @@
 @media (max-width: 65.6em) {
     .order-item {
         width: calc_rem(738);
-        margin-bottom: calc_rem(20);
+        margin-bottom: calc_rem(18);
         display: flex;
         color: black;
         gap: calc_rem(6);
@@ -9,7 +9,7 @@
         align-items: stretch;
     
         &__option {
-            padding: calc_rem(10);
+            
             flex-wrap: 0 0 auto;
             border-radius: calc_rem(1);
             min-height: calc_rem(100);
@@ -38,7 +38,7 @@
 @media (max-width: 48em) {
     .order-item {
         width: calc_rem(512);
-        margin-bottom: calc_rem(20);
+        margin-bottom: calc_rem(15);
         display: flex;
         color: black;
         gap: calc_rem(6);
@@ -46,7 +46,7 @@
         align-items: stretch;
     
         &__option {
-            padding: calc_rem(10);
+            
             flex-wrap: 0 0 auto;
             border-radius: calc_rem(1);
             min-height: calc_rem(100);
@@ -132,7 +132,7 @@
 @media (max-width: 33.9em) {
     .order-item {
         width: calc_rem(300);
-        margin-bottom: calc_rem(20);
+        margin-bottom: calc_rem(10);
         display: flex;
         color: black;
         gap: calc_rem(6);
@@ -140,7 +140,7 @@
         align-items: stretch;
     
         &__option {
-            padding: calc_rem(10);
+            
             flex-wrap: 0 0 auto;
             border-radius: calc_rem(1);
             min-height: calc_rem(100);
@@ -175,6 +175,126 @@
         }
     }
 }
+
+@media (max-width: 65.6em) {
+    .order-title {
+        width: calc_rem(738);
+        margin-bottom: calc_rem(8);
+        display: flex;
+        color: black;
+        gap: calc_rem(6);
+        flex-wrap: wrap;
+        align-items: stretch;
+    
+        &__option {
+            
+            flex-wrap: 0 0 auto;
+            border-radius: calc_rem(1);
+        }
+        &__option:nth-child(1) {
+            width: calc_rem(85);
+        }
+        &__option:nth-child(2) {
+            width: calc_rem(85);
+        }
+        &__option:nth-child(3) {
+            width: calc_rem(300);
+        }
+        &__option:nth-child(4) {
+            width: calc_rem(250);
+        }
+        &__option:nth-child(5) {
+            width: calc_rem(300);
+        }
+        &__option:nth-child(6) {
+            width: calc_rem(432);
+        }
+    }
+}
+
+@media (max-width: 48em) {
+    .order-title {
+        width: calc_rem(512);
+        margin-bottom: calc_rem(8);
+        display: flex;
+        color: black;
+        gap: calc_rem(6);
+        flex-wrap: wrap;
+        align-items: stretch;
+    
+        &__option {
+            
+            flex-wrap: 0 0 auto;
+            border-radius: calc_rem(1);
+        }
+        &__option:nth-child(1) {
+            width: calc_rem(85);
+        }
+        &__option:nth-child(2) {
+            width: calc_rem(85);
+        }
+        &__option:nth-child(3) {
+            width: calc_rem(330);
+        }
+        &__option:nth-child(4) {
+            width: calc_rem(225);
+        }
+        &__option:nth-child(5) {
+            width: calc_rem(281);
+        }
+        &__option:nth-child(6) {
+            width: calc_rem(512);
+        }
+    }
+}
+
+@media (max-width: 33.9em) {
+    .order-title {
+        width: calc_rem(300);
+        margin-bottom: calc_rem(8);
+        display: flex;
+        color: black;
+        gap: calc_rem(6);
+        flex-wrap: wrap;
+        align-items: stretch;
+    
+        &__option {
+            padding: calc_rem(2);
+            flex-wrap: 0 0 auto;
+            border-radius: calc_rem(1);
+            min-height: calc_rem(30);
+        }
+        &__option:nth-child(1) {
+            width: calc_rem(140);
+        }
+        &__option:nth-child(2) {
+            width: calc_rem(140);
+        }
+        &__option:nth-child(3) {
+            width: calc_rem(286);
+        }
+        &__option:nth-child(4) {
+            width: calc_rem(286);
+        }
+        &__option:nth-child(5) {
+            width: calc_rem(286);
+        }
+        &__option:nth-child(6) {
+            width: calc_rem(286);
+        }
+        &__admin {
+            display: block;
+        }
+        &__admin-status-container {
+            margin-bottom: calc_rem(5);
+        }
+        &__admin-status-form {
+            display: flex;
+            gap: calc_rem(5);
+        }
+    }
+}
+
 @media (max-width: 25.19em) {
     .account {
         &__subtitle {

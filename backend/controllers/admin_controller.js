@@ -15,7 +15,7 @@ class adminController {
             const tokenInfo = await tokenService.userVerificationByToken(req);
             
             if (tokenInfo.status) {
-                if (tokenInfo.dbData.roole === 'admin') {
+                if (tokenInfo.dbData.roole === 'admin' || tokenInfo.dbData.roole === 'main_admin') {
                     return ress.create(res, 200, 'True');
                 } else {
                     return ress.create(res, 417, 'False');

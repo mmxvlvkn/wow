@@ -1,4 +1,5 @@
 const $adminOrders = $body.querySelector('.admin__orders');
+const $paymentError = $body.querySelector('.payment-error');
 
 // Products display
 window.addEventListener('DOMContentLoaded', () => {
@@ -22,7 +23,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             } else {
                 if (data.length) {
-                    data.forEach(product => {
+                    const sortData = mergeSort(data);
+                    sortData.forEach(product => {
                         // Main product parse
 
                         // Price formation
@@ -97,35 +99,35 @@ window.addEventListener('DOMContentLoaded', () => {
                         let $productMenu = document.createElement('div');
                         $productMenu.classList.add('order-item__admin');
                         $productMenu.innerHTML = (
-                                `
-                                <div class="order-item__admin-status-container">
-                                    <form class="order-item__admin-status-form">
-                                        <div class="en">
-                                            <select disabled class="order-item__admin-status-select">
-                                                <option value="0">Canceled</option>
-                                                <option value="1">Paid</option>
-                                                <option value="2">Performed</option>
-                                                <option value="3">Completed</option>
-                                            </select>
-                                        </div>
-                                        <div class="ru">
-                                            <select disabled class="order-item__admin-status-select">
-                                                <option value="0">Отменен</option>
-                                                <option value="1">Оплачен</option>
-                                                <option value="2">Выполняется</option>
-                                                <option value="3"n>Выполнен</option>
-                                            </select>
-                                        </div>
-                                        <button type="button" class="order-item__admin-status-btn"><span class="en">Set</span><span class="ru">Изменить</span></button>
-                                        <button type="submit" class="order-item__admin-status-submit"><span class="en">Send</span><span class="ru">Отправить</span></button>
-                                    </form>
-                                </div>
-                                <button type="click" class="order-item__admin-delete"><span class="en">Delete</span><span class="ru">Удалить</span></button>
-                                `.replaceAll(
-                                    `value="${String(product.product_status_number)}"`, 
-                                    `selected value="${String(product.product_status_number)}"`
-                                )
-                            );
+                            `
+                            <div class="order-item__admin-status-container">
+                                <form class="order-item__admin-status-form order-item__admin-product-status-form">
+                                    <div class="en">
+                                        <select disabled class="order-item__admin-status-select">
+                                            <option value="0">Canceled</option>
+                                            <option value="1">Paid</option>
+                                            <option value="2">Performed</option>
+                                            <option value="3">Completed</option>
+                                        </select>
+                                    </div>
+                                    <div class="ru">
+                                        <select disabled class="order-item__admin-status-select">
+                                            <option value="0">Отменен</option>
+                                            <option value="1">Оплачен</option>
+                                            <option value="2">Выполняется</option>
+                                            <option value="3"n>Выполнен</option>
+                                        </select>
+                                    </div>
+                                    <button type="button" class="order-item__admin-status-btn"><span class="en">Set</span><span class="ru">Изменить</span></button>
+                                    <button type="submit" class="order-item__admin-status-submit"><span class="en">Send</span><span class="ru">Отправить</span></button>
+                                </form>
+                            </div>
+                            <button type="click" class="order-item__admin-delete"><span class="en">Delete</span><span class="ru">Удалить</span></button>
+                            `.replaceAll(
+                                `value="${String(product.product_status_number)}"`, 
+                                `selected value="${String(product.product_status_number)}"`
+                            )
+                        );
 
                         // Display products
                         let $productArticle = document.createElement('article');
@@ -140,6 +142,20 @@ window.addEventListener('DOMContentLoaded', () => {
                         $adminOrders.prepend($productArticle);
                         languageChanges();
                     });
+
+                    // Product title formation
+                    let $productTitle = document.createElement('article');
+                    $productTitle.className = "order-title";
+                    $productTitle.innerHTML = `
+                        <div class="order-title__option"><span class="en">Date and time</span><span class="ru">Дата и время</span></div>
+                        <div class="order-title__option"><span class="en">Order number</span><span class="ru">Номер заказа</span></div>
+                        <div class="order-title__option"><span class="en">Product name</span><span class="ru">Наименование продукта</span></div>
+                        <div class="order-title__option"><span class="en">Price</span><span class="ru">Цена</span></div>
+                        <div class="order-title__option"><span class="en">Product description</span><span class="ru">Описание продукта</span></div>
+                        <div class="order-title__option"><span class="en">User data</span><span class="ru">Данные пользователя</span></div>
+                    `;
+                    $adminOrders.prepend($productTitle);
+                    languageChanges();
                 } else {
                     if (localStorage.getItem('isLoggedIn') === 'true') {
                         const $innerInfo = document.createElement('span');
@@ -163,13 +179,110 @@ window.addEventListener('DOMContentLoaded', () => {
             // PRODUCT ADMIN PANEL
 
             // Active functionallity of set a status product
-            $body.querySelectorAll('.order-item__admin-status-btn').forEach($btn => {
+            $body.querySelectorAll('.order-item__admin-product-status-form .order-item__admin-status-btn').forEach($btn => {
                 $btn.addEventListener('click', () => {
                     const $allElementsInForm = $btn.parentElement.children;
                     $allElementsInForm[0].children[0].removeAttribute('disabled');
                     $allElementsInForm[1].children[0].removeAttribute('disabled');
                     $allElementsInForm[2].classList.add('_hidden');
                     $allElementsInForm[3].classList.add('_shown');
+                });
+            });
+
+            // Set product
+            $body.querySelectorAll('.order-item__admin-product-status-form').forEach($form => {
+                $form.addEventListener('submit', event => {
+                    event.preventDefault();
+
+                    if (localStorage.getItem('isLoggedIn') === 'true') {
+                        fetch(`${HOST}/api/set_product`, {
+                            method: 'POST', 
+                            credentials: 'include',
+                            body: JSON.stringify({
+                                productNumber: $form
+                                    .parentElement
+                                    .parentElement
+                                    .parentElement
+                                    .children[1]
+                                    .textContent
+                                    .replace('#', ''),
+                                productStatus: (currentLanguage === 'en') 
+                                    ? 
+                                        $form
+                                        .children[0]
+                                        .children[0]
+                                        .value
+                                    :
+                                        $form
+                                        .children[1]
+                                        .children[0]
+                                        .value
+                            }),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(async (res) => {
+                            const status = res.status;
+                            const data = await res.json();
+                            if (status !== 200) {
+                                $paymentError.classList.add('_shown');
+                                $body.classList.add('_lock');
+                                console.error("Fetch error: " + error);
+                            } else {
+                                location.reload();
+                            }
+                        })
+                        .catch((error) => {
+                            $paymentError.classList.add('_shown');
+                            $body.classList.add('_lock');
+                            console.error("Fetch error: " + error);
+                        });
+                    } else {
+                        location.href = './'
+                    }
+                });
+            });
+
+            //Delete product
+            $body.querySelectorAll('.order-item__admin-product-status-form').forEach($form => {
+                $form.parentElement.nextElementSibling.addEventListener('click', () => {
+                    if (localStorage.getItem('isLoggedIn') === 'true') {
+                        fetch(`${HOST}/api/delete_product`, {
+                            method: 'POST', 
+                            credentials: 'include',
+                            body: JSON.stringify({
+                                productNumber: $form
+                                    .parentElement
+                                    .parentElement
+                                    .parentElement
+                                    .children[1]
+                                    .textContent
+                                    .replace('#', ''),
+                            }),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(async (res) => {
+                            const status = res.status;
+                            const data = await res.json();
+                            if (status !== 200) {
+                                $paymentError.classList.add('_shown');
+                                $body.classList.add('_lock');
+                                console.error("Fetch error: " + error);
+                            } else {
+                                location.reload();
+                            }
+                        })
+                        .catch((error) => {
+                            $paymentError.classList.add('_shown');
+                            $body.classList.add('_lock');
+                            console.error("Fetch error: " + error);
+                        });
+                    } else {
+                        location.href = './'
+                    }
                 });
             });
         })
@@ -195,7 +308,58 @@ window.addEventListener('DOMContentLoaded', () => {
                         $subtitle.innerHTML = `<span class='en'>Personal services</span><span class='ru'>Персональные услуги</span>`;
                         $adminOrders.append($subtitle);
 
-                        data.forEach(product => {
+                        // Product title formation
+                        let $productTitle = document.createElement('article');
+                        $productTitle.className = "order-title";
+                        $productTitle.innerHTML = `
+                            <div class="order-title__option"><span class="en">Date and time</span><span class="ru">Дата и время</span></div>
+                            <div class="order-title__option"><span class="en">Order number</span><span class="ru">Номер заказа</span></div>
+                            <div class="order-title__option"><span class="en">Product name</span><span class="ru">Наименование продукта</span></div>
+                            <div class="order-title__option"><span class="en">Price</span><span class="ru">Цена</span></div>
+                            <div class="order-title__option"><span class="en">Product description</span><span class="ru">Описание продукта</span></div>
+                            <div class="order-title__option"><span class="en">User data</span><span class="ru">Данные пользователя</span></div>
+                        `;
+                        $adminOrders.append($productTitle);
+                        languageChanges();
+
+                        const sortData = mergeSort(data);
+                        sortData.forEach(product => {
+                            // Display admin-panel for product
+                            let $productMenu = document.createElement('div');
+                            $productMenu.classList.add('order-item__admin');
+                            $productMenu.innerHTML = (
+                                `
+                                <div class="order-item__admin-status-container">
+                                    <form class="order-item__admin-status-form order-item__admin-other-product-status-form">
+                                        <div class="en">
+                                            <select disabled class="order-item__admin-status-select">
+                                                <option value="0">Canceled</option>
+                                                <option value="1">Consid-tion</option>
+                                                <option value="2">Paid</option>
+                                                <option value="3">Performed</option>
+                                                <option value="4">Completed</option>
+                                            </select>
+                                        </div>
+                                        <div class="ru">
+                                            <select disabled class="order-item__admin-status-select">
+                                                <option value="0">Отменен</option>
+                                                <option value="1">Рассмотр.</option>
+                                                <option value="2">Оплачен</option>
+                                                <option value="3">Выполняется</option>
+                                                <option value="4"n>Выполнен</option>
+                                            </select>
+                                        </div>
+                                        <button type="button" class="order-item__admin-status-btn"><span class="en">Set</span><span class="ru">Изменить</span></button>
+                                        <button type="submit" class="order-item__admin-status-submit"><span class="en">Send</span><span class="ru">Отправить</span></button>
+                                    </form>
+                                </div>
+                                <button type="click" class="order-item__admin-delete"><span class="en">Delete</span><span class="ru">Удалить</span></button>
+                                `.replaceAll(
+                                    `value="${String(product.product_status_number)}"`, 
+                                    `selected value="${String(product.product_status_number)}"`
+                                )
+                            );
+
                             // Formation info about user
                             const $productUserInfo = getNewOrderItemOptionElement(
                                 `<div class="payment__description-object" style="margin-bottom: 10px;">
@@ -227,11 +391,123 @@ window.addEventListener('DOMContentLoaded', () => {
                             $productArticle.append(getNewOrderItemOptionElement((product.current_language === 'en') ? product.price + "$" : product.price + "руб."));
                             $productArticle.append(getNewOrderItemOptionElement(product.order_description));
                             $productArticle.append($productUserInfo);
-                            $subtitle.after($productArticle);
+                            $productArticle.append($productMenu);
+                            $productTitle.after($productArticle);
                             languageChanges();
                         });
                     }
                 }
+            })
+            .then(() => {
+                // OTHER PRODUCT ADMIN PANEL
+    
+                // Active functionallity of set a status product
+                $body.querySelectorAll('.order-item__admin-other-product-status-form .order-item__admin-status-btn').forEach($btn => {
+                    $btn.addEventListener('click', () => {
+                        const $allElementsInForm = $btn.parentElement.children;
+                        $allElementsInForm[0].children[0].removeAttribute('disabled');
+                        $allElementsInForm[1].children[0].removeAttribute('disabled');
+                        $allElementsInForm[2].classList.add('_hidden');
+                        $allElementsInForm[3].classList.add('_shown');
+                    });
+                });
+    
+                // Set product
+                $body.querySelectorAll('.order-item__admin-other-product-status-form').forEach($form => {
+                    $form.addEventListener('submit', event => {
+                        event.preventDefault();
+    
+                        if (localStorage.getItem('isLoggedIn') === 'true') {
+                            fetch(`${HOST}/api/set_other_product`, {
+                                method: 'POST', 
+                                credentials: 'include',
+                                body: JSON.stringify({
+                                    productNumber: $form
+                                        .parentElement
+                                        .parentElement
+                                        .parentElement
+                                        .children[1]
+                                        .textContent
+                                        .replace('#', ''),
+                                    productStatus: (currentLanguage === 'en') 
+                                        ? 
+                                            $form
+                                            .children[0]
+                                            .children[0]
+                                            .value
+                                        :
+                                            $form
+                                            .children[1]
+                                            .children[0]
+                                            .value
+                                }),
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            })
+                            .then(async (res) => {
+                                const status = res.status;
+                                const data = await res.json();
+                                if (status !== 200) {
+                                    $paymentError.classList.add('_shown');
+                                    $body.classList.add('_lock');
+                                    console.error("Fetch error: " + error);
+                                } else {
+                                    location.reload();
+                                }
+                            })
+                            .catch((error) => {
+                                $paymentError.classList.add('_shown');
+                                $body.classList.add('_lock');
+                                console.error("Fetch error: " + error);
+                            });
+                        } else {
+                            location.href = './'
+                        }
+                    });
+                });
+
+                //Delete product
+                $body.querySelectorAll('.order-item__admin-other-product-status-form').forEach($form => {
+                    $form.parentElement.nextElementSibling.addEventListener('click', () => {
+                        if (localStorage.getItem('isLoggedIn') === 'true') {
+                            fetch(`${HOST}/api/delete_other_product`, {
+                                method: 'POST', 
+                                credentials: 'include',
+                                body: JSON.stringify({
+                                    productNumber: $form
+                                        .parentElement
+                                        .parentElement
+                                        .parentElement
+                                        .children[1]
+                                        .textContent
+                                        .replace('#', ''),
+                                }),
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            })
+                            .then(async (res) => {
+                                const status = res.status;
+                                const data = await res.json();
+                                if (status !== 200) {
+                                    $paymentError.classList.add('_shown');
+                                    $body.classList.add('_lock');
+                                    console.error("Fetch error: " + error);
+                                } else {
+                                    location.reload();
+                                }
+                            })
+                            .catch((error) => {
+                                $paymentError.classList.add('_shown');
+                                $body.classList.add('_lock');
+                                console.error("Fetch error: " + error);
+                            });
+                        } else {
+                            location.href = './'
+                        }
+                    });
+                });
             })
             .catch((error) => {
                 $accountOrders.innerHTML = (currentLanguage === 'en') ? 'Error' : 'Ошибка';
@@ -300,4 +576,76 @@ function stringIsValid(str) {
         return true;
     }
     return false;
+}
+
+// Hide error popup
+
+window.addEventListener('click', (event) => {
+    if ($paymentError.classList.contains('_shown')) {
+        if (!event.target.closest('.payment-error__container') || event.target.classList.contains('payment-error__btn')) {
+            $paymentError.classList.remove('_shown');
+            $body.classList.remove('_lock');
+        }
+    }
+});
+
+
+function mergeSort(unsortedArray) {
+    const midle_index = Math.floor(unsortedArray.length / 2)
+    if(unsortedArray.length < 2){
+      return unsortedArray
+    }
+   
+    const leftArray = unsortedArray.splice(0, midle_index)
+    return mergeArrays(mergeSort(leftArray),mergeSort(unsortedArray))
+}
+
+function mergeArrays(leftArray, rightArray) {
+    let arr = []
+    while (leftArray.length && rightArray.length) {
+        if (!dateAndTimeComparison(leftArray[0], rightArray[0])) {
+            arr.push(leftArray.shift())  
+        } else {
+            arr.push(rightArray.shift())
+        }
+    }
+    return [ ...arr, ...leftArray, ...rightArray ]
+}
+
+// Left is greater than right
+function dateAndTimeComparison(leftElenemt, rightElenemt) {
+    const leftDate = leftElenemt.create_date.split('.').map(elem => Number(elem));
+    const rightDate = rightElenemt.create_date.split('.').map(elem => Number(elem));
+    const leftTime = leftElenemt.create_time.split(':').map(elem => Number(elem));
+    const rightTime = rightElenemt.create_time.split(':').map(elem => Number(elem));
+
+    if (leftDate[2] > rightDate[2]) {
+        return true;
+    } else if (leftDate[2] === rightDate[2]) {
+        if (leftDate[1] > rightDate[1]) {
+            return true;
+        } else if (leftDate[1] === rightDate[1]) {
+            if (leftDate[0] > rightDate[0]) {
+                return true;
+            } else if (leftDate[0] === rightDate[0]) {
+                if (leftTime[0] > rightTime[0]) {
+                    return true;
+                } else if (leftTime[0] === rightTime[0]) {
+                    if (leftTime[1] >= rightTime[1]) {
+                        return true;
+                    }  else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
 }

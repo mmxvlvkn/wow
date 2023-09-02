@@ -10,5 +10,9 @@ productRouter.get('/get_all_products', productController.getAllProducts);
 productRouter.post('/create_other_product', productController.createOtherProduct);
 productRouter.get('/get_user_other_products', productController.getUserOtherProducts);
 productRouter.get('/get_all_other_products', productController.getAllOtherProducts);
+productRouter.post('/set_product', productController.setProduct);
+productRouter.post('/set_other_product', productController.setOtherProduct);
+productRouter.post('/delete_product', productController.deleteProduct);
+productRouter.post('/delete_other_product', productController.deleteOtherProduct);
 
 module.exports = productRouter;
