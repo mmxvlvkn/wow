@@ -96,7 +96,9 @@ class authController {
             }
 
             await database.query('INSERT INTO person_bufer (email, nickname, tlg, pass, roole, code) values ($1, $2, $3, $4, $5, $6)', [req.body.email, req.body.nickname, req.body.tlg, bcrypt.hashSync(req.body.pass, 7), 'user', code]);
-
+            setTimeout(async () => {
+                await database.query('DELETE FROM person_bufer WHERE email = $1', [req.body.email]);
+            }, 1000 * 60 * 15);          
             try {
                 await emailService.sendActivationCode(req.body.email, code);
             } catch (error) {

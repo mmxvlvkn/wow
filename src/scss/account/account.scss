@@ -33,6 +33,11 @@
             }
         }
     }
+    &__subtitle-personal-services {
+        &:hover {
+            color: inherit;
+        }
+    }
     &__personal-services-subtitle {
         &:hover {
             color:white;

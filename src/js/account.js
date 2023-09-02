@@ -159,7 +159,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     if (data.length) {
                         // Other product parse
                         const $subtitle = document.createElement('h2');
-                        $subtitle.className = "account__subtitle";
+                        $subtitle.className = "account__subtitle account__subtitle-personal-services";
                         $subtitle.style.marginBottom = "2px";
                         $subtitle.innerHTML = `<span class='en'>Personal services</span><span class='ru'>Персональные услуги</span>`;
                         $accountOrders.append($subtitle);
