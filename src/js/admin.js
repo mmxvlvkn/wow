@@ -4,6 +4,7 @@ const $paymentError = $body.querySelector('.payment-error');
 // Products display
 window.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('isLoggedIn') === 'true') {
+
         // Main products display
         fetch(`${HOST}/api/get_all_products`, {
             method: 'GET', 
@@ -17,7 +18,8 @@ window.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             if (status !== 200) {
                 try {
-                    $adminOrders.innerHTML = (currentLanguage === 'en') ? 'Error' : 'Ошибка';
+                    $adminOrders.innerHTML = `<span class="en">Error</span><span class="ru">Ошибка</span>`;
+                    languageChanges();
                 } catch (error) {
                     console.error('Error: ' + error);
                 }
@@ -228,7 +230,7 @@ window.addEventListener('DOMContentLoaded', () => {
                             if (status !== 200) {
                                 $paymentError.classList.add('_shown');
                                 $body.classList.add('_lock');
-                                console.error("Fetch error: " + error);
+                                console.error("Fetch error in admin set product");
                             } else {
                                 location.reload();
                             }
@@ -270,7 +272,7 @@ window.addEventListener('DOMContentLoaded', () => {
                             if (status !== 200) {
                                 $paymentError.classList.add('_shown');
                                 $body.classList.add('_lock');
-                                console.error("Fetch error: " + error);
+                                console.error("Fetch error in admin delete product");
                             } else {
                                 location.reload();
                             }
@@ -299,7 +301,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 const status = res.status;
                 const data = await res.json();
                 if (status !== 200) {
-                    console.error('Bad status');
+                    console.error('Bad status in admin get_all_other_products');
                 } else {
                     if (data.length) {
                         const $subtitle = document.createElement('h2');
@@ -451,7 +453,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                 if (status !== 200) {
                                     $paymentError.classList.add('_shown');
                                     $body.classList.add('_lock');
-                                    console.error("Fetch error: " + error);
+                                    console.error("Fetch error in admin set other product");
                                 } else {
                                     location.reload();
                                 }
@@ -493,7 +495,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                 if (status !== 200) {
                                     $paymentError.classList.add('_shown');
                                     $body.classList.add('_lock');
-                                    console.error("Fetch error: " + error);
+                                    console.error("Fetch error in admin delete other product");
                                 } else {
                                     location.reload();
                                 }
@@ -510,12 +512,14 @@ window.addEventListener('DOMContentLoaded', () => {
                 });
             })
             .catch((error) => {
-                $accountOrders.innerHTML = (currentLanguage === 'en') ? 'Error' : 'Ошибка';
+                $adminOrders.innerHTML = `<span class="en">Error</span><span class="ru">Ошибка</span>`;
+                languageChanges();
                 console.error('Fetch error: ' + error);
             });
         })
         .catch((error) => {
-            $adminOrders.innerHTML = (currentLanguage === 'en') ? 'Error' : 'Ошибка';
+            $adminOrders.innerHTML = `<span class="en">Error</span><span class="ru">Ошибка</span>`;
+            languageChanges();
             console.error('Fetch error: ' + error);
         });
     } else {
@@ -579,7 +583,6 @@ function stringIsValid(str) {
 }
 
 // Hide error popup
-
 window.addEventListener('click', (event) => {
     if ($paymentError.classList.contains('_shown')) {
         if (!event.target.closest('.payment-error__container') || event.target.classList.contains('payment-error__btn')) {

@@ -27,7 +27,6 @@ class authController {
             }
 
             // Validation
-
             if (!(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu.test(req.body.email))) {
                 validationSuccessful = false;
                 errorMessage = (errorMessage.en) ? errorMessage : {en: 'Incorrect email', ru: 'Некорректная электронная почта'};
@@ -64,7 +63,6 @@ class authController {
             }
 
             // User absence check
-
             let data = await database.query('SELECT * FROM person WHERE email = $1', [req.body.email]);
 
             if (data.rows.length) {
@@ -80,13 +78,11 @@ class authController {
             }
 
             // Send error
-
             if (errorMessage.en) {
                 return ress.create(res, 409, errorMessage); 
             }
 
             // Making, recording and email-sening access code
-
             const code = emailService.generateEmailCode();
 
             data = await database.query('SELECT * FROM person_bufer WHERE email = $1', [req.body.email]);
@@ -121,23 +117,20 @@ class authController {
     async singIn(req, res) {
         try {
             // Find an unverified user and check the code
-
             const data = await database.query('SELECT * FROM person_bufer WHERE email = $1', [req.body.email]);
 
             if (data.rows.length) {
                 if (req.body.code === data.rows[0].code) {
-                    // Delete account from person_bufer
 
+                    // Delete account from person_bufer
                     await database.query('DELETE FROM person_bufer WHERE email = $1', [req.body.email]);
 
                     // Make account and token
-
                     const token = tokenService.generateAccessToken(req.body.email, 'user', '720h');
 
                     await database.query('INSERT INTO person (email, nickname, tlg, pass, roole, token) values ($1, $2, $3, $4, $5, $6)', [data.rows[0].email, data.rows[0].nickname, data.rows[0].tlg, data.rows[0].pass, 'user', token]);
 
                     // Send ressponse
-
                     return ress.create(res, 200, 'OK', ['token', `Bearer ${token}`, {
                         maxAge: 2 * 30 * 24 * 60 * 60 * 1000,
                         httpOnly: true
@@ -187,7 +180,6 @@ class authController {
                     });
 
                     // Delete refresh email code
-
                     if (!data.rows[0].code) {
                         await database.query('UPDATE person SET code = $2 WHERE email = $1', [req.body.email, '']);
                     }

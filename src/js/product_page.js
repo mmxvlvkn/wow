@@ -83,14 +83,12 @@ function runRadiobutton(event) {
 const $optionsRange = $body.querySelectorAll('.product-settings__option.range');
 const priceGaps = [1];
 
-console.log($optionsRange.length)
 for (let i = 0; i < $optionsRange.length; i++) {
     const $progress = $optionsRange[i].querySelector('.product-settings__range-progress');
     const $inputsForRange = $optionsRange[i].querySelectorAll('.product-settings__input-for-range');
     const $ranges = $optionsRange[i].querySelectorAll('.product-settings__range');
 
     // Run input for slider range
-    console.log($inputsForRange)
     $inputsForRange.forEach($inputForRange => {
         const min = $ranges[0].getAttribute('min');
         const max = $ranges[0].getAttribute('max');
@@ -121,7 +119,6 @@ for (let i = 0; i < $optionsRange.length; i++) {
     });
 
     // Run slider range
-
     $ranges.forEach($inputForRange => {
         $inputForRange.addEventListener('input', event => {
             const min = $ranges[0].getAttribute('min');
@@ -154,7 +151,6 @@ let adobtiveStatus = 'null'
 window.addEventListener('resize', () => {
 
     // Width adoptive
-
     baseTopForDescription = parseInt(window.getComputedStyle($body.querySelector('header')).height) + parseInt(window.getComputedStyle($productPage).paddingTop);
     baseTopForProductSettingsContainer = baseTopForDescription + productSettingsVerticalPadding;
 
@@ -193,7 +189,6 @@ const $productPriceSubmit = $body.querySelectorAll('.product-price__submit');
 let coef = 1;
 
 // Get data for price formation
-
 let dataForPriceFormation;
 fetch(`${HOST}/api/get_price_formation`, {
     method: 'POST', 
@@ -247,13 +242,13 @@ fetch(`${HOST}/api/get_price_formation`, {
         });
 
         // Submit and payment
-
         $form.addEventListener('submit', event => {
             event.preventDefault();
 
             if (localStorage.getItem('isLoggedIn') === 'true') {
                 checkToken().then(checkTokenResult => {
                     if (checkTokenResult) {
+
                         // Create sending object
                         let sendingData = {};
                         sendingData.radio = {};
@@ -318,7 +313,7 @@ fetch(`${HOST}/api/get_price_formation`, {
                         .catch((error) => {
                             $paymentError.classList.add('_shown');
                             $body.classList.add('_lock')
-                            console.error('Fetch error');
+                            console.error('Fetch error: ' + error);
                         });
 
                     } else {
@@ -342,6 +337,7 @@ fetch(`${HOST}/api/get_price_formation`, {
                 if (localStorage.getItem('isLoggedIn') === 'true') {
                     checkToken().then(checkTokenResult => {
                         if (checkTokenResult) {
+
                             // Create sending object
                             let sendingData = {};
                             sendingData.radio = {};
@@ -406,7 +402,7 @@ fetch(`${HOST}/api/get_price_formation`, {
                             .catch((error) => {
                                 $paymentError.classList.add('_shown');
                                 $body.classList.add('_lock')
-                                console.error('Fetch error');
+                                console.error('Fetch error: ' + error);
                             });
         
                         } else {
@@ -505,7 +501,6 @@ function priceFormation(dataForPriceFormation) {
 }
 
 // Show error
-
 const $paymentError = $body.querySelector('.payment-error');
 window.addEventListener('click', (event) => {
     if ($paymentError.classList.contains('_shown')) {

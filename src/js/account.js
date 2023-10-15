@@ -1,11 +1,10 @@
 const $accountOrders = $body.querySelector('.account__orders');
 
 // Products display
-
 window.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('isLoggedIn') === 'true') {
-        // Main products display
 
+        // Main products display
         fetch(`${HOST}/api/get_user_products`, {
             method: 'GET', 
             credentials: 'include',
@@ -18,7 +17,8 @@ window.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             if (status !== 200) {
                 try {
-                    $accountOrders.innerHTML = (currentLanguage === 'en') ? 'Error' : 'Ошибка';
+                    $accountOrders.innerHTML = `<span class="en">Error</span><span class="ru">Ошибка</span>`;
+                    languageChanges();
                 } catch (error) {
                     console.error('Error: ' + error);
                 }
@@ -154,7 +154,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 const status = res.status;
                 const data = await res.json();
                 if (status !== 200) {
-                    console.error('Bad status');
+                    console.error('Bad status in other products display');
                 } else {
                     if (data.length) {
                         // Other product parse
@@ -217,19 +217,20 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             })
             .catch((error) => {
-                $accountOrders.innerHTML = (currentLanguage === 'en') ? 'Error' : 'Ошибка';
+                $accountOrders.innerHTML = `<span class="en">Error</span><span class="ru">Ошибка</span>`;
+                languageChanges();
                 console.error('Fetch error: ' + error);
             });
         })
         .catch((error) => {
-            $accountOrders.innerHTML = (currentLanguage === 'en') ? 'Error' : 'Ошибка';
+            $accountOrders.innerHTML = `<span class="en">Error</span><span class="ru">Ошибка</span>`;
+            languageChanges();
             console.error('Fetch error: ' + error);
         });
     } else {
         if (localStorage.getItem('isLoggedIn') === 'true') {
             const $innerInfo = document.createElement('span');
             $innerInfo.innerHTML = `<span class='en'>No orders</span><span class='ru'>Заказы отсутствуют</span>`;
-            //!
             $innerInfo.style.display = 'block';
             $innerInfo.style.marginBottom = '10px';
             $accountOrders.append($innerInfo);
@@ -385,7 +386,8 @@ if (localStorage.getItem('isLoggedIn') === 'true') {
         if (status !== 200) {
             try {
                 $body.querySelectorAll('.account__setting-error').forEach($errorMessage => {
-                    $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                    $errorMessage.innerHTML = `<span class="en">${data.en}</span><span class="ru">${data.ru}</span>`;
+                    languageChanges();
                 });
             } catch (error) {
                 console.error('Error: ' + error);
@@ -399,7 +401,8 @@ if (localStorage.getItem('isLoggedIn') === 'true') {
     })
     .catch((error) => {
         $body.querySelectorAll('.account__setting-error').forEach($errorMessage => {
-            $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';
+            $errorMessage.innerHTML = `<span class="en">Unexpected error</span><span class="ru">Непредвиденная ошибка</span>`;
+            languageChanges();
         });
         console.error('Fetch error: ' + error);
     });
@@ -455,7 +458,8 @@ function changeUserParameter($form) {
             if ($input.classList.contains('account__setting-input-nickname')) {
                 if (!(/^[a-zA-Z][a-zA-Z0-9-_\.]{1,20}$/.test($input.value))) {
                     $input.style.border = '2px solid red';
-                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect nickname' : 'Неккоректный никнейм';
+                    $errorMessage.innerHTML = `<span class="en">Incorrect nickname</span><span class="ru">Неккоректный никнейм</span>`;
+                    languageChanges();
                 } else {
                     $submitBtn.setAttribute('disabled', 'true');
 
@@ -477,14 +481,16 @@ function changeUserParameter($form) {
             
                         if (status !== 200) {
                             try {
-                                $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                                $errorMessage.innerHTML = `<span class="en">${data.en}</span><span class="ru">${data.ru}</span>`;
+                                languageChanges();
                             } catch (error) {
                                 console.error('Error: ' + error);
                             }
                         } else {
                             $input.setAttribute('readonly', 'true');
                             $errorMessage.style.color = '#33CC66';
-                            $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
+                            $errorMessage.innerHTML = `<span class="en">Success</span><span class="ru">Успешно</span>`;
+                            languageChanges();
                             $errorMessage.style.fontSize = '12px';
                             setTimeout(() => {
                                 $errorMessage.style.color = 'red';
@@ -499,7 +505,8 @@ function changeUserParameter($form) {
                     .catch((error) => {
                         $submitBtn.removeAttribute('disabled');
 
-                        $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                        $errorMessage.innerHTML = `<span class="en">Unexpected error</span><span class="ru">Непредвиденная ошибка</span>`;
+                        languageChanges();    
                         console.error('Fetch error: ' + error);
                     });
                 }
@@ -507,7 +514,8 @@ function changeUserParameter($form) {
             } else if ($input.classList.contains('account__setting-input-tlg')) {
                 if (!(/^[@]{1}[^а-яё]+$/.test($input.value))) {
                     $input.style.border = '2px solid red';
-                    $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect telegram' : 'Неккоректный телеграмм';
+                    $errorMessage.innerHTML = `<span class="en">Incorrect telegram</span><span class="ru">Неккоректный телеграмм</span>`;
+                    languageChanges();
                 } else {
                     $submitBtn.setAttribute('disabled', 'true');
 
@@ -529,14 +537,16 @@ function changeUserParameter($form) {
             
                         if (status !== 200) {
                             try {
-                                $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                                $errorMessage.innerHTML = `<span class="en">${data.en}</span><span class="ru">${data.ru}</span>`;
+                                languageChanges();
                             } catch (error) {
                                 console.error('Error: ' + error);
                             }
                         } else {
                             $input.setAttribute('readonly', 'true');
                             $errorMessage.style.color = '#33CC66';
-                            $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
+                            $errorMessage.innerHTML = `<span class="en">Success</span><span class="ru">Успешно</span>`;
+                            languageChanges();
                             $errorMessage.style.fontSize = '12px';
                             setTimeout(() => {
                                 $errorMessage.style.color = 'red';
@@ -551,7 +561,8 @@ function changeUserParameter($form) {
                     .catch((error) => {
                         $submitBtn.removeAttribute('disabled');
 
-                        $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                        $errorMessage.innerHTML = `<span class="en">Unexpected error</span><span class="ru">Непредвиденная ошибка</span>`;   
+                        languageChanges(); 
                         console.error('Fetch error: ' + error);
                     });
                 }
@@ -561,7 +572,8 @@ function changeUserParameter($form) {
                 if (setEmailStatus === 1) {
                     if (!(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu.test($input.value))) {
                         $input.style.border = '2px solid red';
-                        $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect email' : 'Неккоректный эл. почта';
+                        $errorMessage.innerHTML = `<span class="en">Incorrect email</span><span class="ru">Неккоректная эл. почта</span>`;
+                        languageChanges();
                     } else {
                         $submitBtn.setAttribute('disabled', 'true');
 
@@ -584,13 +596,15 @@ function changeUserParameter($form) {
                             if (status !== 200) {
                                 try {
                                     $errorMessage.style.color = 'red';
-                                    $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                                    $errorMessage.innerHTML = `<span class="en">${data.en}</span><span class="ru">${data.ru}</span>`;
+                                    languageChanges();
                                 } catch (error) {
                                     console.error('Error: ' + error);
                                 }
                             } else {
                                 $errorMessage.style.color = '#33CC66';
-                                $errorMessage.textContent = (currentLanguage === 'en') ? `Enter the code from ${currentEmail}` : `Введите код из ${currentEmail}`;;
+                                $errorMessage.innerHTML = `<span class="en">Enter the code from ${currentEmail}</span><span class="ru">$Введите код из ${currentEmail}</span>`;
+                                languageChanges();
                                 $errorMessage.style.fontSize = '14px';
                                 newEmail = $input.value;
                                 $input.value = '';
@@ -603,7 +617,8 @@ function changeUserParameter($form) {
                             $submitBtn.removeAttribute('disabled');
 
                             $errorMessage.style.color = 'red';
-                            $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                            $errorMessage.innerHTML = `<span class="en">Incorrect telegram</span><span class="ru">Неккоректный телеграмм</span>`;
+                            languageChanges();
                             console.error('Fetch error: ' + error);
                         });
                     }
@@ -612,7 +627,8 @@ function changeUserParameter($form) {
                     $errorMessage.style.color = 'red';
                     if (!(/^[0-9]{6}$/.test($input.value))) {
                         $input.style.border = '2px solid red';
-                        $errorMessage.textContent = (currentLanguage === 'en') ? 'Incorrect code' : 'Неккоректный код';
+                        $errorMessage.innerHTML = `<span class="en">Incorrect code</span><span class="ru">Неккоректный код</span>`;
+                        languageChanges();
                     } else {
                         $submitBtn.setAttribute('disabled', 'true');
 
@@ -640,13 +656,15 @@ function changeUserParameter($form) {
                             if (status !== 200) {
                                 try {
                                     $errorMessage.style.color = 'red';
-                                    $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                                    $errorMessage.innerHTML = `<span class="en">${data.en}</span><span class="ru">${data.ru}</span>`;
+                                    languageChanges();
                                 } catch (error) {
                                     console.error('Error: ' + error);
                                 }
                             } else {
                                 $errorMessage.style.color = '#33CC66';
-                                $errorMessage.textContent = (currentLanguage === 'en') ? `Enter the code from ${newEmail}` : `Введите код из ${newEmail}`;;
+                                $errorMessage.innerHTML = `<span class="en">Enter the code from ${newEmail}</span><span class="ru">$Введите код из ${newEmail}</span>`;
+                                languageChanges();
                                 $errorMessage.style.fontSize = '14px';
                                 $input.value = '';
                                 setEmailStatus = 3;
@@ -656,7 +674,8 @@ function changeUserParameter($form) {
                             $submitBtn.removeAttribute('disabled');
                             
                             $errorMessage.style.color = 'red';
-                            $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                            $errorMessage.innerHTML = `<span class="en">Incorrect telegram</span><span class="ru">Неккоректный телеграмм</span>`;
+                            languageChanges();
                             console.error('Fetch error: ' + error);
                         });
                     }
@@ -688,14 +707,16 @@ function changeUserParameter($form) {
                         if (status !== 200) {
                             try {
                                 $errorMessage.style.color = 'red';
-                                $errorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                                $errorMessage.innerHTML = `<span class="en">${data.en}</span><span class="ru">${data.ru}</span>`;
+                                languageChanges();
                             } catch (error) {
                                 console.error('Error: ' + error);
                             }
                         } else {
                             $input.setAttribute('readonly', 'true');
                             $errorMessage.style.color = '#33CC66';
-                            $errorMessage.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
+                            $errorMessage.innerHTML = `<span class="en">Success</span><span class="ru">Успешно</span>`;
+                            languageChanges();
                             $errorMessage.style.fontSize = '14px';
                             setTimeout(() => {
                                 $errorMessage.style.color = 'red';
@@ -717,7 +738,8 @@ function changeUserParameter($form) {
                         $submitBtn.removeAttribute('disabled');
                         
                         $errorMessage.style.color = 'red';
-                        $errorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                        $errorMessage.innerHTML = `<span class="en">Incorrect telegram</span><span class="ru">Неккоректный телеграмм</span>`;
+                        languageChanges();  
                         console.error('Fetch error: ' + error);
                     });   
                 }
@@ -767,51 +789,59 @@ if (localStorage.getItem('isLoggedIn') === 'true') {
 
         if ($currentPass.value.length < 6) {
             $currentPass.style.border = '2px solid red';
-            $setPassCurrentError.textContent = (currentLanguage === 'en') ? 'Password less than 6 characters' : 'Пароль меньше 6 символов';
+            $setPassCurrentError.innerHTML = `<span class="en">Password less than 6 characters</span><span class="ru">Пароль меньше 6 символов</span>`;
+            languageChanges();
             isValid = false;
         }
 
         if (!(/^(?=.*\d)(?=.*[a-zA-Z])(?!.*\s).*$/.test($currentPass.value))) {
             $currentPass.style.border = '2px solid red';
-            $setPassCurrentError.textContent = (currentLanguage === 'en') ? 'Password must contain latin letters and numbers' : 'Пароль должен содержать латинские буквы и цифры';
+            $setPassCurrentError.innerHTML = `<span class="en">Password must contain latin letters and numbers</span><span class="ru">Пароль должен содержать латинские буквы и цифры</span>`;
+            languageChanges();
             isValid = false;
         }
 
         if ($newPass.value !== $repeatPass.value) {
             $newPass.style.border = '2px solid red';
             $repeatPass.style.border = '2px solid red';
-            $setPassNewError.textContent = (currentLanguage === 'en') ? 'Passwords do not match' : 'Пароли не совпадают';
+            $setPassNewError.innerHTML = `<span class="en">Passwords do not match</span><span class="ru">Пароли не совпадают</span>`;
+            languageChanges();
             isValid = false;
         }
         
         if ($newPass.value.length < 6) {
             $newPass.style.border = '2px solid red';
-            $setPassNewError.textContent = (currentLanguage === 'en') ? 'Password less than 6 characters' : 'Пароль меньше 6 символов';
+            $setPassNewError.innerHTML = `<span class="en">Password less than 6 characters</span><span class="ru">Пароль меньше 6 символов</span>`;
+            languageChanges();
             isValid = false;
         }
 
         if (!(/^(?=.*\d)(?=.*[a-zA-Z])(?!.*\s).*$/.test($newPass.value))) {
             $newPass.style.border = '2px solid red';
-            $setPassNewError.textContent = (currentLanguage === 'en') ? 'Password must contain latin letters and numbers' : 'Пароль должен содержать латинские буквы и цифры';
+            $setPassNewError.innerHTML = `<span class="en">Password must contain latin letters and numbers</span><span class="ru">Пароль должен содержать латинские буквы и цифры</span>`;
+            languageChanges();
             isValid = false;
         }
 
         if ($repeatPass.value.length < 6) {
             $repeatPass.style.border = '2px solid red';
-            $setPassNewError.textContent = (currentLanguage === 'en') ? 'Password less than 6 characters' : 'Пароль меньше 6 символов';
+            $setPassNewError.innerHTML = `<span class="en">Password less than 6 characters</span><span class="ru">Пароль меньше 6 символов</span>`;
+            languageChanges();
             isValid = false;
         }
 
         if (!(/^(?=.*\d)(?=.*[a-zA-Z])(?!.*\s).*$/.test($repeatPass.value))) {
             $repeatPass.style.border = '2px solid red';
-            $setPassNewError.textContent = (currentLanguage === 'en') ? 'Password must contain latin letters and numbers' : 'Пароль должен содержать латинские буквы и цифры';
+            $setPassNewError.innerHTML = `<span class="en">Password must contain latin letters and numbers</span><span class="ru">Пароль должен содержать латинские буквы и цифры</span>`;
+            languageChanges();
             isValid = false;
         }
 
         if ($newPass.value === $currentPass.value) {
             $newPass.style.border = '2px solid red';
             $repeatPass.style.border = '2px solid red';
-            $setPassNewError.textContent = (currentLanguage === 'en') ? 'Old and new passwords are match' : 'Старый и новый пароли совпадают';
+            $setPassNewError.innerHTML = `<span class="en">'Old and new passwords are match</span><span class="ru">Старый и новый пароли совпадают</span>`;
+            languageChanges();
             isValid = false;
         }
 
@@ -834,7 +864,8 @@ if (localStorage.getItem('isLoggedIn') === 'true') {
 
                 if (status !== 200) {
                     try {
-                        $setPassNewError.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                        $setPassNewError.innerHTML = `<span class="en">${data.en}</span><span class="ru">${data.ru}</span>`;
+                        languageChanges();
                     } catch (error) {
                         console.error('Error: ' + error);
                     }
@@ -848,7 +879,8 @@ if (localStorage.getItem('isLoggedIn') === 'true') {
                 }
             })
             .catch((error) => {
-                $setPassNewError.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                $setPassNewError.innerHTML = `<span class="en">Unexpected error</span><span class="ru">Непредвиденная ошибка</span>`;
+                languageChanges();
                 console.error('Fetch error: ' + error);
             });
         }
@@ -899,7 +931,8 @@ if (localStorage.getItem('isLoggedIn') === 'true') {
 
         if (!(/^[0-9]{6}$/.test($setPassCodeInput.value))) {
             $setPassCodeInput.style.border = '2px solid red';
-            $setPassCodeError.textContent = (currentLanguage === 'en') ? 'Incorrect email code' : 'Неверный код';
+            $setPassCodeError.innerHTML = `<span class="en">Incorrect email code</span><span class="ru">Неверный код</span>`;
+            languageChanges();
         } else {
             fetch(`${HOST}/api/set_user_password`, {
                 method: 'POST', 
@@ -918,13 +951,15 @@ if (localStorage.getItem('isLoggedIn') === 'true') {
 
                 if (status !== 200) {
                     try {
-                        $setPassCodeError.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                        $setPassCodeError.innerHTML = `<span class="en">${data.en}</span><span class="ru">${data.ru}</span>`;
+                        languageChanges();
                     } catch (error) {
                         console.error('Error: ' + error);
                     }
                 } else {
                     $setPassCodeInput.value = '';
-                    $setPassCodeError.textContent = (currentLanguage === 'en') ? 'Success!' : 'Успешно!';
+                    $setPassCodeError.innerHTML = `<span class="en">Success</span><span class="ru">Успешно</span>`;
+                    languageChanges();
                     $setPassCodeError.style.color = '#00FF66';
                     $setPassCodeError.style.fontSize = '14px';
 
@@ -939,7 +974,8 @@ if (localStorage.getItem('isLoggedIn') === 'true') {
                 }
             })
             .catch((error) => {
-                $setPassNewError.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
+                $setPassNewError.innerHTML = `<span class="en">Unexpected error</span><span class="ru">Непредвиденная ошибка</span>`;
+                languageChanges();
                 console.error('Fetch error: ' + error);
             });
         }

@@ -28,8 +28,8 @@ $otherProductsForm.addEventListener('submit', event => {
             }
 
             if (isValid) {
+                
                 // Query send
-
                 fetch(`${HOST}/api/create_other_product`, {
                     method: 'POST', 
                     credentials: 'include',
@@ -48,7 +48,7 @@ $otherProductsForm.addEventListener('submit', event => {
                     if (status !== 200) {
                         $paymentError.classList.add('_shown');
                         $body.classList.add('_lock');
-                        console.error("Fetch error: " + error);
+                        console.error("Fetch error in create_other_product");
                         isOtherProductForm = false;
                     } else {
                         $otherProductsDescription.value = '';

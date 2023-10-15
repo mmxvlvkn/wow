@@ -4,7 +4,6 @@ const COLOR_2 = '#564fff';
 // HEADER
 
 // Login visualization in header when visiting the site
-
 const $HeaderContactsBtn = document.querySelector('.left-row__contacts-btn');
 const $adminBtn = document.querySelector('.header__admin');
 
@@ -47,7 +46,7 @@ async function checkToken() {
     })
     .catch((error) => {
         localStorage.setItem('isLoggedIn', 'false');
-        console.error('Check token error');
+        console.error('Check token error: ' + error);
         result = false;
     });
 
@@ -72,7 +71,7 @@ async function checkAdmin() {
         }
     })
     .catch((error) => {
-        console.error('Check admin error');
+        console.error('Check admin error: ' + error);
     });
 
     return result;
@@ -96,7 +95,6 @@ window.addEventListener('click', (event) => {
 });
 
 // Languages
-
 const $headerLanguage = $body.querySelector('.header__languages');
 const $headerLanguageEn = $body.querySelector('.header__languages .languages__en');
 const $headerLanguageRu = $body.querySelector('.header__languages .languages__ru');
@@ -182,8 +180,6 @@ function languageChanges() {
     }
 }
 
-//
-
 // Show the price in Russian on the product map
 const usdRusCourse = 96.32;
 
@@ -208,7 +204,6 @@ $productCardsArray.forEach($productCard => {
 });
 
 // Adoptive
-
 const $headerBurgerButton = $body.querySelector('.burger__button');
 const $headerBurgerList = $body.querySelector('.burger__list');
 const $headerRightRow = $body.querySelector('.right-row');
@@ -297,7 +292,6 @@ function headerAdoptiveMore608() {
 }
 
 // Show burger list
-
 $headerBurgerButton.addEventListener('click', () => {
     $headerBurgerList.classList.toggle('_shown');
 
@@ -318,7 +312,6 @@ window.addEventListener( 'click', (event) => {
 });
 
 // Establishing a position burger list
-
 $headerBurgerList.style.top = `${70 - document.documentElement.scrollTop}px`;
 window.addEventListener('scroll', () => {
     $headerBurgerList.style.top = `${70 - document.documentElement.scrollTop}px`;
@@ -327,7 +320,6 @@ window.addEventListener('scroll', () => {
 // SIGN UP
 
 // Set width sign up
-
 const $headerSignUpPopup = document.querySelector('.header__sign-up-popup');
 
 window.addEventListener('resize', () => {
@@ -335,7 +327,6 @@ window.addEventListener('resize', () => {
 });
 
 // Show sign up popup
-
 //? $headerRightRowReg;
 const $headerSignUpCloseBtn = $headerSignUpPopup.querySelector('.sign-up__close');
 
@@ -367,7 +358,6 @@ $headerSignUpCloseBtn.addEventListener('click', () => {
 });
 
 // Set position sign up
-
 const $headerSignUpContainer = $headerSignUpPopup.querySelector('.sign-up__container');
 
 if ($headerSignUpContainer.clientHeight + 40 > window.innerHeight) {
@@ -389,7 +379,6 @@ window.addEventListener('resize', () => {
 })
 
 // Register form Validation
-
 const $headerSignUpFormReg = $headerSignUpPopup.querySelector('.sign-up__form-registration');
 const $headerSignUpEmail = $headerSignUpFormReg.querySelector('.sign-up__email');
 const $headerSignUpNickname = $headerSignUpFormReg.querySelector('.sign-up__nickname');
@@ -417,49 +406,51 @@ $headerSignUpFormReg.addEventListener('submit', (event) => {
 
         if (!(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu.test($headerSignUpEmail.value))) {
             $headerSignUpEmail.style.border = '1px solid red';
-            errorMessage = (errorMessage) ? errorMessage : ((currentLanguage === 'en') ? 'Incorrect email' : 'Некорректная электронная почта');
+            errorMessage = (errorMessage) ? errorMessage : `<span class="en">Incorrect email</span><span class="ru">Некорректная электронная почта</span>`;
         }
 
         if (!(/^[a-zA-Z][a-zA-Z0-9-_\.]{1,20}$/.test($headerSignUpNickname.value))) {
             $headerSignUpNickname.style.border = '1px solid red';
-            errorMessage = (errorMessage) ? errorMessage : ((currentLanguage === 'en') ? 'The nickname must start with a Latin letter, contain only Latin letters and numbers, and may contain the symbols -,_,.' : 'Никнейм должен начинаться с латинской буквы, содержать только латинские буквы и цифры, может содержать символы -,_,.');
+            errorMessage = (errorMessage) ? errorMessage : `<span class="en">The nickname must start with a Latin letter, contain only Latin letters and numbers, and may contain the symbols -,_,.</span><span class="ru">Никнейм должен начинаться с латинской буквы, содержать только латинские буквы и цифры, может содержать символы -,_,.</span>`;
         }
 
         if (!stringLengthCheck($headerSignUpNickname.value, 6)) {
             $headerSignUpNickname.style.border = '1px solid red';
-            errorMessage = (errorMessage) ? errorMessage : ((currentLanguage === 'en') ? 'Nickname less than 6 characters' : 'Никнейм меньше 6 символов');
+            errorMessage = (errorMessage) ? errorMessage : `<span class="en">Nickname less than 6 characters</span><span class="ru">Никнейм меньше 6 символов</span>`;
         }
 
         if (!(/^[@]{1}[^а-яё]+$/.test($headerSignUpTlg.value))) {
             $headerSignUpTlg.style.border = '1px solid red';
-            errorMessage = (errorMessage) ? errorMessage : ((currentLanguage === 'en') ? 'Incorrect telegram' : 'Некорректный телеграм');
+            errorMessage = (errorMessage) ? errorMessage : `<span class="en">Incorrect telegram</span><span class="ru">Некорректный телеграм</span>`;
         }
 
         if (!stringLengthCheck($headerSignUpTlg.value, 2)) {
             $headerSignUpTlg.style.border = '1px solid red';
-            errorMessage = (errorMessage) ? errorMessage : ((currentLanguage === 'en') ? 'Telegram less than 2 characters' : 'Телеграм меньше 2 символов');
+            errorMessage = (errorMessage) ? errorMessage : `<span class="en">Telegram less than 2 characters</span><span class="ru">Телеграм меньше 2 символов</span>`;
         }
 
         if (!(/^(?=.*\d)(?=.*[a-zA-Z])(?!.*\s).*$/.test($headerSignUpPassword.value))) {
             $headerSignUpPassword.style.border = '1px solid red';
             $headerSignUpRepeatPassword.style.border = '1px solid red';
-            errorMessage = (errorMessage) ? errorMessage : ((currentLanguage === 'en') ? 'Password must contain latin letters and numbers' : 'Пароль должен содержать латинские буквы и цифры');
+            errorMessage = (errorMessage) ? errorMessage : `<span class="en">Password must contain latin letters and numbers</span><span class="ru">Пароль должен содержать латинские буквы и цифры</span>`;
         }
 
         if (!stringLengthCheck($headerSignUpPassword.value, 6)) {
             $headerSignUpPassword.style.border = '1px solid red';
             $headerSignUpRepeatPassword.style.border = '1px solid red';
-            errorMessage = (errorMessage) ? errorMessage : ((currentLanguage === 'en') ? 'Password less than 6 characters' : 'Пароль меньше 6 символов');
+            errorMessage = (errorMessage) ? errorMessage : `<span class="en">Password less than 6 characters</span><span class="ru">Пароль меньше 6 символов</span>`;
         }
 
         if ($headerSignUpPassword.value !== $headerSignUpRepeatPassword.value) {
             $headerSignUpPassword.style.border = '1px solid red';
             $headerSignUpRepeatPassword.style.border = '1px solid red';
-            errorMessage = (errorMessage) ? errorMessage : ((currentLanguage === 'en') ? 'Passwords do not match' : 'Пароли не совпадают');
+            errorMessage = (errorMessage) ? errorMessage : `<span class="en">Passwords do not match</span><span class="ru">Пароли не совпадают</span>`;
         }
 
         if (errorMessage) {
-            $headerSignUpErrorMessage.textContent = errorMessage;
+            $headerSignUpErrorMessage.innerHTML = errorMessage;
+            languageChanges();
+
         } else {
             if ($headerSignUpErrorMessage.textContent) {
                 $headerSignUpErrorMessage.textContent = '';
@@ -484,7 +475,8 @@ $headerSignUpFormReg.addEventListener('submit', (event) => {
                 const data = await res.json();
                 if (status !== 200) {
                     try {
-                        $headerSignUpErrorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                        $headerSignUpErrorMessage.innerHTML = `<span class="en">${data.en}</span><span class="ru">${data.ru}</span>`;
+                        languageChanges();
                     } catch (error) {
                         console.error('Error: ' + error);
                     }
@@ -508,16 +500,18 @@ $headerSignUpFormReg.addEventListener('submit', (event) => {
                     $headerSignUpActivation.classList.add('_shown');
                     $headerSignUpBackBtn.classList.add('_shown');
 
-                    $headerSignUpCodeError.textContent = (currentLanguage === 'en') ? data.en : data.ru;
-                    $headerSignUpSubtitle.textContent = (currentLanguage === 'en') ? `Email with code sent ${userEmail}` : `Сообщение с кодом отправлено на почту ${userEmail}`
+                    $headerSignUpCodeError.innerHTML = `<span class="en">${data.en}</span><span class="ru">${data.ru}</span>`;
+                    $headerSignUpSubtitle.innerHTML = `<span class="en">Email with code sent ${userEmail}</span><span class="ru">Сообщение с кодом отправлено на почту ${userEmail}</span>`;
+                    languageChanges();
 
                     resendMessageCounterForSingUp = makeSendButtonInactive($headerSignUpReorderCounter, $headerSignUpReorderBtn);
                     alreadyLeaving = false;
                 }
             })
             .catch((error) => {
-                $headerSignUpErrorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
-                console.error('Fetch error');
+                $headerSignUpErrorMessage.innerHTML = `<span class="en">Unexpected error</span><span class="ru">Непредвиденная ошибка</span>`;
+                languageChanges();
+                console.error('Fetch error: ' + error);
                 alreadyLeaving = false;
             });
         }
@@ -525,7 +519,6 @@ $headerSignUpFormReg.addEventListener('submit', (event) => {
 });
 
 // Remove red border by focus registration input
-
 removeRedBorder($headerSignUpEmail);
 removeRedBorder($headerSignUpNickname);
 removeRedBorder($headerSignUpTlg);
@@ -559,7 +552,6 @@ $headerSignUpBackBtn.addEventListener('click', () => {
 });
 
 // Send email-code again
-
 const $headerSignUpFormActv = $headerSignUpPopup.querySelector('.sign-up__form-activation');
 const $headerSignUpCodeInput = $headerSignUpFormActv.querySelector('.sign-up__code');
 const $headerSignUpCodeError = $headerSignUpFormActv.querySelector('.sign-up__code-error-message');
@@ -583,7 +575,8 @@ $headerSignUpReorderBtn.addEventListener('click', () => {
 
             if (status !== 200) {
                 try {
-                    $headerSignUpCodeError.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                    $headerSignUpCodeError.innerHTML = `<span class="en">${data.en}</span><span class="ru">${data.ru}</span>`;
+                    languageChanges();
 
                     clearInterval(resendMessageCounterForSingUp);
                     $headerSignUpReorderCounter.textContent = '';
@@ -596,21 +589,22 @@ $headerSignUpReorderBtn.addEventListener('click', () => {
             }
         })
         .catch((error) => {
-            $headerSignUpCodeError.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
-            console.error('Fetch error');
+            $headerSignUpCodeError.innerHTML = `<span class="en">Unexpected error</span><span class="ru">Непредвиденная ошибка</span>`;   
+            languageChanges(); 
+            console.error('Fetch error: ' + error);
         });
     }
 });
 
 // Activation form Validation
-
 $headerSignUpFormActv.addEventListener('submit', (event) => {
     event.preventDefault();
 
     if (!(/^[0-9]{6}$/.test($headerSignUpCodeInput.value))) {
         $headerSignUpCodeInput.style.border = `1px solid red`;
 
-        $headerSignUpCodeError.textContent = (currentLanguage === 'en') ? 'Incorrect code' : 'Неверный код';
+        $headerSignUpCodeError.innerHTML = `<span class="en">Incorrect code</span><span class="ru">Неверный код</span>`;
+        languageChanges();
     } else {
         fetch(`${HOST}/api/sign_in`, {
             method: 'POST', 
@@ -629,7 +623,8 @@ $headerSignUpFormActv.addEventListener('submit', (event) => {
 
             if (status !== 200) {
                 try {
-                    $headerSignUpCodeError.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                    $headerSignUpCodeError.innerHTML = `<span class="en">${data.en}</span><span class="ru">${data.ru}</span>`;
+                    languageChanges();
                 } catch (error) {
                     console.error('Error: ' + error);
                 }
@@ -657,16 +652,15 @@ $headerSignUpFormActv.addEventListener('submit', (event) => {
             }
         })
         .catch((error) => {
-            $headerSignUpCodeError.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
-            console.error('Fetch error');
+            $headerSignUpCodeError.innerHTML = `<span class="en">Unexpected error</span><span class="ru">Непредвиденная ошибка</span>`; 
+            languageChanges();   
+            console.error('Fetch error: ' + error);
         });
     }
 });
 
 // Make the send button inactive
-
 function makeSendButtonInactive($counter, $btn) {
-    //!!!!!!!!!
     $btn.classList.add('_disabled');
 
     let countOfSeconsd = 2 * 60;
@@ -691,14 +685,12 @@ function makeSendButtonInactive($counter, $btn) {
 }
 
 // Remove red border and clean error message by focus
-
 $headerSignUpCodeInput.addEventListener('focus', () => {
     $headerSignUpCodeInput.style.border = `2px solid ${COLOR_2}`;
     $headerSignUpCodeError.textContent = '';
 });
 
 // Exit visualization in header by button
-
 $headerRightRowExit.addEventListener('click', () => {
     localStorage.setItem('isLoggedIn', 'false');
 
@@ -706,7 +698,6 @@ $headerRightRowExit.addEventListener('click', () => {
 });
 
 // Login visualization in header
-
 function doLogin() {
     $headerRightRowReg.classList.add('_hidden');
     $headerRightRowLog.classList.add('_hidden');
@@ -722,7 +713,6 @@ function doLogin() {
 }
 
 // Exit visualization in header
-
 function doExit() {
     $headerRightRowReg.classList.remove('_hidden');
     $headerRightRowLog.classList.remove('_hidden');
@@ -738,7 +728,6 @@ function doExit() {
 // LOG_IN
 
 // Show login popup
-
 //? $headerRightRowLog;
 const $headerLogInPopup = $body.querySelector('.header__log-in-popup');
 const $headerLogInCloseBtn = $headerLogInPopup.querySelector('.log-in__close');
@@ -771,7 +760,6 @@ $headerLogInCloseBtn.addEventListener('click', () => {
 });
 
 // Set position sign up
-
 const $headerLogInContainer = $headerLogInPopup.querySelector('.log-in__container');
 
 if ($headerLogInContainer.clientHeight + 40 > window.innerHeight) {
@@ -793,7 +781,6 @@ window.addEventListener('resize', () => {
 });
 
 // Login form Validation
-
 const $headerLogInForm = $headerLogInPopup.querySelector('.log-in__form');
 
 const $headerLogInEmail = $headerLogInForm.querySelector('.log-in__email');
@@ -808,28 +795,28 @@ $headerLogInForm.addEventListener('submit', (event) => {
 
     if (!(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu.test($headerLogInEmail.value))) {
         $headerLogInEmail.style.border = '1px solid red';
-        errorMessage = (errorMessage) ? errorMessage : ((currentLanguage === 'en') ? 'Incorrect email' : 'Некорректная электронная почта');
+        errorMessage = (errorMessage) ? errorMessage : `<span class="en">ncorrect email</span><span class="ru">Некорректная электронная почта</span>`;
     }
 
     if (!stringLengthCheck($headerLogInPassword.value, 6)) {
         $headerLogInPassword.style.border = '1px solid red';
-        errorMessage = (errorMessage) ? errorMessage : ((currentLanguage === 'en') ? 'Password less than 6 characters' : 'Пароль меньше 6 символов');
+        errorMessage = (errorMessage) ? errorMessage : `<span class="en">Password less than 6 characters</span><span class="ru">Пароль меньше 6 символов</span>`;
     }
 
     if (!(/^(?=.*\d)(?=.*[a-zA-Z])(?!.*\s).*$/.test($headerLogInPassword.value))) {
         $headerLogInPassword.style.border = '1px solid red';
-        errorMessage = (errorMessage) ? errorMessage : ((currentLanguage === 'en') ? 'Password must contain latin letters and numbers' : 'Пароль должен содержать латинские буквы и цифры');
+        errorMessage = (errorMessage) ? errorMessage : `<span class="en">Password must contain latin letters and numbers</span><span class="ru">Пароль должен содержать латинские буквы и цифры</span>`;
     }
 
     if (errorMessage) {
-        $headerLogInErrorMessage.textContent = errorMessage;
+        $headerLogInErrorMessage.innerHTML = errorMessage;
+        languageChanges();
     } else {
         if ($headerLogInErrorMessage.textContent) {
             $headerLogInErrorMessage.textContent = '';
         }
 
         // Query send for register
-
         fetch(`${HOST}/api/log_in`, {
             method: 'POST', 
             credentials: 'include',
@@ -846,7 +833,8 @@ $headerLogInForm.addEventListener('submit', (event) => {
             const data = await res.json();
             if (status !== 200) {
                 try {
-                    $headerLogInErrorMessage.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                    $headerLogInErrorMessage.innerHTML = `<span class="en">${data.en}</span><span class="ru">${data.ru}</span>`;
+                    languageChanges();
                 } catch (error) {
                     console.error('Error: ' + error);
                 }
@@ -867,14 +855,14 @@ $headerLogInForm.addEventListener('submit', (event) => {
             }
         })
         .catch((error) => {
-            $headerLogInErrorMessage.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
-            console.error('Fetch error');
+            $headerLogInErrorMessage.innerHTML = `<span class="en">Unexpected error</span><span class="ru">Непредвиденная ошибка</span>`;
+            languageChanges();
+            console.error('Fetch error: ' + error);
         });
     }
 });
 
 // Restore password
-
 const $headerLogInBackBtn = $headerLogInPopup.querySelector('.log-in__back');
 
 const $headerLogInRestorePassword = $headerLogInForm.querySelector('.log-in__restore-password');
@@ -900,7 +888,6 @@ $headerLogInRestorePassword.addEventListener('click', () => {
 });
 
 // Send refresh email code
-
 $headerLogInConfirmationForm.addEventListener('submit', (event) => {
     event.preventDefault();
 
@@ -909,18 +896,18 @@ $headerLogInConfirmationForm.addEventListener('submit', (event) => {
 
         if (!(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu.test($headerLogInConfirmationEmail.value))) {
             $headerLogInConfirmationEmail.style.border = '1px solid red';
-            errorMessage = (errorMessage) ? errorMessage : ((currentLanguage === 'en') ? 'Incorrect email' : 'Некорректная электронная почта');
+            errorMessage = (errorMessage) ? errorMessage : `<span class="en">Incorrect email</span><span class="ru">Некорректная электронная почта</span>`;
         }
 
         if (errorMessage) {
-            $headerLogInConfirmationError.textContent = errorMessage;
+            $headerLogInConfirmationError.innerHTML = errorMessage;
+            languageChanges();
         } else {
             if ($headerLogInConfirmationError.textContent) {
                 $headerLogInConfirmationError.textContent = '';
             }
 
             // Query send for send refresh email code
-
             fetch(`${HOST}/api/send_refresh_email_code`, {
                 method: 'POST', 
                 body: JSON.stringify({
@@ -935,7 +922,8 @@ $headerLogInConfirmationForm.addEventListener('submit', (event) => {
                 const data = await res.json();
                 if (status !== 200) {
                     try {
-                        $headerLogInConfirmationError.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                        $headerLogInConfirmationError.innerHTML = `<span class="en">${data.en}</span><span class="ru">${data.ru}</span>`;
+                        languageChanges();
                     } catch (error) {
                         console.error('Error: ' + error);
                     }
@@ -954,15 +942,15 @@ $headerLogInConfirmationForm.addEventListener('submit', (event) => {
                 }
             })
             .catch((error) => {
-                $headerLogInConfirmationError.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
-                console.error('Fetch error');
+                $headerLogInConfirmationError.innerHTML = `<span class="en">Unexpected error</span><span class="ru">Непредвиденная ошибка</span>`;
+                languageChanges();
+                console.error('Fetch error: ' + error);
             });
         }
     }
 });
 
 // Check the access code on the server
-
 $headerLogInCodeForm.addEventListener('submit', (event) => {
     event.preventDefault();
 
@@ -970,7 +958,8 @@ $headerLogInCodeForm.addEventListener('submit', (event) => {
         if (!(/^[0-9]{6}$/.test($headerLogInCode.value))) {
             $headerLogInCode.style.border = `1px solid red`;
     
-            $headerLogInConfirmationError.textContent = (currentLanguage === 'en') ? 'Incorrect code' : 'Неверный код';
+            $headerLogInConfirmationError.innerHTML = `<span class="en">Incorrect code</span><span class="ru">Неверный код</span>`;
+            languageChanges();
         } else {
             fetch(`${HOST}/api/check_access_code_on_server`, {
                 method: 'POST', 
@@ -989,7 +978,8 @@ $headerLogInCodeForm.addEventListener('submit', (event) => {
     
                 if (status !== 200) {
                     try {
-                        $headerLogInConfirmationError.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                        $headerLogInConfirmationError.innerHTML = `<span class="en">${data.en}</span><span class="ru">${data.ru}</span>`;
+                        languageChanges();
                     } catch (error) {
                         console.error('Error: ' + error);
                     }
@@ -1013,15 +1003,15 @@ $headerLogInCodeForm.addEventListener('submit', (event) => {
                 }
             })
             .catch((error) => {
-                $headerLogInConfirmationError.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
-                console.error('Fetch error');
+                $headerLogInConfirmationError.innerHTML = `<span class="en">Unexpected error</span><span class="ru">Непредвиденная ошибка</span>`;    
+                languageChanges();
+                console.error('Fetch error: ' + error);
             });
         }
     }
 });
 
 // Send new password
-
 const $headerLogInNewPassForm = $headerLogInNewPassContainer.querySelector('.log-in__new-pass-form');
 const $headerLogInNewPass = $headerLogInNewPassContainer.querySelector('.log-in__new-pass');
 const $headerLogInRepeatNewPass = $headerLogInNewPassContainer.querySelector('.log-in__repeat-new-pass');
@@ -1035,30 +1025,30 @@ $headerLogInNewPassForm.addEventListener('submit', (event) => {
     if (!(/^(?=.*\d)(?=.*[a-zA-Z])(?!.*\s).*$/.test($headerLogInNewPass.value))) {
         $headerLogInNewPass.style.border = '1px solid red';
         $headerLogInRepeatNewPass.style.border = '1px solid red';
-        errorMessage = (errorMessage) ? errorMessage : ((currentLanguage === 'en') ? 'Password must contain latin letters and numbers' : 'Пароль должен содержать латинские буквы и цифры');
+        errorMessage = (errorMessage) ? errorMessage : `<span class="en">Password must contain latin letters and numbers</span><span class="ru">Пароль должен содержать латинские буквы и цифры</span>`;
     }
 
     if (!stringLengthCheck($headerLogInNewPass.value, 6)) {
         $headerLogInNewPass.style.border = '1px solid red';
         $headerLogInRepeatNewPass.style.border = '1px solid red';
-        errorMessage = (errorMessage) ? errorMessage : ((currentLanguage === 'en') ? 'Password less than 6 characters' : 'Пароль меньше 6 символов');
+        errorMessage = (errorMessage) ? errorMessage : `<span class="en">Password less than 6 characters</span><span class="ru">Пароль меньше 6 символов</span>`;
     }
 
     if ($headerLogInNewPass.value !== $headerLogInRepeatNewPass.value) {
         $headerLogInNewPass.style.border = '1px solid red';
         $headerLogInRepeatNewPass.style.border = '1px solid red';
-        errorMessage = (errorMessage) ? errorMessage : ((currentLanguage === 'en') ? 'Passwords do not match' : 'Пароли не совпадают');
+        errorMessage = (errorMessage) ? errorMessage : `<span class="en">Passwords do not match</span><span class="ru">Пароли не совпадают</span>`;
     }
 
     if (errorMessage) {
-        $headerLogInNewPassError.textContent = errorMessage;
+        $headerLogInNewPassError.innerHTML = errorMessage;
+        languageChanges();
     } else {
         if ($headerLogInNewPassError.textContent) {
             $headerLogInNewPassError.textContent = '';
         }
 
         // Query send
-
         fetch(`${HOST}/api/change_user_password`, {
             method: 'POST', 
             credentials: 'include',
@@ -1074,7 +1064,8 @@ $headerLogInNewPassForm.addEventListener('submit', (event) => {
             const data = await res.json();
             if (status !== 200) {
                 try {
-                    $headerLogInNewPassError.textContent = (currentLanguage === 'en') ? data.en : data.ru;
+                    $headerLogInNewPassError.innerHTML = `<span class="en">${data.en}</span><span class="ru">${data.ru}</span>`;
+                    languageChanges();
                 } catch (error) {
                     console.error('Error: ' + error);
                 }
@@ -1098,14 +1089,14 @@ $headerLogInNewPassForm.addEventListener('submit', (event) => {
             }
         })
         .catch((error) => {
-            $headerLogInNewPassError.textContent = (currentLanguage === 'en') ? 'Unexpected error' : 'Непредвиденная ошибка';    
-            console.error('Fetch error');
+            $headerLogInNewPassError.innerHTML = `<span class="en">Unexpected error</span><span class="ru">Непредвиденная ошибка</span>`;
+            languageChanges();
+            console.error('Fetch error: ' + error);
         });
     }
 });
 
 // Remove red border by focus registration input
-
 removeRedBorder($headerLogInEmail);
 removeRedBorder($headerLogInPassword);
 removeRedBorder($headerLogInConfirmationEmail);
@@ -1114,7 +1105,6 @@ removeRedBorder($headerLogInNewPass);
 removeRedBorder($headerLogInRepeatNewPass);
 
 // Back to login
-
 $headerLogInBackBtn.addEventListener('click', () => {
     if ($headerLogInConfirmationContainer.classList.contains('_shown')) {
         $headerLogInConfirmationContainer.classList.remove('_shown');

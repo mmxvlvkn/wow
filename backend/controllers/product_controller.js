@@ -116,7 +116,7 @@ class productController {
                     return ress.create(res, 200, newOrderNumber);
                 } catch (error) {
                     console.log('Error: ' + error)
-                    return ress.create(res, 409, 'Ordering error');
+                    return ress.create(res, 409, {en: 'Ordering error', ru: 'Ошибка оформления заказа'});
                 }
             } else {
                 return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
@@ -232,7 +232,7 @@ class productController {
                     return ress.create(res, 200, sendData);
                 } catch (error) {
                     console.log('Error: ' + error)
-                    return ress.create(res, 409, 'Geting products error');
+                    return ress.create(res, 409, {en: 'Geting products error', ru: 'Ошибка получения продуктов'});
                 }
             } else {
                 return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
@@ -277,10 +277,10 @@ class productController {
                         return ress.create(res, 200, sendData);
                     } catch (error) {
                         console.log('Error: ' + error)
-                        return ress.create(res, 409, 'Geting products error');
+                        return ress.create(res, 409, {en: 'Geting products error', ru: 'Ошибка получения продуктов'});
                     }
                 } else {
-                    return ress.create(res, 400, 'You are not admin');
+                    return ress.create(res, 400, {en: 'You are not admin', ru: 'Вы не администратор'});
                 }
             } else {
                 return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
@@ -329,7 +329,7 @@ class productController {
                     return ress.create(res, 200, newOrderNumber);
                 } catch (error) {
                     console.log('Error: ' + error)
-                    return ress.create(res, 409, 'Ordering error');
+                    return ress.create(res, 409, {en: 'Ordering error', ru: 'Ошибка оформления заказа'});
                 }
             } else {
                 return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
@@ -374,7 +374,7 @@ class productController {
                     return ress.create(res, 200, sendData);
                 } catch (error) {
                     console.log('Error: ' + error)
-                    return ress.create(res, 409, 'Geting products error');
+                    return ress.create(res, 409, {en: 'Geting products error', ru: 'Ошибка получения продуктов'});
                 }
             } else {
                 return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
@@ -421,10 +421,10 @@ class productController {
                         return ress.create(res, 200, sendData);
                     } catch (error) {
                         console.log('Error: ' + error)
-                        return ress.create(res, 409, 'Geting products error');
+                        return ress.create(res, 409, {en: 'Geting products error', ru: 'Ошибка получения продуктов'});
                     }
                 } else {
-                    return ress.create(res, 400, 'You are not admin');
+                    return ress.create(res, 400, {en: 'You are not admin', ru: 'Вы не администратор'});
                 }
             } else {
                 return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
@@ -449,7 +449,7 @@ class productController {
                         return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
                     }
                 } else {
-                    return ress.create(res, 400, 'You are not admin');
+                    return ress.create(res, 400, {en: 'You are not admin', ru: 'Вы не администратор'});
                 }
             } else {
                 return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
@@ -474,7 +474,7 @@ class productController {
                         return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
                     }
                 } else {
-                    return ress.create(res, 400, 'You are not admin');
+                    return ress.create(res, 400, {en: 'You are not admin', ru: 'Вы не администратор'});
                 }
             } else {
                 return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
@@ -499,7 +499,7 @@ class productController {
                         return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
                     }
                 } else {
-                    return ress.create(res, 400, 'You are not admin');
+                    return ress.create(res, 400, {en: 'You are not admin', ru: 'Вы не администратор'});
                 }
             } else {
                 return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});
@@ -524,7 +524,7 @@ class productController {
                         return ress.create(res, 500, {en: 'Unexpected database error', ru: 'Непредвиденная ошибка базы данных'});
                     }
                 } else {
-                    return ress.create(res, 400, 'You are not admin');
+                    return ress.create(res, 400, {en: 'You are not admin', ru: 'Вы не администратор'});
                 }
             } else {
                 return ress.create(res, 409, {en: 'Authentication error', ru: 'Ошибка аутентификации'});

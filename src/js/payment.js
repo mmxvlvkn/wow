@@ -24,6 +24,8 @@ fetch(`${HOST}/api/get_order_description`, {
         $orderNumber.textContent = 'ERROR';
         $orderNumber.style.color = 'red';
     } else {
+
+        // Order Description parsing
         $orderNumber.textContent = '#' + localStorage.getItem('order_number');
         console.log(data)
         $subtitle.textContent = (data.current_language === 'en') ? data.title_en : data.title_ru;
@@ -127,7 +129,7 @@ function stringIsValid(str) {
     return false;
 }
 
-// form validation
+// Card form validation
 const $body = document.querySelector('body');
 const $paymentForm = $body.querySelector('.payment__form');
 const $paymentCardNumber = $paymentForm.querySelector('.payment__card-number');
